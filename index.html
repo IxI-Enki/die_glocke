@@ -548,6 +548,45 @@
     .login-error { color: #ff6b6b; font-size: 0.8rem; margin-top: 0.5rem; }
     .login-success { color: #00ff9d; font-size: 0.8rem; margin-top: 0.5rem; }
 
+    /* Modal for generated files */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 40;
+    }
+
+    .modal-card {
+      width: min(1100px, 96vw);
+      max-height: 86vh;
+      overflow: auto;
+      background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-tertiary) 100%);
+      border: 1px solid var(--color-border);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.55);
+      padding: 1rem;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 0.5rem;
+    }
+
+    .modal-title { font-family: 'JetBrains Mono', monospace; color: var(--color-accent-blue); font-weight: 700; }
+    .modal-close { cursor: pointer; color: var(--color-accent-green); font-weight: 700; }
+
+    .file-block { border: 1px solid var(--color-border); padding: 0.5rem; margin: 0.5rem 0; background: rgba(10, 14, 20, 0.7); }
+    .file-name { font-family: 'JetBrains Mono', monospace; color: var(--color-accent-cyan); font-size: 0.85rem; }
+    .file-actions { display: flex; gap: 0.5rem; margin: 0.4rem 0; }
+    .code-block { font-family: 'Fira Code', monospace; font-size: 0.75rem; white-space: pre; overflow-x: auto; background: #0a0e14; padding: 0.5rem; border: 1px solid var(--color-border); }
+
     /* Tools list */
     .tools-wrapper { padding: 1rem; }
     .tools-list {
@@ -592,20 +631,22 @@
     <div class="portal-title">PORTAL</div>
   </div>
 
-  <!-- LOGIN SCREEN (HIDDEN BY KEY CHORD) -->
+  
   <div id="login-screen" class="login-screen hidden" aria-hidden="true">
     <div class="login-card">
       <div class="login-title">Secure Access</div>
-      <label class="mcp-label" for="login-username">Username</label>
-      <input id="login-username" class="mcp-input" type="text" autocomplete="username" placeholder="Enter username" />
+      <form id="login-form" method="post" action="" autocomplete="on">
+        <label class="mcp-label" for="login-username">Username</label>
+        <input id="login-username" name="username" class="mcp-input" type="text" autocomplete="username" placeholder="Enter username" />
 
-      <label class="mcp-label" for="login-password" style="margin-top:0.5rem;">Password</label>
-      <input id="login-password" class="mcp-input" type="password" autocomplete="current-password" placeholder="Enter password" />
+        <label class="mcp-label" for="login-password" style="margin-top:0.5rem;">Password</label>
+        <input id="login-password" name="password" class="mcp-input" type="password" autocomplete="current-password" placeholder="Enter password" />
 
-      <div class="login-actions">
-        <button id="btn-login" class="mcp-btn">Login</button>
-      </div>
-      <div id="login-message" class="login-hint">Tipp: Login ein-/ausblenden mit STRG + SHIFT + ALT(Gr) + Ö</div>
+        <div class="login-actions">
+          <button id="btn-login" class="mcp-btn" type="submit">Login</button>
+        </div>
+        <div id="login-message" class="login-hint"></div>
+      </form>
     </div>
   </div>
 
@@ -875,8 +916,21 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal container (hidden initially) -->
+    <div id="generator-modal" class="modal-overlay hidden" aria-hidden="true">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title">Generated MCP Server Files</div>
+          <div id="modal-close" class="modal-close">✕</div>
+        </div>
+        <div id="modal-content"></div>
+      </div>
+    </div>
   </div>
 
+  <script src="glocke.js"></script>
+  <script src="glocke.js"></script>
   <script>
     // --- Utilities ---
     function show(el) { el.classList.remove('hidden'); el.setAttribute('aria-hidden', 'false'); }
@@ -890,7 +944,7 @@
 
     function clearLoginMessage() {
       const m = document.getElementById('login-message');
-      m.textContent = 'Tipp: Login ein-/ausblenden mit STRG + SHIFT + ALT(Gr) + Ö';
+      m.textContent = '';
       m.className = 'login-hint';
     }
 
@@ -951,128 +1005,39 @@
       show(document.getElementById('app-root'));
     }
 
-    // --- Visual effects from original page ---
-    function createScribbles() {
-      const layer = document.getElementById('occult-layer');
-      if (!layer) return;
-      const symbols = "Ψ∇℧℥⚡🌀🌀⚡℥℧∇Ψ01010101{}[]()<>|&^%$#@!~";
-      const count = 30;
-
-      for (let i = 0; i < count; i++) {
-        const el = document.createElement('div');
-        el.className = 'scribble';
-        const text = symbols.charAt(Math.floor(Math.random() * symbols.length));
-        el.textContent = text;
-        el.style.left = Math.random() * 100 + '%';
-        el.style.top = Math.random() * 100 + '%';
-        el.style.animationDelay = Math.random() * 5 + 's';
-        el.style.animation = `scribble-float ${3 + Math.random() * 4}s ease-in-out infinite`;
-        layer.appendChild(el);
-
-        if (!document.getElementById('scribble-keyframes')) {
-          const style = document.createElement('style');
-          style.id = 'scribble-keyframes';
-          style.textContent = `
-            @keyframes scribble-float {
-              0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.2; }
-              25% { transform: translate(${(Math.random() - 0.5) * 40}px, ${(Math.random() - 0.5) * 40}px) rotate(${Math.random() * 360}deg); opacity: 0.8; }
-              50% { transform: translate(${(Math.random() - 0.5) * 60}px, ${(Math.random() - 0.5) * 60}px) rotate(${Math.random() * 360}deg); opacity: 0.6; }
-              75% { transform: translate(${(Math.random() - 0.5) * 30}px, ${(Math.random() - 0.5) * 30}px) rotate(${Math.random() * 360}deg); opacity: 0.9; }
-            }
-          `;
-          document.head.appendChild(style);
-        }
-      }
-    }
-
-    function createRings() {
-      const root = document.getElementById('bell-root');
-      if (!root) return;
-      for (let i = 0; i < 3; i++) {
-        const ring = document.createElement('div');
-        ring.className = 'quantum-ring';
-        ring.style.left = '50%';
-        ring.style.top = '50%';
-        ring.style.animationDelay = `${i * 1}s`;
-        root.appendChild(ring);
-      }
-    }
-
-    function createParticles() {
-      const root = document.getElementById('bell-root');
-      if (!root) return;
-      for (let i = 0; i < 12; i++) {
-        const p = document.createElement('div');
-        p.className = 'particle';
-        p.style.left = '50%';
-        p.style.bottom = '0';
-        p.style.setProperty('--dx', `${(Math.random() - 0.5) * 80}px`);
-        p.style.animationDelay = `${Math.random() * 2}s`;
-        root.appendChild(p);
-      }
-    }
-
-    function createCircuits() {
-      const root = document.getElementById('bell-root');
-      if (!root) return;
-      for (let i = 0; i < 6; i++) {
-        const line = document.createElement('div');
-        line.className = 'circuit-line';
-        const start = Math.random() * 100;
-        const length = 30 + Math.random() * 50;
-        const end = start + length;
-        line.style.setProperty('--start', `${start}%`);
-        line.style.setProperty('--length', `${length}%`);
-        line.style.setProperty('--end', `${end}%`);
-        line.style.top = `${10 + i * 12}%`;
-        line.style.animationDelay = `${Math.random() * 2}s`;
-        root.appendChild(line);
-      }
-    }
-
-    function createLightning() {
-      const root = document.getElementById('bell-root');
-      if (!root) return;
-      for (let i = 0; i < 4; i++) {
-        const l = document.createElement('div');
-        l.className = 'lightning';
-        l.style.left = `${45 + i * 2}%`;
-        l.style.top = '0';
-        l.style.height = `${60 + Math.random() * 40}px`;
-        l.style.animationDelay = `${Math.random() * 5}s`;
-        root.appendChild(l);
-      }
-    }
-
     // --- App init ---
     document.addEventListener('DOMContentLoaded', () => {
       // Login UI
-      const btnLogin = document.getElementById('btn-login');
+      const loginForm = document.getElementById('login-form');
       const inputUser = document.getElementById('login-username');
       const inputPass = document.getElementById('login-password');
 
-      btnLogin.addEventListener('click', async () => {
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
         clearLoginMessage();
         const u = inputUser.value.trim();
         const p = inputPass.value;
         const ok = await validateLogin(u, p);
         if (ok) {
+          try {
+            if (navigator.credentials && window.PasswordCredential && navigator.credentials.store) {
+              const cred = new PasswordCredential({ id: u, name: u, password: p });
+              await navigator.credentials.store(cred);
+            }
+          } catch (_) {}
           completeLogin();
         } else {
           setLoginMessage('Invalid credentials.', false);
         }
       });
 
-      // Keyboard chord: Ctrl + Shift + Alt(Gr) + Ö to toggle login overlay
       let loginVisible = false;
       document.addEventListener('keydown', (e) => {
         const key = (e.key || '').toLowerCase();
         const hasAltGr = e.getModifierState && e.getModifierState('AltGraph');
         const hasAlt = e.altKey || hasAltGr;
-        // Note: On Windows DE layout, AltGr sets both Ctrl and Alt. Also map keyCode fallback 186
         const isOeLike = (key === 'ö' || key === 'ø' || key === ';' || e.keyCode === 186);
         if ((e.ctrlKey || hasAltGr) && e.shiftKey && hasAlt && isOeLike) {
-          // ';' fallback for non-DE layouts roughly where Ö sits
           e.preventDefault();
           loginVisible = !loginVisible;
           const login = document.getElementById('login-screen');
@@ -1081,14 +1046,8 @@
         }
       });
 
-      // Visual FX (run even if hidden, harmless)
-      createScribbles();
-      createRings();
-      createParticles();
-      createCircuits();
-      createLightning();
 
-      // Tool, API, Env adders (inside MCP generator tool)
+      // Tool, API, Env adders
       document.getElementById('btn-add-tool').addEventListener('click', () => {
         const container = document.getElementById('tools-container');
         const div = document.createElement('div');
@@ -1135,8 +1094,150 @@
       });
 
       // Header main button (kept behavior)
-      document.getElementById('btn-generate').addEventListener('click', () => {
-        alert('✨ MCP Server configuration captured! Ready for generation.');
+      document.getElementById('btn-generate').addEventListener('click', async () => {
+        // Collect inputs
+        const svc = document.getElementById('input-service-name').value.trim();
+        const desc = document.getElementById('input-description').value.trim();
+        const author = document.getElementById('input-author').value.trim();
+        const category = document.getElementById('select-category').value;
+        const tags = document.getElementById('input-tags').value.trim();
+        const license = document.getElementById('select-license').value;
+
+        const apis = Array.from(document.querySelectorAll('#apis-container .api-item')).map(el => ({
+          name: (el.querySelector('.api-name')||{}).value||'',
+          url: (el.querySelector('.api-url')||{}).value||'',
+          docs: (el.querySelector('.api-docs')||{}).value||'',
+          rate: (el.querySelector('.api-rate')||{}).value||''
+        }));
+
+        const tools = Array.from(document.querySelectorAll('#tools-container .tool-item')).map(el => ({
+          name: (el.querySelector('.tool-name')||{}).value||'',
+          desc: (el.querySelector('.tool-desc')||{}).value||'',
+          params: (el.querySelector('.tool-params')||{}).value||''
+        }));
+
+        const auth = {
+          type: document.getElementById('select-auth-type').value,
+          header: document.getElementById('input-auth-header').value.trim(),
+          secret: document.getElementById('input-secret-name').value.trim()
+        };
+
+        const docker = {
+          base: document.getElementById('select-base-image').value,
+          workdir: document.getElementById('input-workdir').value,
+          uid: document.getElementById('input-user-id').value,
+          uname: document.getElementById('input-user-name').value,
+          extra: document.getElementById('input-docker-packages').value,
+          net: document.getElementById('check-docker-network').checked,
+          priv: document.getElementById('check-docker-privileged').checked
+        };
+
+        const output = {
+          style: document.getElementById('select-output-format').value,
+          emojis: {
+            ok: document.getElementById('input-emoji-success').value,
+            err: document.getElementById('input-emoji-error').value,
+            warn: document.getElementById('input-emoji-warning').value,
+            info: document.getElementById('input-emoji-info').value
+          },
+          color: document.getElementById('check-color-output').checked,
+          ts: document.getElementById('check-timestamps').checked,
+          verbose: document.getElementById('check-verbose').checked
+        };
+
+        const adv = {
+          timeout: document.getElementById('input-timeout').value,
+          retries: document.getElementById('input-max-retries').value,
+          log: document.getElementById('select-log-level').value,
+          cache: document.getElementById('select-cache').value,
+          ttl: document.getElementById('input-cache-ttl').value,
+          hc: document.getElementById('check-health-check').checked,
+          metrics: document.getElementById('check-metrics').checked,
+          shutdown: document.getElementById('check-graceful-shutdown').checked
+        };
+
+        const deps = (document.getElementById('input-dependencies').value||'').trim();
+        const sysdeps = document.getElementById('input-sys-deps').value.trim();
+        const envs = Array.from(document.querySelectorAll('#env-vars-container .env-item')).map(el => ({
+          name: (el.querySelector('.env-name')||{}).value||'',
+          value: (el.querySelector('.env-value')||{}).value||''
+        }));
+
+        // Basic validation (prompt for missing critical fields)
+        if (!svc) { alert('Please enter a Service Name.'); return; }
+        if (!author) { alert('Please enter an Author.'); return; }
+
+        // Fetch prompt (GLOCKE.md) embedded in repo (serverless)
+        let promptText = '';
+        try {
+          promptText = `GLOCKE.md - READONLY\n`;
+        } catch (_) {}
+
+        // Synthesize server files client-side
+        const serverNameSafe = svc.toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
+        const serverPyName = `${serverNameSafe}_server.py`;
+
+        const requirements = (deps ? deps.split(/\s+/).join('\n') : 'mcp[cli]>=1.2.0\nhttpx').trim();
+
+        const dockerfile = `FROM ${docker.base}\nWORKDIR ${docker.workdir}\nENV PYTHONUNBUFFERED=1\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY ${serverPyName} .\nRUN useradd -m -u ${docker.uid||'1000'} ${docker.uname||'mcpuser'} \\\n && chown -R ${docker.uname||'mcpuser'}:${docker.uname||'mcpuser'} ${docker.workdir}\nUSER ${docker.uname||'mcpuser'}\nCMD [\"python\", \"${serverPyName}\"]\n`;
+
+        const pyTools = tools.map(t => {
+          const params = (t.params||'').split(',').map(s=>s.trim()).filter(Boolean);
+          const sig = params.map(p=>`${p}: str = \"\"`).join(', ');
+          return `@mcp.tool()\nasync def ${t.name||'tool'}(${sig}):\n    \"\"\"${(t.desc||'Tool').replace(/\"/g,'\\\"')}\"\"\"\n    try:\n        return f\"${output.emojis.ok||'✅'} ${t.name||'tool'} executed\"\n    except Exception as e:\n        return f\"${output.emojis.err||'❌'} Error: {str(e)}\"\n`;
+        }).join('\n');
+
+        const serverPy = `#!/usr/bin/env python3\n\n\"\"\"${svc} MCP Server - ${desc}\"\"\"\nimport os, sys, logging, httpx\nfrom datetime import datetime, timezone\nfrom mcp.server.fastmcp import FastMCP\nlogging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', stream=sys.stderr)\nlogger = logging.getLogger(\"${serverNameSafe}-server\")\nmcp = FastMCP(\"${svc}\")\n${pyTools||''}\nif __name__ == \"__main__\":\n    logger.info(\"Starting ${svc} MCP server...\")\n    try:\n        mcp.run(transport='stdio')\n    except Exception as e:\n        logger.error(f\"Server error: {e}\", exc_info=True)\n        sys.exit(1)\n`;
+
+        const readme = `# ${svc} MCP Server\n\n${desc||''}\n\n## Author\n${author}\n\n## Category\n${category}\n\n## Tools\n${tools.map(t=>`- ${t.name}: ${t.desc}`).join('\n')}\n\n## APIs\n${apis.map(a=>`- ${a.name} (${a.url})`).join('\n')}\n`;
+
+        const files = [
+          { name: 'Dockerfile', content: dockerfile },
+          { name: 'requirements.txt', content: requirements + '\n' },
+          { name: serverPyName, content: serverPy },
+          { name: 'README.md', content: readme }
+        ];
+
+        // Render modal
+        const modal = document.getElementById('generator-modal');
+        const content = document.getElementById('modal-content');
+        content.innerHTML = '';
+        files.forEach(f => {
+          const wrap = document.createElement('div');
+          wrap.className = 'file-block';
+          const name = document.createElement('div');
+          name.className = 'file-name';
+          name.textContent = f.name;
+          const actions = document.createElement('div');
+          actions.className = 'file-actions';
+          const btnCopy = document.createElement('button');
+          btnCopy.className = 'add-btn';
+          btnCopy.textContent = 'Copy';
+          btnCopy.addEventListener('click', async ()=>{ try { await navigator.clipboard.writeText(f.content); btnCopy.textContent='Copied'; setTimeout(()=>btnCopy.textContent='Copy',1200); } catch(_){} });
+          const btnDl = document.createElement('button');
+          btnDl.className = 'add-btn';
+          btnDl.textContent = 'Download';
+          btnDl.addEventListener('click', ()=>{
+            const blob = new Blob([f.content], { type: 'text/plain;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = f.name;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+          });
+          actions.appendChild(btnCopy); actions.appendChild(btnDl);
+          const pre = document.createElement('pre');
+          pre.className = 'code-block';
+          pre.textContent = f.content;
+          wrap.appendChild(name);
+          wrap.appendChild(actions);
+          wrap.appendChild(pre);
+          content.appendChild(wrap);
+        });
+        document.getElementById('modal-close').onclick = ()=>{ modal.classList.add('hidden'); modal.setAttribute('aria-hidden','true'); };
+        modal.classList.remove('hidden');
+        modal.setAttribute('aria-hidden','false');
       });
 
       // Tools list selection
