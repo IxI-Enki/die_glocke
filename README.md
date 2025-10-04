@@ -1,3 +1,5 @@
 ---
-title: 'Die_Glocke'
+title: 'die_glocke'
+contents: 'empty'
+state: 'development'
 ---
