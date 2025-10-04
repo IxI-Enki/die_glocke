@@ -2,7 +2,8 @@
   function createScribbles(rootId){
     var layer=document.getElementById(rootId||'occult-layer');
     if(!layer) return;
-    var symbols="⚙️🌐🤖👾💀☠️👽👁️📎🪐🌍🌎🌏🌑🌖🌕🌙🌛⭐🌀🕳️👁️‍🗨️Ψ∇℧℥   ⚡ ℥℧∇Ψ01010101 ↻↺↷↶↪↩↫↬↭↯↝↜∡∢∽∿∼⊙⊛⊚⊗⋅⋄⋇⌖⨀⨉⨝⨭⨳⨸⨷⩨⩼⩻αβδεζγκνιϞ";
+    // ASCII/Nerd-font safe symbols to avoid tofu boxes
+    var symbols="*+-.<>^~|/\\()[]{}#%&$@!?0123456789-=Ψ∇℧℥⊙⊛⊚⊗⋅⋄⋇⌖⨀⨉⨝αβδεζγκνιπφΩ";
     var count=420;
     for(var i=0;i<count;i++){
       var el=document.createElement('div');
@@ -84,6 +85,29 @@
     createParticles();
     createCircuits();
     createLightning();
+
+    // Extra orbiters and center-burst around tool bell
+    var bell=document.getElementById('tool-bell');
+    if(bell){
+      var orbitSymbols=['Ψ','∇','Ω','⊙','⊛','α','β','φ','*','+','~'];
+      for(var i=0;i<14;i++){
+        var o=document.createElement('div');
+        o.className='orbiter'; o.textContent=orbitSymbols[i % orbitSymbols.length];
+        o.style.setProperty('--radius', (40 + Math.random()*50)+'px');
+        o.style.setProperty('--duration', (8 + Math.random()*10)+'s');
+        o.style.opacity = (0.6 + Math.random()*0.4).toString();
+        bell.appendChild(o);
+      }
+      for(var p=0;p<28;p++){
+        var pr=document.createElement('div'); pr.className='particle';
+        pr.style.left='50%'; pr.style.top='50%';
+        var angle=Math.random()*Math.PI*2; var r=60+Math.random()*120;
+        pr.style.setProperty('--dx', Math.cos(angle)*r+'px');
+        pr.style.setProperty('--dy', Math.sin(angle)*r+'px');
+        pr.style.animationDelay=(Math.random()*2)+'s';
+        bell.appendChild(pr);
+      }
+    }
 
     // Tools list toggle behavior
     var toolsList=document.getElementById('tools-list');
