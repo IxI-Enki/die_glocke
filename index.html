@@ -589,11 +589,8 @@
 
     /* Tools list */
     .tools-wrapper { padding: 1rem; }
-    .tools-list {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(180px, 1fr));
-      gap: 0.75rem;
-    }
+    .tools-list { display: grid; grid-template-columns: repeat(4, minmax(180px, 1fr)); gap: 0.75rem; }
+    .tool-card.full { grid-column: 1 / -1; }
 
     .tool-card {
       border: 1px solid var(--color-border);
@@ -608,6 +605,21 @@
     .tool-card-desc { font-size: 0.75rem; color: var(--color-text-primary); opacity: 0.85; margin-top: 0.25rem; }
 
     .tool-panel { padding: 0 1rem 1rem; }
+
+    /* Tool hero inside card */
+    .tool-card-hero {
+      position: relative;
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-tertiary) 100%);
+      border: 1px solid var(--color-border);
+      overflow: hidden;
+      min-height: 140px;
+    }
+    .tool-card-hero .logo-container { gap: 1rem; }
+    .tool-card-hero .occult-layer { z-index: 0; }
+    .tool-card-hero .mcp-logo-text { font-size: 1.6rem; letter-spacing: 0.18em; }
+    .tool-card-hero .mcp-subtitle { font-size: 0.7rem; }
+    .tool-card-hero .version { font-size: 0.7rem; }
 
     @media (max-width: 1200px) {
       .container { grid-template-columns: repeat(2, 1fr); }
@@ -655,7 +667,7 @@
   <div id="app-root" class="hidden" aria-hidden="true">
     <header class="mcp-header">
       <div class="logo-container">
-        <div class="bell-container" id="bell-root">
+        <div class="bell-container" id="portal-bell">
           <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" class="tibetan-bell">
             <defs>
               <linearGradient id="bellGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -689,15 +701,11 @@
         </div>
 
         <div>
-          <div class="mcp-logo-text">DIE GLOCKE</div>
-          <div class="mcp-subtitle">MCP SERVER GENERATOR</div>
-          <div class="version">by Jan/IxI-Enki • v2.0.1</div>
+          <div class="mcp-logo-text">PORTAL</div>
+          <div class="mcp-subtitle">ACCESS NODE</div>
+          <div class="version">secure gateway</div>
         </div>
       </div>
-
-      <button id="btn-generate" class="mcp-btn">⚡ GENERATE SERVER</button>
-
-      <!-- Occult Techno Scribbles Layer -->
       <div class="occult-layer" id="occult-layer"></div>
     </header>
 
@@ -706,9 +714,27 @@
       <div class="mcp-section">
         <h2 class="section-title">Tools</h2>
         <div class="tools-list" id="tools-list">
-          <div class="tool-card" data-tool-id="mcp-generator">
-            <div class="tool-card-title">MCP Server Generator</div>
-            <div class="tool-card-desc">Design and configure MCP servers, Docker image, auth, and tooling.</div>
+          <div class="tool-card full" data-tool-id="mcp-generator">
+            <div class="tool-card-hero">
+              <div class="logo-container">
+                <div class="bell-container" id="tool-bell">
+                  <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" class="tibetan-bell">
+                    <use href="#bellGradient"/>
+                    <path d="M50,20 C40,20 30,30 30,50 Q30,80 50,100 Q70,80 70,50 C70,30 60,20 50,20 Z" />
+                    <line x1="50" y1="25" x2="50" y2="45" stroke="url(#bellGradient)" stroke-width="2"/>
+                    <circle cx="50" cy="60" r="18" fill="none" stroke="url(#bellGradient)" stroke-width="1" opacity="0.6"/>
+                    <circle cx="50" cy="70" r="12" fill="none" stroke="url(#bellGradient)" stroke-width="1" opacity="0.4"/>
+                  </svg>
+                  <div class="sauron-eye"><div class="sauron-pupil"></div></div>
+                </div>
+                <div>
+                  <div class="mcp-logo-text">DIE GLOCKE</div>
+                  <div class="mcp-subtitle">MCP SERVER GENERATOR</div>
+                  <div class="version">by Jan/IxI-Enki • v2.0.1</div>
+                </div>
+              </div>
+              <div class="occult-layer" id="tool-occult"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -860,6 +886,9 @@
               <div style="margin-top:0.5rem;"></div>
               <label><input type="checkbox" id="check-install-guide" checked /> Include INSTALL.md</label>
               <label><input type="checkbox" id="check-catalog-snippets" checked /> Include Catalog/Registry snippets</label>
+            </div>
+            <div class="mcp-section" style="display:flex;align-items:center;justify-content:flex-end;">
+              <button id="btn-generate" class="mcp-btn">⚡ GENERATE SERVER</button>
             </div>
           </div>
 

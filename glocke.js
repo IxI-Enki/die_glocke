@@ -1,6 +1,6 @@
 (function(){
-  function createScribbles(){
-    var layer=document.getElementById('occult-layer');
+  function createScribbles(rootId){
+    var layer=document.getElementById(rootId||'occult-layer');
     if(!layer) return;
     var symbols="Ψ∇℧℥⚡🌀🌀⚡℥℧∇Ψ01010101{}[]()<>|&^%$#@!~";
     var count=30;
@@ -78,7 +78,8 @@
     }
   }
   document.addEventListener('DOMContentLoaded',function(){
-    createScribbles();
+    createScribbles('occult-layer');
+    createScribbles('tool-occult');
     createRings();
     createParticles();
     createCircuits();
