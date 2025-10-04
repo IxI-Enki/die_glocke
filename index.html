@@ -66,7 +66,7 @@
       content: "";
       position: absolute;
       inset: 0;
-      background:
+      background: 
         radial-gradient(800px 400px at 20% 20%, rgba(0,255,157,0.08), transparent 60%),
         radial-gradient(900px 500px at 80% 80%, rgba(0,212,255,0.07), transparent 60%),
         radial-gradient(1200px 600px at 50% 50%, rgba(77,124,255,0.05), transparent 65%),
@@ -769,62 +769,7 @@
           <div class="tool-card full" data-tool-id="mcp-generator">
             <div class="tool-card-hero">
               <div class="logo-container">
-                <div class="bell-container" id="tool-bell">
-                  <svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg" class="tool-bell-svg">
-                    <defs>
-                      <linearGradient id="cyberMetalGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#224b62"/>
-                        <stop offset="30%" stop-color="#1a2a42"/>
-                        <stop offset="60%" stop-color="#0f2138"/>
-                        <stop offset="100%" stop-color="#18304a"/>
-                      </linearGradient>
-                      <linearGradient id="rimNeonGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#00e5ff"/>
-                        <stop offset="100%" stop-color="#00ff9d"/>
-                      </linearGradient>
-                      <linearGradient id="clapperNeonGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#00b3ff"/>
-                        <stop offset="100%" stop-color="#00ffa8"/>
-                      </linearGradient>
-                      <radialGradient id="irisGradient" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" stop-color="#00fff5"/>
-                        <stop offset="45%" stop-color="#00b3ff"/>
-                        <stop offset="80%" stop-color="rgba(0,0,0,0.2)"/>
-                        <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
-                      </radialGradient>
-                      <filter id="toolBellGlow" x="-50%" y="-50%" width="200%" height="200%">
-                        <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="b"/>
-                        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-                      </filter>
-                      <filter id="plasma" x="-50%" y="-50%" width="200%" height="200%">
-                        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="t"/>
-                        <feColorMatrix type="hueRotate" values="20"/>
-                        <feDisplacementMap in="SourceGraphic" in2="t" scale="2"/>
-                      </filter>
-                    </defs>
-                     <!-- Neon eye stack (square glow + eye) -->
-                     <rect x="46" y="12" width="28" height="28" rx="6" ry="6" fill="rgba(0,255,157,0.12)" style="filter: blur(2px)"/>
-                     <g class="ai-eye">
-                       <circle class="eye-iris" cx="60" cy="26" r="13" fill="url(#irisGradient)" />
-                       <ellipse class="eye-pupil" cx="60" cy="26" rx="3.6" ry="7.6"/>
-                     </g>
-                     <!-- Slim stem -->
-                     <rect x="56" y="34" width="8" height="18" fill="url(#rimNeonGradient)" rx="1"/>
-                     <!-- Small connector -->
-                     <rect x="50" y="52" width="20" height="5" fill="rgba(0,212,255,0.4)"/>
-                     <!-- Bell body outline (screenshot shape) -->
-                     <path d="M44 58 C52 52 68 52 76 58 L78 96 C72 116 50 126 42 96 Z" fill="none" stroke="url(#rimNeonGradient)" stroke-width="4"/>
-                     <!-- Inner glass fill -->
-                     <path d="M46 60 C54 55 66 55 74 60 L75 94 C70 112 50 120 45 94 Z" fill="rgba(0,212,255,0.12)"/>
-                     <!-- Base rings -->
-                     <ellipse cx="60" cy="126" rx="26" ry="5" fill="rgba(0,255,157,0.18)"/>
-                     <ellipse cx="60" cy="126" rx="22" ry="3.4" fill="rgba(0,212,255,0.28)"/>
-                     <!-- Floating body dots -->
-                     <circle class="body-dot" cx="54" cy="74" r="2" style="--dx:-2px; --dy:-1px; --dd:3.6s"/>
-                     <circle class="body-dot" cx="66" cy="80" r="2" style="--dx:1px; --dy:-2px; --dd:4.2s"/>
-                     <circle class="body-dot" cx="60" cy="90" r="2" style="--dx:0px; --dy:2px; --dd:3.2s"/>
-                  </svg>
-                </div>
+                 <div class="bell-container" id="tool-bell"></div>
                 <div>
                   <div class="mcp-logo-text">DIE GLOCKE</div>
                   <div class="mcp-subtitle">MCP SERVER GENERATOR</div>
