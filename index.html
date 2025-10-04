@@ -496,6 +496,9 @@
 
     /* Login Screen */
     .login-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -1066,7 +1069,9 @@
         const key = (e.key || '').toLowerCase();
         const hasAltGr = e.getModifierState && e.getModifierState('AltGraph');
         const hasAlt = e.altKey || hasAltGr;
-        if (e.ctrlKey && e.shiftKey && hasAlt && (key === 'ö' || key === 'ø' || key === ';')) {
+        // Note: On Windows DE layout, AltGr sets both Ctrl and Alt. Also map keyCode fallback 186
+        const isOeLike = (key === 'ö' || key === 'ø' || key === ';' || e.keyCode === 186);
+        if ((e.ctrlKey || hasAltGr) && e.shiftKey && hasAlt && isOeLike) {
           // ';' fallback for non-DE layouts roughly where Ö sits
           e.preventDefault();
           loginVisible = !loginVisible;
