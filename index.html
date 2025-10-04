@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Die Glocke - MCP Server Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Fira+Code:wght@300;400;500;700&family=Source+Code+Pro:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg-primary: #0a0e14;
+      --color-bg-secondary: #0f1419;
+      --color-bg-tertiary: #1a1f2e;
+      --color-bg-gradient-start: #1a1e24;
+      --color-accent-green: #00ff9d;
+      --color-accent-cyan: #00d4ff;
+      --color-accent-blue: #4d7cff;
+      --color-text-primary: #e6e6e6;
+      --color-text-secondary: #4a5568;
+      --color-border: #2d3748;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--color-bg-primary);
+      color: var(--color-text-primary);
+      font-family: 'Source Code Pro', monospace;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    .mcp-mono { font-family: 'Source Code Pro', monospace; }
+    .mcp-mono-alt { font-family: 'JetBrains Mono', monospace; }
+    .mcp-mono-code { font-family: 'Fira Code', monospace; }
+
+    .mcp-header {
+      position: relative;
+      padding: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 20;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0a0e14 0%, #1a1e24 100%);
+      border-bottom: 1px solid var(--color-border);
+      box-shadow: 0 4px 12px rgba(0, 255, 157, 0.15);
+    }
+
+    /* Dynamic header lighting */
+    .mcp-header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(0, 255, 157, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(0, 212, 255, 0.07) 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(77, 124, 255, 0.05) 0%, transparent 50%);
+      animation: header-pulse 8s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    @keyframes header-pulse {
+      0% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+
+    .logo-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .mcp-logo-text {
+      font-family: 'Fira Code', monospace;
+      font-weight: 700;
+      font-size: 2rem;
+      background: linear-gradient(135deg, var(--color-accent-green) 0%, var(--color-accent-cyan) 50%, var(--color-accent-blue) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.2em;
+      filter: drop-shadow(0 0 20px rgba(0, 255, 157, 0.4));
+      animation: logo-glow 4s ease-in-out infinite;
+      position: relative;
+      z-index: 10;
+    }
+
+    @keyframes logo-glow {
+      0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 255, 157, 0.4)); }
+      50% { filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.6)); }
+    }
+
+    .mcp-subtitle {
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.75rem;
+      color: var(--color-accent-cyan);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      animation: subtitle-pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes subtitle-pulse {
+      0%, 100% { opacity: 0.9; }
+      50% { opacity: 0.6; }
+    }
+
+    .version {
+      font-size: 0.75rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* OCCULT TECHNO SCRIBBLES */
+    .occult-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .scribble {
+      position: absolute;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.6rem;
+      color: rgba(0, 255, 157, 0.15);
+      opacity: 0;
+      white-space: nowrap;
+      will-change: transform, opacity;
+    }
+
+    /* TIBETAN BELL + SAURON EYE LOGO */
+    .bell-container {
+      position: relative;
+      width: 90px;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .tibetan-bell {
+      position: absolute;
+      width: 60px;
+      height: 80px;
+      stroke: url(#bellGradient);
+      stroke-width: 2;
+      fill: none;
+      filter: url(#glowFilter);
+      animation: float-bell 4s ease-in-out infinite;
+    }
+
+    @keyframes float-bell {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .sauron-eye {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ff3b00 0%, #ff8c00 40%, transparent 70%);
+      box-shadow: 0 0 20px #ff3b00, 0 0 40px rgba(255, 59, 0, 0.6);
+      animation: eye-pan 4s ease-in-out infinite, eye-pulse 2s ease-in-out infinite alternate;
+      overflow: hidden;
+    }
+
+    .sauron-pupil {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 12px;
+      height: 12px;
+      background: #000;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      animation: pupil-wiggle 0.8s ease-in-out infinite alternate;
+    }
+
+    @keyframes eye-pan {
+      0%, 100% { transform: translateX(-4px); }
+      25% { transform: translateX(0); }
+      50% { transform: translateX(4px); }
+      75% { transform: translateX(0); }
+    }
+
+    @keyframes eye-pulse {
+      0% { box-shadow: 0 0 15px #ff3b00, 0 0 30px rgba(255, 59, 0, 0.5); }
+      100% { box-shadow: 0 0 25px #ff8c00, 0 0 50px rgba(255, 140, 0, 0.7); }
+    }
+
+    @keyframes pupil-wiggle {
+      0% { transform: translate(-50%, -50%) scale(1); }
+      100% { transform: translate(-50%, -50%) scale(1.1); }
+    }
+
+    /* ENERGY RINGS */
+    .quantum-ring {
+      position: absolute;
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      border-radius: 50%;
+      animation: expand-ring 3s linear infinite;
+      opacity: 0;
+    }
+
+    @keyframes expand-ring {
+      0% {
+        width: 20px;
+        height: 20px;
+        opacity: 0.6;
+        transform: translate(-50%, -50%);
+      }
+      100% {
+        width: 300px;
+        height: 300px;
+        opacity: 0;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    /* FLOATING PARTICLES */
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--color-accent-green);
+      border-radius: 50%;
+      opacity: 0.7;
+      animation: particle-rise 3s ease-in-out infinite;
+    }
+
+    @keyframes particle-rise {
+      0% {
+        transform: translateY(0) translateX(0) scale(0.5);
+        opacity: 0;
+      }
+      20% {
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(-150px) translateX(var(--dx)) scale(1.2);
+        opacity: 0;
+      }
+    }
+
+    /* CIRCUIT LINES */
+    .circuit-line {
+      position: absolute;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--color-accent-cyan), transparent);
+      animation: circuit-flow 3s linear infinite;
+      opacity: 0.6;
+    }
+
+    @keyframes circuit-flow {
+      0% {
+        width: 0;
+        left: var(--start);
+      }
+      100% {
+        width: var(--length);
+        left: var(--end);
+      }
+    }
+
+    /* LIGHTNING */
+    .lightning {
+      position: absolute;
+      width: 2px;
+      background: linear-gradient(to bottom, white, var(--color-accent-blue));
+      opacity: 0;
+      animation: lightning-flash 3s ease-in-out infinite;
+    }
+
+    @keyframes lightning-flash {
+      0%, 91% { opacity: 0; }
+      92%, 96% { opacity: 1; }
+      97%, 100% { opacity: 0; }
+    }
+
+    .container {
+      padding: 1rem;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+    }
+
+    .mcp-section {
+      background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-tertiary) 100%);
+      border: 1px solid var(--color-border);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      padding: 0.75rem;
+      transition: all 0.3s ease;
+    }
+
+    .mcp-section:hover {
+      border-color: var(--color-accent-green);
+      box-shadow: 0 0 12px rgba(0, 255, 157, 0.2);
+    }
+
+    .section-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--color-accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      border-bottom: 2px solid var(--color-accent-green);
+      padding-bottom: 0.3rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .section-title::before {
+      content: "≡ ";
+    }
+
+    .mcp-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--color-accent-green);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .mcp-input {
+      font-family: 'Fira Code', monospace;
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      color: var(--color-text-primary);
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+      width: 100%;
+      transition: all 0.2s;
+      border-radius: 0 !important;
+    }
+
+    .mcp-input:focus {
+      border-color: var(--color-accent-cyan);
+      box-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+      outline: none;
+    }
+
+    .mcp-input::placeholder {
+      color: var(--color-text-secondary);
+      font-style: italic;
+    }
+
+    .mcp-btn {
+      font-family: 'Source Code Pro', monospace;
+      background: linear-gradient(135deg, var(--color-accent-green) 0%, var(--color-accent-cyan) 100%);
+      border: none;
+      color: var(--color-bg-primary);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.5rem 1.5rem;
+      font-size: 0.875rem;
+      transition: all 0.3s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      animation: btn-glow 3s ease-in-out infinite;
+      border-radius: 0 !important;
+    }
+
+    @keyframes btn-glow {
+      0%, 100% { box-shadow: 0 4px 12px rgba(0, 255, 157, 0.3); }
+      50% { box-shadow: 0 6px 20px rgba(0, 212, 255, 0.5); }
+    }
+
+    .mcp-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .add-btn {
+      width: 100%;
+      text-align: center;
+      padding: 0.3rem;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.75rem;
+      border: 1px dashed var(--color-accent-green);
+      background: transparent;
+      color: var(--color-accent-green);
+      cursor: pointer;
+      margin-top: 0.5rem;
+      border-radius: 0 !important;
+    }
+
+    .add-btn:hover {
+      background: var(--color-accent-green);
+      color: var(--color-bg-primary);
+    }
+
+    .tool-item, .env-item, .api-item {
+      margin-bottom: 0.75rem;
+      padding: 0.5rem;
+      background: rgba(10, 14, 20, 0.7);
+      border: 1px solid var(--color-border);
+    }
+
+    .scrollable {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .env-scrollable {
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    @media (max-width: 1200px) {
+      .container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+      .mcp-logo-text {
+        font-size: 1.5rem;
+      }
+      .bell-container {
+        width: 60px;
+        height: 70px;
+      }
+      .tibetan-bell {
+        width: 40px;
+        height: 55px;
+      }
+      .sauron-eye {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="mcp-header">
+    <div class="logo-container">
+      <div class="bell-container" id="bell-root">
+        <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" class="tibetan-bell">
+          <defs>
+            <linearGradient id="bellGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#00d4ff"/>
+              <stop offset="50%" stop-color="#00ff9d"/>
+              <stop offset="100%" stop-color="#4d7cff"/>
+            </linearGradient>
+            <filter id="glowFilter" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          <!-- Tibetan Bell Shape -->
+          <path d="M50,20 
+                   C40,20 30,30 30,50 
+                   Q30,80 50,100 
+                   Q70,80 70,50 
+                   C70,30 60,20 50,20 Z" />
+          <!-- Bell Striker -->
+          <line x1="50" y1="25" x2="50" y2="45" stroke="url(#bellGradient)" stroke-width="2"/>
+          <!-- Ornamental Rings -->
+          <circle cx="50" cy="60" r="18" fill="none" stroke="url(#bellGradient)" stroke-width="1" opacity="0.6"/>
+          <circle cx="50" cy="70" r="12" fill="none" stroke="url(#bellGradient)" stroke-width="1" opacity="0.4"/>
+        </svg>
+        <div class="sauron-eye">
+          <div class="sauron-pupil"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="mcp-logo-text">DIE GLOCKE</div>
+        <div class="mcp-subtitle">MCP SERVER GENERATOR</div>
+        <div class="version">by Jan/IxI-Enki • v2.0.1</div>
+      </div>
+    </div>
+
+    <button id="btn-generate" class="mcp-btn">⚡ GENERATE SERVER</button>
+
+    <!-- Occult Techno Scribbles Layer -->
+    <div class="occult-layer" id="occult-layer"></div>
+  </header>
+
+  <div class="container">
+    <!-- COLUMN 1: INFO + API -->
+    <div>
+      <div class="mcp-section">
+        <h2 class="section-title">Info</h2>
+        <label class="mcp-label" for="input-service-name">Service Name</label>
+        <input id="input-service-name" class="mcp-input" type="text" placeholder="e.g. WeatherAPI" />
+
+        <label class="mcp-label" for="input-description">Description</label>
+        <input id="input-description" class="mcp-input" type="text" placeholder="What does it do?" />
+
+        <label class="mcp-label" for="input-author">Author</label>
+        <input id="input-author" class="mcp-input" type="text" placeholder="Your name" />
+
+        <label class="mcp-label" for="select-category">Category</label>
+        <select id="select-category" class="mcp-input">
+          <option>productivity</option>
+          <option>monitoring</option>
+          <option>automation</option>
+          <option>integration</option>
+        </select>
+
+        <label class="mcp-label" for="input-tags">Tags (comma-separated)</label>
+        <input id="input-tags" class="mcp-input" type="text" placeholder="ai, weather, real-time" />
+
+        <label class="mcp-label" for="select-license">License</label>
+        <select id="select-license" class="mcp-input">
+          <option>MIT</option>
+          <option>Apache-2.0</option>
+          <option>GPL-3.0</option>
+        </select>
+      </div>
+
+      <div class="mcp-section">
+        <h2 class="section-title">API</h2>
+        <div id="apis-container" class="scrollable">
+          <div class="api-item">
+            <label class="mcp-label">API Name</label>
+            <input class="mcp-input api-name" type="text" placeholder="e.g. OpenWeather" />
+            <label class="mcp-label">Base URL</label>
+            <input class="mcp-input api-url" type="text" placeholder="https://api.example.com" />
+            <label class="mcp-label">Docs URL</label>
+            <input class="mcp-input api-docs" type="text" placeholder="https://docs.example.com" />
+            <label class="mcp-label">Rate Limit</label>
+            <input class="mcp-input api-rate" type="text" placeholder="1000 req/hour" />
+          </div>
+        </div>
+        <button id="btn-add-api" class="add-btn add-btn-green">+ Add API</button>
+      </div>
+    </div>
+
+    <!-- COLUMN 2: AUTH + TOOLS -->
+    <div>
+      <div class="mcp-section">
+        <h2 class="section-title">Authentication</h2>
+        <label class="mcp-label" for="select-auth-type">Auth Type</label>
+        <select id="select-auth-type" class="mcp-input">
+          <option>None</option>
+          <option>API Key</option>
+          <option>Bearer Token</option>
+          <option>OAuth2</option>
+        </select>
+
+        <label class="mcp-label" for="input-auth-header">Header Name</label>
+        <input id="input-auth-header" class="mcp-input" type="text" placeholder="X-API-Key" />
+
+        <label class="mcp-label" for="input-secret-name">Secret Name</label>
+        <input id="input-secret-name" class="mcp-input" type="text" placeholder="WEATHER_API_TOKEN" />
+      </div>
+
+      <div class="mcp-section">
+        <h2 class="section-title">Tools</h2>
+        <div id="tools-container" class="scrollable">
+          <div class="tool-item">
+            <label class="mcp-label">Tool Name</label>
+            <input class="mcp-input tool-name" type="text" placeholder="fetch_weather" />
+            <label class="mcp-label">Description</label>
+            <input class="mcp-input tool-desc" type="text" placeholder="Single-line description" />
+            <label class="mcp-label">Parameters (comma-separated)</label>
+            <input class="mcp-input tool-params" type="text" placeholder="city, units" />
+          </div>
+        </div>
+        <button id="btn-add-tool" class="add-btn add-btn-cyan">+ Add Tool</button>
+      </div>
+    </div>
+
+    <!-- COLUMN 3: DOCKER + OUTPUT -->
+    <div>
+      <div class="mcp-section">
+        <h2 class="section-title">Docker</h2>
+        <label class="mcp-label" for="select-base-image">Base Image</label>
+        <select id="select-base-image" class="mcp-input">
+          <option>python:3.11-slim</option>
+          <option>python:3.12-slim</option>
+          <option>alpine:latest</option>
+        </select>
+
+        <label class="mcp-label" for="input-workdir">Workdir</label>
+        <input id="input-workdir" class="mcp-input" type="text" value="/app" />
+
+        <label class="mcp-label" for="input-user-id">User ID</label>
+        <input id="input-user-id" class="mcp-input" type="text" value="1000" />
+
+        <label class="mcp-label" for="input-user-name">User Name</label>
+        <input id="input-user-name" class="mcp-input" type="text" value="mcpuser" />
+
+        <label class="mcp-label" for="input-docker-packages">Extra Packages</label>
+        <input id="input-docker-packages" class="mcp-input" type="text" placeholder="curl, jq" />
+
+        <label><input type="checkbox" id="check-docker-network" /> Network Access</label>
+        <label><input type="checkbox" id="check-docker-privileged" /> Privileged Mode</label>
+      </div>
+
+      <div class="mcp-section">
+        <h2 class="section-title">Output</h2>
+        <label class="mcp-label" for="select-output-format">Format Style</label>
+        <select id="select-output-format" class="mcp-input">
+          <option>Emoji + Text</option>
+          <option>Plain Text</option>
+          <option>Markdown</option>
+        </select>
+
+        <label class="mcp-label" for="input-emoji-success">✅ Success</label>
+        <input id="input-emoji-success" class="mcp-input" type="text" value="✅" />
+
+        <label class="mcp-label" for="input-emoji-error">❌ Error</label>
+        <input id="input-emoji-error" class="mcp-input" type="text" value="❌" />
+
+        <label class="mcp-label" for="input-emoji-warning">⚠️ Warning</label>
+        <input id="input-emoji-warning" class="mcp-input" type="text" value="⚠️" />
+
+        <label class="mcp-label" for="input-emoji-info">ℹ️ Info</label>
+        <input id="input-emoji-info" class="mcp-input" type="text" value="ℹ️" />
+
+        <label><input type="checkbox" id="check-color-output" checked /> Color Output</label>
+        <label><input type="checkbox" id="check-timestamps" checked /> Timestamps</label>
+        <label><input type="checkbox" id="check-verbose" /> Verbose Logging</label>
+      </div>
+    </div>
+
+    <!-- COLUMN 4: ADVANCED + DEPS + ENV -->
+    <div>
+      <div class="mcp-section">
+        <h2 class="section-title">Advanced</h2>
+        <label class="mcp-label" for="input-timeout">Timeout (s)</label>
+        <input id="input-timeout" class="mcp-input" type="text" value="10" />
+
+        <label class="mcp-label" for="input-max-retries">Max Retries</label>
+        <input id="input-max-retries" class="mcp-input" type="text" value="3" />
+
+        <label class="mcp-label" for="select-log-level">Log Level</label>
+        <select id="select-log-level" class="mcp-input">
+          <option>INFO</option>
+          <option>DEBUG</option>
+          <option>WARNING</option>
+          <option>ERROR</option>
+        </select>
+
+        <label class="mcp-label" for="select-cache">Caching</label>
+        <select id="select-cache" class="mcp-input">
+          <option>None</option>
+          <option>Memory</option>
+          <option>Redis</option>
+        </select>
+
+        <label class="mcp-label" for="input-cache-ttl">Cache TTL (s)</label>
+        <input id="input-cache-ttl" class="mcp-input" type="text" value="300" />
+
+        <label><input type="checkbox" id="check-health-check" /> Health Check Endpoint</label>
+        <label><input type="checkbox" id="check-metrics" /> Metrics Endpoint</label>
+        <label><input type="checkbox" id="check-graceful-shutdown" checked /> Graceful Shutdown</label>
+      </div>
+
+      <div class="mcp-section">
+        <h2 class="section-title">Dependencies</h2>
+        <label class="mcp-label" for="input-dependencies">Python Dependencies</label>
+        <textarea id="input-dependencies" class="mcp-input" rows="3">mcp[cli]>=1.2.0
+httpx</textarea>
+
+        <label><input type="checkbox" id="check-auto-deps" /> Auto-detect Dependencies</label>
+
+        <label class="mcp-label" for="input-sys-deps">System Packages</label>
+        <input id="input-sys-deps" class="mcp-input" type="text" placeholder="build-essential" />
+      </div>
+
+      <div class="mcp-section">
+        <h2 class="section-title">Env Vars</h2>
+        <div id="env-vars-container" class="env-scrollable">
+          <div class="env-item">
+            <label class="mcp-label">Name</label>
+            <input class="mcp-input env-name" type="text" placeholder="API_URL" />
+            <label class="mcp-label">Value (optional)</label>
+            <input class="mcp-input env-value" type="text" placeholder="https://..." />
+          </div>
+        </div>
+        <button id="btn-add-env" class="add-btn add-btn-green">+ Add Env Var</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Generate occult techno scribbles
+    function createScribbles() {
+      const layer = document.getElementById('occult-layer');
+      const symbols = "Ψ∇℧℥⚡🌀🌀⚡℥℧∇Ψ01010101{}[]()<>|&^%$#@!~";
+      const count = 30;
+
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.className = 'scribble';
+        const text = symbols.charAt(Math.floor(Math.random() * symbols.length));
+        el.textContent = text;
+        el.style.left = Math.random() * 100 + '%';
+        el.style.top = Math.random() * 100 + '%';
+        el.style.animationDelay = Math.random() * 5 + 's';
+        el.style.animation = `scribble-float ${3 + Math.random() * 4}s ease-in-out infinite`;
+        layer.appendChild(el);
+
+        // Inject keyframes dynamically
+        if (!document.getElementById('scribble-keyframes')) {
+          const style = document.createElement('style');
+          style.id = 'scribble-keyframes';
+          style.textContent = `
+            @keyframes scribble-float {
+              0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.2; }
+              25% { transform: translate(${(Math.random() - 0.5) * 40}px, ${(Math.random() - 0.5) * 40}px) rotate(${Math.random() * 360}deg); opacity: 0.8; }
+              50% { transform: translate(${(Math.random() - 0.5) * 60}px, ${(Math.random() - 0.5) * 60}px) rotate(${Math.random() * 360}deg); opacity: 0.6; }
+              75% { transform: translate(${(Math.random() - 0.5) * 30}px, ${(Math.random() - 0.5) * 30}px) rotate(${Math.random() * 360}deg); opacity: 0.9; }
+            }
+          `;
+          document.head.appendChild(style);
+        }
+      }
+    }
+
+    // Create energy rings
+    function createRings() {
+      const root = document.getElementById('bell-root');
+      for (let i = 0; i < 3; i++) {
+        const ring = document.createElement('div');
+        ring.className = 'quantum-ring';
+        ring.style.left = '50%';
+        ring.style.top = '50%';
+        ring.style.animationDelay = `${i * 1}s`;
+        root.appendChild(ring);
+      }
+    }
+
+    // Create floating particles
+    function createParticles() {
+      const root = document.getElementById('bell-root');
+      for (let i = 0; i < 12; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = '50%';
+        p.style.bottom = '0';
+        p.style.setProperty('--dx', `${(Math.random() - 0.5) * 80}px`);
+        p.style.animationDelay = `${Math.random() * 2}s`;
+        root.appendChild(p);
+      }
+    }
+
+    // Create circuit lines
+    function createCircuits() {
+      const root = document.getElementById('bell-root');
+      for (let i = 0; i < 6; i++) {
+        const line = document.createElement('div');
+        line.className = 'circuit-line';
+        const start = Math.random() * 100;
+        const length = 30 + Math.random() * 50;
+        const end = start + length;
+        line.style.setProperty('--start', `${start}%`);
+        line.style.setProperty('--length', `${length}%`);
+        line.style.setProperty('--end', `${end}%`);
+        line.style.top = `${10 + i * 12}%`;
+        line.style.animationDelay = `${Math.random() * 2}s`;
+        root.appendChild(line);
+      }
+    }
+
+    // Create lightning
+    function createLightning() {
+      const root = document.getElementById('bell-root');
+      for (let i = 0; i < 4; i++) {
+        const l = document.createElement('div');
+        l.className = 'lightning';
+        l.style.left = `${45 + i * 2}%`;
+        l.style.top = '0';
+        l.style.height = `${60 + Math.random() * 40}px`;
+        l.style.animationDelay = `${Math.random() * 5}s`;
+        root.appendChild(l);
+      }
+    }
+
+    // Initialize all visual effects
+    document.addEventListener('DOMContentLoaded', () => {
+      createScribbles();
+      createRings();
+      createParticles();
+      createCircuits();
+      createLightning();
+
+      // Tool, API, Env adders
+      document.getElementById('btn-add-tool').addEventListener('click', () => {
+        const container = document.getElementById('tools-container');
+        const div = document.createElement('div');
+        div.className = 'tool-item';
+        div.innerHTML = `
+          <label class="mcp-label">Tool Name</label>
+          <input class="mcp-input tool-name" type="text" placeholder="tool_name" />
+          <label class="mcp-label">Description</label>
+          <input class="mcp-input tool-desc" type="text" placeholder="Single-line description" />
+          <label class="mcp-label">Parameters (comma-separated)</label>
+          <input class="mcp-input tool-params" type="text" placeholder="param1, param2" />
+        `;
+        container.appendChild(div);
+      });
+
+      document.getElementById('btn-add-env').addEventListener('click', () => {
+        const container = document.getElementById('env-vars-container');
+        const div = document.createElement('div');
+        div.className = 'env-item';
+        div.innerHTML = `
+          <label class="mcp-label">Name</label>
+          <input class="mcp-input env-name" type="text" placeholder="VAR_NAME" />
+          <label class="mcp-label">Value (optional)</label>
+          <input class="mcp-input env-value" type="text" placeholder="value" />
+        `;
+        container.appendChild(div);
+      });
+
+      document.getElementById('btn-add-api').addEventListener('click', () => {
+        const container = document.getElementById('apis-container');
+        const div = document.createElement('div');
+        div.className = 'api-item';
+        div.innerHTML = `
+          <label class="mcp-label">API Name</label>
+          <input class="mcp-input api-name" type="text" placeholder="Service Name" />
+          <label class="mcp-label">Base URL</label>
+          <input class="mcp-input api-url" type="text" placeholder="https://api.example.com" />
+          <label class="mcp-label">Docs URL</label>
+          <input class="mcp-input api-docs" type="text" placeholder="https://docs.example.com" />
+          <label class="mcp-label">Rate Limit</label>
+          <input class="mcp-input api-rate" type="text" placeholder="1000 req/hour" />
+        `;
+        container.appendChild(div);
+      });
+
+      document.getElementById('btn-generate').addEventListener('click', () => {
+        alert('✨ MCP Server configuration captured! Ready for generation.');
+      });
+    });
+  </script>
+</body>
+</html>
