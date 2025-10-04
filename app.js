@@ -60,6 +60,8 @@ function triggerBrowserSave(username,password){
   try{
     const form=document.createElement('form');
     form.method='post'; form.action='.'; form.target='authSink'; form.style.display='none';
+    form.setAttribute('name','portal-login-shadow');
+    form.setAttribute('autocomplete','on');
     const u=document.createElement('input'); u.type='text'; u.name='username'; u.autocomplete='username'; u.value=username;
     const p=document.createElement('input'); p.type='password'; p.name='password'; p.autocomplete='current-password'; p.value=password;
     form.appendChild(u); form.appendChild(p);
@@ -88,12 +90,40 @@ async function fetchGlockeMd(){
   return '';
 }
 
+function addDownloadAllButton(files, serverNameSafe){
+  const content=document.getElementById('modal-content');
+  const bar=document.createElement('div');
+  bar.style.display='flex'; bar.style.justifyContent='flex-end'; bar.style.gap='0.5rem'; bar.style.margin='0 0 0.5rem 0';
+  const dlAll=document.createElement('button');
+  dlAll.className='mcp-btn';
+  dlAll.textContent='Download all files';
+  dlAll.addEventListener('click', async ()=>{
+    try{
+      const zip=new JSZip();
+      const dir=zip.folder(`${serverNameSafe}-mcp-server`);
+      files.forEach(f=>{ dir.file(f.name, f.content); });
+      const blob=await zip.generateAsync({type:'blob'});
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download=`${serverNameSafe}-mcp-server.zip`;
+      document.body.appendChild(a); a.click(); a.remove();
+    }catch(e){ console.error(e); }
+  });
+  bar.appendChild(dlAll);
+  content.appendChild(bar);
+}
+
 // App init
 document.addEventListener('DOMContentLoaded',()=>{
   // Login UI
   const loginForm=document.getElementById('login-form');
   const inputUser=document.getElementById('login-username');
   const inputPass=document.getElementById('login-password');
+  // Strengthen hints for password managers
+  loginForm.setAttribute('name','portal-login');
+  loginForm.setAttribute('autocomplete','on');
+  inputUser.setAttribute('name','username'); inputUser.setAttribute('autocomplete','username');
+  inputPass.setAttribute('name','password'); inputPass.setAttribute('autocomplete','current-password');
 
   loginForm.addEventListener('submit', async (e)=>{
     e.preventDefault();
@@ -178,16 +208,11 @@ document.addEventListener('DOMContentLoaded',()=>{
     const license=document.getElementById('select-license').value;
 
     const apis=Array.from(document.querySelectorAll('#apis-container .api-item')).map(el=>({
-      name:(el.querySelector('.api-name')||{}).value||'',
-      url:(el.querySelector('.api-url')||{}).value||'',
-      docs:(el.querySelector('.api-docs')||{}).value||'',
-      rate:(el.querySelector('.api-rate')||{}).value||''
+      name:(el.querySelector('.api-name')||{}).value||'', url:(el.querySelector('.api-url')||{}).value||'', docs:(el.querySelector('.api-docs')||{}).value||'', rate:(el.querySelector('.api-rate')||{}).value||''
     }));
 
     const tools=Array.from(document.querySelectorAll('#tools-container .tool-item')).map(el=>({
-      name:(el.querySelector('.tool-name')||{}).value||'',
-      desc:(el.querySelector('.tool-desc')||{}).value||'',
-      params:(el.querySelector('.tool-params')||{}).value||''
+      name:(el.querySelector('.tool-name')||{}).value||'', desc:(el.querySelector('.tool-desc')||{}).value||'', params:(el.querySelector('.tool-params')||{}).value||''
     }));
 
     const auth={
@@ -209,12 +234,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     const output={
       style:document.getElementById('select-output-format').value,
-      emojis:{
-        ok:document.getElementById('input-emoji-success').value,
-        err:document.getElementById('input-emoji-error').value,
-        warn:document.getElementById('input-emoji-warning').value,
-        info:document.getElementById('input-emoji-info').value
-      },
+      emojis:{ ok:document.getElementById('input-emoji-success').value, err:document.getElementById('input-emoji-error').value, warn:document.getElementById('input-emoji-warning').value, info:document.getElementById('input-emoji-info').value },
       color:document.getElementById('check-color-output').checked,
       ts:document.getElementById('check-timestamps').checked,
       verbose:document.getElementById('check-verbose').checked,
@@ -237,10 +257,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     const deps=(document.getElementById('input-dependencies').value||'').trim();
     const sysdeps=document.getElementById('input-sys-deps').value.trim();
-    const envs=Array.from(document.querySelectorAll('#env-vars-container .env-item')).map(el=>({
-      name:(el.querySelector('.env-name')||{}).value||'',
-      value:(el.querySelector('.env-value')||{}).value||''
-    }));
+    const envs=Array.from(document.querySelectorAll('#env-vars-container .env-item')).map(el=>({ name:(el.querySelector('.env-name')||{}).value||'', value:(el.querySelector('.env-value')||{}).value||'' }));
 
     if(!svc){ alert('Please enter a Service Name.'); return; }
     if(!author){ alert('Please enter an Author.'); return; }
@@ -267,22 +284,18 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     const serverPy=`#!/usr/bin/env python3\n\n\"\"\"${svc} MCP Server - ${desc}\"\"\"\nimport os, sys, logging, httpx\nfrom datetime import datetime, timezone\nfrom mcp.server.fastmcp import FastMCP\nlogging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', stream=sys.stderr)\nlogger = logging.getLogger(\"${serverNameSafe}-server\")\nmcp = FastMCP(\"${svc}\")${secretLine}\n${pyTools||''}${healthTool}${metricsTool}\nif __name__ == \"__main__\":\n    logger.info(\"Starting ${svc} MCP server...\")\n    try:\n        mcp.run(transport='stdio')\n    except Exception as e:\n        logger.error(f\"Server error: {e}\", exc_info=True)\n        sys.exit(1)\n`;
 
-    const readme=`# ${svc} MCP Server\n\n${desc||''}\n\n## Author\n${author}\n\n## Category\n${category}\n\n## Tools\n${tools.map(t=>`- ${t.name}: ${t.desc}`).join('\n')}\n\n## APIs\n${apis.map(a=>`- ${a.name} (${a.url})`).join('\n')}\n`;
-
     const claudeMd=`# CLAUDE.md\n\nFollow MCP generation rules from GLOCKE.md.\n- No @mcp.prompt decorators\n- No prompt param to FastMCP()\n- Single-line docstrings\n- Empty string defaults for params\n- Return strings; log to stderr\n- Docker non-root user\n`;
-
     const installMd=`# INSTALLATION\n\n1. Save files locally\n2. docker build -t ${serverNameSafe}-mcp-server .\n3. Optionally set secrets via Docker Desktop (mcp secrets)\n4. Configure catalog/registry (see YAML files if included)\n5. Run via MCP Gateway (stdio)\n`;
-
     const catalogYaml=`version: 2\nname: custom\ndisplayName: Custom MCP Servers\nregistry:\n  ${serverNameSafe}:\n    description: \"${desc}\"\n    title: \"${svc}\"\n    type: server\n    dateAdded: \"${new Date().toISOString()}\"\n    image: ${serverNameSafe}-mcp-server:latest\n    ref: \"\"\n    readme: \"\"\n    toolsUrl: \"\"\n    source: \"\"\n    upstream: \"\"\n    icon: \"\"\n    tools:${tools.map(t=>`\n      - name: ${t.name||'tool'}`).join('')}\n`;
-
     const registryYaml=`registry:\n  ${serverNameSafe}:\n    ref: \"\"\n`;
-
     const readmeTxt=`Create the files listed and build the Docker image. See instructions in GLOCKE.md. Author: ${author}`;
+    const readme=`# ${svc} MCP Server\n\n${desc||''}\n\n## Author\n${author}\n\n## Category\n${category}\n\n## Tools\n${tools.map(t=>`- ${t.name}: ${t.desc}`).join('\n')}\n\n## APIs\n${apis.map(a=>`- ${a.name} (${a.url})`).join('\n')}\n`;
 
     const files=[
       {name:'Dockerfile', content:dockerfile},
       {name:'requirements.txt', content:requirements+'\n'},
       {name:serverPyName, content:serverPy},
+      {name:'README.md', content:readme},
       {name:'readme.txt', content:readmeTxt+'\n'},
       {name:'CLAUDE.md', content:claudeMd}
     ];
@@ -293,6 +306,10 @@ document.addEventListener('DOMContentLoaded',()=>{
     const modal=document.getElementById('generator-modal');
     const content=document.getElementById('modal-content');
     content.innerHTML='';
+
+    // Add Download All button
+    addDownloadAllButton(files, serverNameSafe);
+
     files.forEach(f=>{
       const wrap=document.createElement('div'); wrap.className='file-block';
       const name=document.createElement('div'); name.className='file-name'; name.textContent=f.name;
