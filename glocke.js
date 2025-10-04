@@ -2,7 +2,7 @@
   function createScribbles(rootId){
     var layer=document.getElementById(rootId||'occult-layer');
     if(!layer) return;
-    var symbols="Ψ∇℧℥⚡⚡℥℧∇Ψ01010101{}[]()<>⁜※⁕⁎†‡*⁙⁘°¿?⌀⁓µ⌁↻↺↷↶↪↩↫↬↭↯↝↜◊▢▣◌◈◇◆●○◉◎◯◻□∅ↈↂↀ∑√∝∞∏∈∋∉∌∨∧∲∮∯∡∢∽∿∼∷⊕⊙⊛⊚⊗⊡⊠⋅⋄⋇⌖⌗⨀⨁⨂⨉⨝⨭⨳⨸⨷⩨⩼⩻αβδεζγκνιπρξλΞμτχςΣσυφΦΩωϴϿϾͼϕϟϞ|&^%$#@!~";
+    var symbols="Ψ∇℧℥ ⚡℥℧∇Ψ01010101⁕⁎*⁙°⌀⁓µ⌁↻↺↷↶↪↩↫↬↭↯↝↜◌●○◉◎◯∅ↂↀ∑√∝∞∏∋∉∨∮∡∢∽∿∼⊙⊛⊚⊗⋅⋄⋇⌖⨀⨉⨝⨭⨳⨸⨷⩨⩼⩻αβδεζγκνιπρξλΞμτχςΣσυφΦΩωϴϿϾͼϕϟϞ|&^%$#@!~";
     var count=420;
     for(var i=0;i<count;i++){
       var el=document.createElement('div');
@@ -23,7 +23,7 @@
     }
   }
   function createRings(){
-    var root=document.getElementById('bell-root');
+    var root=document.getElementById('tool-bell');
     if(!root) return;
     for(var i=0;i<3;i++){
       var ring=document.createElement('div');
@@ -35,7 +35,7 @@
     }
   }
   function createParticles(){
-    var root=document.getElementById('bell-root');
+    var root=document.getElementById('tool-bell');
     if(!root) return;
     for(var i=0;i<12;i++){
       var p=document.createElement('div');
@@ -48,7 +48,7 @@
     }
   }
   function createCircuits(){
-    var root=document.getElementById('bell-root');
+    var root=document.getElementById('tool-bell');
     if(!root) return;
     for(var i=0;i<6;i++){
       var line=document.createElement('div');
@@ -65,7 +65,7 @@
     }
   }
   function createLightning(){
-    var root=document.getElementById('bell-root');
+    var root=document.getElementById('tool-bell');
     if(!root) return;
     for(var i=0;i<4;i++){
       var l=document.createElement('div');

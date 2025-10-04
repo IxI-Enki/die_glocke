@@ -6,6 +6,15 @@
   <title>Die Glocke - MCP Server Generator</title>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Fira+Code:wght@300;400;500;700&family=Source+Code+Pro:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
+    /* Nerd Font: Fira Code Nerd Font for extended symbols */
+    @font-face {
+      font-family: 'FiraCode Nerd Font';
+      src: url('https://cdn.jsdelivr.net/gh/ryanoasis/nerd-fonts@3.2.1/patched-fonts/FiraCode/Regular/complete/Fira%20Code%20Nerd%20Font%20Complete-Regular.woff2') format('woff2'),
+           url('https://cdn.jsdelivr.net/gh/ryanoasis/nerd-fonts@3.2.1/patched-fonts/FiraCode/Regular/complete/Fira%20Code%20Nerd%20Font%20Complete-Regular.woff') format('woff');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
     :root {
       --color-bg-primary: #0a0e14;
       --color-bg-secondary: #0f1419;
@@ -37,7 +46,7 @@
 
     .mcp-mono { font-family: 'Source Code Pro', monospace; }
     .mcp-mono-alt { font-family: 'JetBrains Mono', monospace; }
-    .mcp-mono-code { font-family: 'Fira Code', monospace; }
+    .mcp-mono-code { font-family: 'FiraCode Nerd Font', 'Fira Code', monospace; }
 
     .mcp-header {
       position: relative;
@@ -78,6 +87,7 @@
       display: flex;
       align-items: center;
       gap: 1rem;
+      width: 100%;
     }
 
     .mcp-logo-text {
@@ -132,13 +142,44 @@
 
     .scribble {
       position: absolute;
-      font-family: 'Fira Code', monospace;
+      font-family: 'FiraCode Nerd Font', 'Fira Code', monospace;
       font-size: 0.6rem;
       color: rgba(0, 255, 157, 0.15);
       opacity: 0;
       white-space: nowrap;
       will-change: transform, opacity;
     }
+    /* PORTAL header logo - distinct from bell */
+    .portal-logo { position: relative; width: 110px; height: 110px; margin-right: 0.5rem; }
+    .portal-logo .halo { position: absolute; inset: -15%; border-radius: 50%; background:
+        radial-gradient(closest-side, rgba(77,124,255,0.35), transparent 70%),
+        conic-gradient(from 0deg, rgba(0,255,157,0.12), rgba(0,212,255,0.12), rgba(77,124,255,0.12), rgba(0,255,157,0.12));
+      filter: blur(18px); animation: halo-pulse 6s ease-in-out infinite; }
+    .portal-logo .core { position:absolute; left:50%; top:50%; width:28px; height:28px; transform: translate(-50%,-50%);
+      border-radius: 50%; background: radial-gradient(circle, #0ff 0%, #4d7cff 40%, #0a0e14 65%);
+      box-shadow: 0 0 16px rgba(0,255,255,0.6), 0 0 36px rgba(77,124,255,0.45);
+      animation: core-breathe 2.8s ease-in-out infinite; }
+    .portal-logo .ring { position:absolute; left:50%; top:50%; border: 2px solid rgba(0,212,255,0.45); border-radius:50%; transform: translate(-50%,-50%);
+      animation: ring-spin 8s linear infinite; box-shadow: 0 0 8px rgba(0,212,255,0.3); }
+    .portal-logo .r1 { width:64px; height:64px; animation-duration: 7s; }
+    .portal-logo .r2 { width:86px; height:86px; border-color: rgba(0,255,157,0.35); animation-duration: 11s; }
+    .portal-logo .r3 { width:104px; height:104px; border-color: rgba(77,124,255,0.35); animation-duration: 14s; }
+    .portal-logo .arc { position:absolute; left:50%; top:50%; width:70px; height:70px; transform: translate(-50%,-50%);
+      border-top: 2px solid rgba(255,255,255,0.6); border-left: 2px solid transparent; border-right: 2px solid transparent; border-bottom: 2px solid transparent; border-radius: 50%;
+      filter: drop-shadow(0 0 10px rgba(255,255,255,0.4));
+      animation: arc-orbit 5s linear infinite; mix-blend-mode: screen; }
+    .portal-logo .a2 { width:92px; height:92px; animation-duration: 9s; border-top-color: rgba(0,255,157,0.7); }
+    .portal-logo .beam { position:absolute; left:50%; top:-10%; width:2px; height:120%; background: linear-gradient(to bottom, rgba(0,255,157,0), rgba(0,255,157,0.8), rgba(0,255,157,0));
+      transform: translateX(-50%); mix-blend-mode: screen; animation: beam-scan 3.6s linear infinite; }
+    .portal-logo .spark { position:absolute; width:4px; height:4px; border-radius:50%; background: #00ff9d; box-shadow: 0 0 10px #00ff9d, 0 0 18px rgba(0,255,157,0.6);
+      animation: spark-fly 2.8s ease-in-out infinite; opacity: 0.85; }
+
+    @keyframes halo-pulse { 0%,100%{ transform: rotate(0deg) scale(1); opacity:0.9;} 50%{ transform: rotate(180deg) scale(1.08); opacity:1; } }
+    @keyframes ring-spin { 0%{ transform: translate(-50%,-50%) rotate(0deg);} 100%{ transform: translate(-50%,-50%) rotate(360deg);} }
+    @keyframes core-breathe { 0%,100%{ box-shadow: 0 0 16px rgba(0,255,255,0.6), 0 0 36px rgba(77,124,255,0.45);} 50%{ box-shadow: 0 0 24px rgba(0,212,255,0.8), 0 0 52px rgba(77,124,255,0.6);} }
+    @keyframes arc-orbit { 0%{ transform: translate(-50%,-50%) rotate(0deg);} 100%{ transform: translate(-50%,-50%) rotate(360deg);} }
+    @keyframes beam-scan { 0%{ transform: translateX(-50%) rotate(0deg);} 100%{ transform: translateX(-50%) rotate(360deg);} }
+    @keyframes spark-fly { 0%{ transform: translate(0,0) scale(0.8); opacity:0.6;} 50%{ transform: translate(6px,-10px) scale(1.2); opacity:1;} 100%{ transform: translate(-4px,-18px) scale(0.9); opacity:0.7;} }
 
     /* TIBETAN BELL + SAURON EYE LOGO */
     .bell-container {
@@ -160,6 +201,17 @@
       filter: url(#glowFilter);
       animation: float-bell 4s ease-in-out infinite;
     }
+
+    /* Hyper-detailed bell for tool */
+    .tool-bell-svg { width: 120px; height: 150px; filter: url(#toolBellGlow); animation: bell-swing 3.8s ease-in-out infinite; }
+    @keyframes bell-swing { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+    .bell-metal { fill: url(#metalGradient); stroke: rgba(255,255,255,0.15); stroke-width: 0.6; }
+    .bell-engrave { stroke: rgba(255, 223, 140, 0.7); stroke-width: 0.8; fill: none; opacity: 0.8; }
+    .bell-rim { fill: url(#rimGradient); }
+    .bell-clapper { fill: url(#clapperGradient); transform-origin: 60px 108px; animation: clapper-swing 3.8s ease-in-out infinite; }
+    @keyframes clapper-swing { 0%,100% { transform: rotate(10deg); } 50% { transform: rotate(-10deg); } }
+    .bell-shimmer { stroke: rgba(255,255,255,0.9); stroke-width: 1.1; filter: drop-shadow(0 0 8px rgba(255,255,255,0.35)); animation: shimmer-run 2.4s linear infinite; }
+    @keyframes shimmer-run { 0% { stroke-dashoffset: 140; } 100% { stroke-dashoffset: 0; } }
 
     @keyframes float-bell {
       0%, 100% { transform: translateY(0); }
@@ -667,37 +719,18 @@
   <div id="app-root" class="hidden" aria-hidden="true">
     <header class="mcp-header">
       <div class="logo-container">
-        <div class="bell-container" id="portal-bell">
-          <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" class="tibetan-bell">
-            <defs>
-              <linearGradient id="bellGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#00d4ff"/>
-                <stop offset="50%" stop-color="#00ff9d"/>
-                <stop offset="100%" stop-color="#4d7cff"/>
-              </linearGradient>
-              <filter id="glowFilter" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
-                <feMerge>
-                  <feMergeNode in="blur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
-            <!-- Tibetan Bell Shape -->
-            <path d="M50,20 
-                   C40,20 30,30 30,50 
-                   Q30,80 50,100 
-                   Q70,80 70,50 
-                   C70,30 60,20 50,20 Z" />
-            <!-- Bell Striker -->
-            <line x1="50" y1="25" x2="50" y2="45" stroke="url(#bellGradient)" stroke-width="2"/>
-            <!-- Ornamental Rings -->
-            <circle cx="50" cy="60" r="18" fill="none" stroke="url(#bellGradient)" stroke-width="1" opacity="0.6"/>
-            <circle cx="50" cy="70" r="12" fill="none" stroke="url(#bellGradient)" stroke-width="1" opacity="0.4"/>
-          </svg>
-          <div class="sauron-eye">
-            <div class="sauron-pupil"></div>
-          </div>
+        <div class="portal-logo">
+          <div class="halo"></div>
+          <div class="core"></div>
+          <div class="ring r1"></div>
+          <div class="ring r2"></div>
+          <div class="ring r3"></div>
+          <div class="arc"></div>
+          <div class="arc a2"></div>
+          <div class="beam"></div>
+          <div class="spark" style="left:18%; top:62%; animation-delay:.2s"></div>
+          <div class="spark" style="left:68%; top:22%; animation-delay:.6s"></div>
+          <div class="spark" style="left:44%; top:78%; animation-delay:1.1s"></div>
         </div>
 
         <div>
@@ -718,14 +751,45 @@
             <div class="tool-card-hero">
               <div class="logo-container">
                 <div class="bell-container" id="tool-bell">
-                  <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" class="tibetan-bell">
-                    <use href="#bellGradient"/>
-                    <path d="M50,20 C40,20 30,30 30,50 Q30,80 50,100 Q70,80 70,50 C70,30 60,20 50,20 Z" />
-                    <line x1="50" y1="25" x2="50" y2="45" stroke="url(#bellGradient)" stroke-width="2"/>
-                    <circle cx="50" cy="60" r="18" fill="none" stroke="url(#bellGradient)" stroke-width="1" opacity="0.6"/>
-                    <circle cx="50" cy="70" r="12" fill="none" stroke="url(#bellGradient)" stroke-width="1" opacity="0.4"/>
+                  <svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg" class="tool-bell-svg">
+                    <defs>
+                      <linearGradient id="metalGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#caa862"/>
+                        <stop offset="35%" stop-color="#f5d793"/>
+                        <stop offset="65%" stop-color="#b8904e"/>
+                        <stop offset="100%" stop-color="#e8c981"/>
+                      </linearGradient>
+                      <linearGradient id="rimGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#f7e3a7"/>
+                        <stop offset="100%" stop-color="#a67c37"/>
+                      </linearGradient>
+                      <linearGradient id="clapperGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#7a5a1e"/>
+                        <stop offset="100%" stop-color="#e8c981"/>
+                      </linearGradient>
+                      <filter id="toolBellGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="b"/>
+                        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+                      </filter>
+                    </defs>
+                    <!-- Vajra-like crown -->
+                    <path class="bell-metal" d="M60 8 C58 8 54 12 54 16 L54 22 C54 24 52 26 50 26 C48 26 46 24 46 22 L46 16 C46 12 42 8 40 8 C41 13 41 19 41 21 C41 24 42.5 27 45 29 C47 31 48 33 48 35 L72 35 C72 33 73 31 75 29 C77.5 27 79 24 79 21 C79 19 79 13 80 8 C78 8 74 12 74 16 L74 22 C74 24 72 26 70 26 C68 26 66 24 66 22 L66 16 C66 12 62 8 60 8 Z"/>
+                    <!-- Bell body -->
+                    <path class="bell-metal" d="M30 40 C30 40 28 58 34 78 C38 92 48 108 60 120 C72 108 82 92 86 78 C92 58 90 40 90 40 C90 40 80 36 60 36 C40 36 30 40 30 40 Z"/>
+                    <!-- Engravings -->
+                    <path class="bell-engrave" d="M36 50 C48 48 72 48 84 50"/>
+                    <path class="bell-engrave" d="M34 60 C48 58 72 58 88 60"/>
+                    <path class="bell-engrave" d="M32 70 C48 68 72 68 90 70"/>
+                    <!-- Decorative motifs -->
+                    <path class="bell-engrave" d="M44 54 q4 4 0 8 q-4 4 -8 0 q-4 -4 0 -8 q4 -4 8 0 Z"/>
+                    <path class="bell-engrave" d="M76 54 q4 4 0 8 q-4 4 -8 0 q-4 -4 0 -8 q4 -4 8 0 Z"/>
+                    <!-- Rim -->
+                    <path class="bell-rim" d="M22 118 C40 122 80 122 98 118 L98 129 C80 134 40 134 22 129 Z"/>
+                    <!-- Shimmer path -->
+                    <path class="bell-shimmer" d="M28 42 C40 38 80 38 92 42" stroke-dasharray="140 140"/>
+                    <!-- Clapper -->
+                    <circle class="bell-clapper" cx="60" cy="110" r="6"/>
                   </svg>
-                  <div class="sauron-eye"><div class="sauron-pupil"></div></div>
                 </div>
                 <div>
                   <div class="mcp-logo-text">DIE GLOCKE</div>
