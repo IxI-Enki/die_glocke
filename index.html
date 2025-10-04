@@ -692,6 +692,15 @@
     .tool-card-hero .mcp-subtitle { font-size: 0.7rem; }
     .tool-card-hero .version { font-size: 0.7rem; }
 
+    /* Stylized Bell (tool-bell) */
+    .bell-svg { width: 140px; height: 180px; filter: drop-shadow(0 0 12px rgba(0,255,180,0.15)); }
+    .bell-fill { fill: url(#bellFillGrad); }
+    .bell-outline { fill: none; stroke: url(#bellLineGrad); stroke-width: 3; }
+    .bell-rim { fill: url(#bellRimGrad); }
+    .bell-line { stroke: rgba(0,255,200,0.5); stroke-width: 1.2; fill: none; opacity: 0.6; }
+    .vajra-fill { fill: url(#vajraGrad); }
+    .vajra-line { stroke: rgba(0,212,255,0.6); stroke-width: 1; fill: none; }
+
     @media (max-width: 1200px) {
       .container { grid-template-columns: repeat(2, 1fr); }
       .tools-list { grid-template-columns: repeat(2, minmax(180px, 1fr)); }
@@ -769,7 +778,44 @@
           <div class="tool-card full" data-tool-id="mcp-generator">
             <div class="tool-card-hero">
               <div class="logo-container">
-                 <div class="bell-container" id="tool-bell"></div>
+                 <div class="bell-container" id="tool-bell">
+                   <svg viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg" class="bell-svg">
+                     <defs>
+                       <linearGradient id="bellFillGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                         <stop offset="0%" stop-color="#163242"/>
+                         <stop offset="50%" stop-color="#102637"/>
+                         <stop offset="100%" stop-color="#0b1c2a"/>
+                       </linearGradient>
+                       <linearGradient id="bellLineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                         <stop offset="0%" stop-color="#00e5ff"/>
+                         <stop offset="100%" stop-color="#00ff9d"/>
+                       </linearGradient>
+                       <linearGradient id="bellRimGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                         <stop offset="0%" stop-color="rgba(0,255,157,0.2)"/>
+                         <stop offset="100%" stop-color="rgba(0,212,255,0.25)"/>
+                       </linearGradient>
+                       <linearGradient id="vajraGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                         <stop offset="0%" stop-color="#1b3b50"/>
+                         <stop offset="100%" stop-color="#102637"/>
+                       </linearGradient>
+                     </defs>
+                     <!-- Vajra crown (stylized) -->
+                     <path class="vajra-fill" d="M80 12 C76 12 70 18 70 24 L70 36 C70 39 67 42 64 42 C61 42 58 39 58 36 L58 24 C58 18 52 12 48 12 C50 22 50 30 50 33 C50 37 52.5 41 57 44 C60 46 62 49 62 52 L98 52 C98 49 100 46 103 44 C107.5 41 110 37 110 33 C110 30 110 22 112 12 C108 12 102 18 102 24 L102 36 C102 39 99 42 96 42 C93 42 90 39 90 36 L90 24 C90 18 84 12 80 12 Z"/>
+                     <path class="vajra-line" d="M50 33 C60 38 100 38 110 33"/>
+                     <!-- Thin stem -->
+                     <rect x="76" y="52" width="8" height="22" fill="url(#bellLineGrad)" rx="1"/>
+                     <!-- Bell body: Tibetan hand bell profile (based on reference) -->
+                     <path class="bell-fill" d="M30 86 C30 86 27 116 38 142 C47 162 63 182 80 194 C97 182 113 162 122 142 C133 116 130 86 130 86 C130 86 112 76 80 76 C48 76 30 86 30 86 Z"/>
+                     <!-- Ornament bands -->
+                     <path class="bell-line" d="M40 96 C60 92 100 92 120 96"/>
+                     <path class="bell-line" d="M36 108 C58 104 102 104 124 108"/>
+                     <!-- Rim and foot -->
+                     <ellipse class="bell-rim" cx="80" cy="196" rx="48" ry="8"/>
+                     <ellipse class="bell-rim" cx="80" cy="188" rx="44" ry="5"/>
+                     <!-- Outer neon outline for clarity of silhouette -->
+                     <path class="bell-outline" d="M30 86 C30 86 27 116 38 142 C47 162 63 182 80 194 C97 182 113 162 122 142 C133 116 130 86 130 86 C130 86 112 76 80 76 C48 76 30 86 30 86 Z"/>
+                   </svg>
+                 </div>
                 <div>
                   <div class="mcp-logo-text">DIE GLOCKE</div>
                   <div class="mcp-subtitle">MCP SERVER GENERATOR</div>
