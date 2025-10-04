@@ -33,6 +33,8 @@
       overflow-x: hidden;
     }
 
+    .hidden { display: none !important; }
+
     .mcp-mono { font-family: 'Source Code Pro', monospace; }
     .mcp-mono-alt { font-family: 'JetBrains Mono', monospace; }
     .mcp-mono-code { font-family: 'Fira Code', monospace; }
@@ -358,6 +360,77 @@
       font-style: italic;
     }
 
+    /* PORTAL HERO */
+    .portal-hero {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(1200px 600px at 20% 10%, rgba(0,255,157,0.08), transparent 60%),
+                  radial-gradient(800px 600px at 80% 90%, rgba(0,212,255,0.07), transparent 55%),
+                  linear-gradient(135deg, #0a0e14 0%, #1a1e24 100%);
+      overflow: hidden;
+      z-index: 5;
+    }
+
+    .portal-hero::before {
+      content: "";
+      position: absolute;
+      inset: -20%;
+      background: conic-gradient(from 0deg, rgba(0,255,157,0.07), rgba(0,212,255,0.06), rgba(77,124,255,0.05), rgba(0,255,157,0.07));
+      filter: blur(80px);
+      animation: portal-sweep 16s linear infinite;
+      opacity: 0.9;
+    }
+
+    .portal-hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 3px 3px;
+      opacity: 0.25;
+      animation: portal-grain 3.5s steps(8) infinite;
+      pointer-events: none;
+    }
+
+    @keyframes portal-sweep {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.04); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    @keyframes portal-grain {
+      0%, 100% { transform: translate(0,0); }
+      25% { transform: translate(2%, -1%); }
+      50% { transform: translate(-2%, 1%); }
+      75% { transform: translate(1%, 2%); }
+    }
+
+    .portal-title {
+      position: relative;
+      font-family: 'Fira Code', monospace;
+      font-weight: 900;
+      font-size: clamp(4rem, 12vw, 18rem);
+      letter-spacing: 0.35em;
+      background: linear-gradient(135deg, var(--color-accent-green) 0%, var(--color-accent-cyan) 50%, var(--color-accent-blue) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 42px rgba(0,255,157,0.25));
+      animation: portal-breathe 6s ease-in-out infinite;
+      text-transform: uppercase;
+      user-select: none;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    @keyframes portal-breathe {
+      0%, 100% { letter-spacing: 0.35em; filter: drop-shadow(0 0 42px rgba(0,255,157,0.25)); }
+      50% { letter-spacing: 0.42em; filter: drop-shadow(0 0 60px rgba(0,212,255,0.35)); }
+    }
+
     .mcp-btn {
       font-family: 'Source Code Pro', monospace;
       background: linear-gradient(135deg, var(--color-accent-green) 0%, var(--color-accent-cyan) 100%);
@@ -421,288 +494,464 @@
       overflow-y: auto;
     }
 
+    /* Login Screen */
+    .login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      background: radial-gradient(1200px 600px at 20% 10%, rgba(0,255,157,0.08), transparent 60%),
+                  radial-gradient(800px 600px at 80% 90%, rgba(0,212,255,0.07), transparent 55%);
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 460px;
+      background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-tertiary) 100%);
+      border: 1px solid var(--color-border);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+      padding: 1rem;
+    }
+
+    .login-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--color-accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      border-bottom: 2px solid var(--color-accent-green);
+      padding-bottom: 0.4rem;
+      margin-bottom: 0.9rem;
+      text-align: center;
+    }
+
+    .login-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.75rem;
+    }
+
+    .login-hint {
+      font-size: 0.7rem;
+      color: var(--color-text-secondary);
+      line-height: 1.4;
+      margin-top: 0.5rem;
+    }
+
+    .login-error { color: #ff6b6b; font-size: 0.8rem; margin-top: 0.5rem; }
+    .login-success { color: #00ff9d; font-size: 0.8rem; margin-top: 0.5rem; }
+
+    /* Tools list */
+    .tools-wrapper { padding: 1rem; }
+    .tools-list {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(180px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .tool-card {
+      border: 1px solid var(--color-border);
+      background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-tertiary) 100%);
+      padding: 0.75rem;
+      cursor: pointer;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .tool-card:hover { border-color: var(--color-accent-green); box-shadow: 0 0 10px rgba(0,255,157,0.12); transform: translateY(-2px); }
+    .tool-card-title { font-weight: 700; color: var(--color-accent-blue); font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+    .tool-card-desc { font-size: 0.75rem; color: var(--color-text-primary); opacity: 0.85; margin-top: 0.25rem; }
+
+    .tool-panel { padding: 0 1rem 1rem; }
+
     @media (max-width: 1200px) {
-      .container {
-        grid-template-columns: repeat(2, 1fr);
-      }
+      .container { grid-template-columns: repeat(2, 1fr); }
+      .tools-list { grid-template-columns: repeat(2, minmax(180px, 1fr)); }
     }
 
     @media (max-width: 768px) {
-      .container {
-        grid-template-columns: 1fr;
-      }
-      .mcp-logo-text {
-        font-size: 1.5rem;
-      }
-      .bell-container {
-        width: 60px;
-        height: 70px;
-      }
-      .tibetan-bell {
-        width: 40px;
-        height: 55px;
-      }
-      .sauron-eye {
-        width: 20px;
-        height: 20px;
-      }
+      .container { grid-template-columns: 1fr; }
+      .tools-list { grid-template-columns: 1fr; }
+      .mcp-logo-text { font-size: 1.5rem; }
+      .bell-container { width: 60px; height: 70px; }
+      .tibetan-bell { width: 40px; height: 55px; }
+      .sauron-eye { width: 20px; height: 20px; }
     }
   </style>
 </head>
 <body>
 
-  <header class="mcp-header">
-    <div class="logo-container">
-      <div class="bell-container" id="bell-root">
-        <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" class="tibetan-bell">
-          <defs>
-            <linearGradient id="bellGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#00d4ff"/>
-              <stop offset="50%" stop-color="#00ff9d"/>
-              <stop offset="100%" stop-color="#4d7cff"/>
-            </linearGradient>
-            <filter id="glowFilter" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
-              <feMerge>
-                <feMergeNode in="blur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-          </defs>
-          <!-- Tibetan Bell Shape -->
-          <path d="M50,20 
+  <!-- PORTAL HERO (DEFAULT VIEW) -->
+  <div id="portal-hero" class="portal-hero">
+    <div class="portal-title">PORTAL</div>
+  </div>
+
+  <!-- LOGIN SCREEN (HIDDEN BY KEY CHORD) -->
+  <div id="login-screen" class="login-screen hidden" aria-hidden="true">
+    <div class="login-card">
+      <div class="login-title">Secure Access</div>
+      <label class="mcp-label" for="login-username">Username</label>
+      <input id="login-username" class="mcp-input" type="text" autocomplete="username" placeholder="Enter username" />
+
+      <label class="mcp-label" for="login-password" style="margin-top:0.5rem;">Password</label>
+      <input id="login-password" class="mcp-input" type="password" autocomplete="current-password" placeholder="Enter password" />
+
+      <div class="login-actions">
+        <button id="btn-login" class="mcp-btn">Login</button>
+      </div>
+      <div id="login-message" class="login-hint">Tipp: Login ein-/ausblenden mit STRG + SHIFT + ALT(Gr) + Ö</div>
+    </div>
+  </div>
+
+  <!-- APP ROOT (HIDDEN UNTIL LOGIN) -->
+  <div id="app-root" class="hidden" aria-hidden="true">
+    <header class="mcp-header">
+      <div class="logo-container">
+        <div class="bell-container" id="bell-root">
+          <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" class="tibetan-bell">
+            <defs>
+              <linearGradient id="bellGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00d4ff"/>
+                <stop offset="50%" stop-color="#00ff9d"/>
+                <stop offset="100%" stop-color="#4d7cff"/>
+              </linearGradient>
+              <filter id="glowFilter" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+                <feMerge>
+                  <feMergeNode in="blur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            <!-- Tibetan Bell Shape -->
+            <path d="M50,20 
                    C40,20 30,30 30,50 
                    Q30,80 50,100 
                    Q70,80 70,50 
                    C70,30 60,20 50,20 Z" />
-          <!-- Bell Striker -->
-          <line x1="50" y1="25" x2="50" y2="45" stroke="url(#bellGradient)" stroke-width="2"/>
-          <!-- Ornamental Rings -->
-          <circle cx="50" cy="60" r="18" fill="none" stroke="url(#bellGradient)" stroke-width="1" opacity="0.6"/>
-          <circle cx="50" cy="70" r="12" fill="none" stroke="url(#bellGradient)" stroke-width="1" opacity="0.4"/>
-        </svg>
-        <div class="sauron-eye">
-          <div class="sauron-pupil"></div>
-        </div>
-      </div>
-
-      <div>
-        <div class="mcp-logo-text">DIE GLOCKE</div>
-        <div class="mcp-subtitle">MCP SERVER GENERATOR</div>
-        <div class="version">by Jan/IxI-Enki • v2.0.1</div>
-      </div>
-    </div>
-
-    <button id="btn-generate" class="mcp-btn">⚡ GENERATE SERVER</button>
-
-    <!-- Occult Techno Scribbles Layer -->
-    <div class="occult-layer" id="occult-layer"></div>
-  </header>
-
-  <div class="container">
-    <!-- COLUMN 1: INFO + API -->
-    <div>
-      <div class="mcp-section">
-        <h2 class="section-title">Info</h2>
-        <label class="mcp-label" for="input-service-name">Service Name</label>
-        <input id="input-service-name" class="mcp-input" type="text" placeholder="e.g. WeatherAPI" />
-
-        <label class="mcp-label" for="input-description">Description</label>
-        <input id="input-description" class="mcp-input" type="text" placeholder="What does it do?" />
-
-        <label class="mcp-label" for="input-author">Author</label>
-        <input id="input-author" class="mcp-input" type="text" placeholder="Your name" />
-
-        <label class="mcp-label" for="select-category">Category</label>
-        <select id="select-category" class="mcp-input">
-          <option>productivity</option>
-          <option>monitoring</option>
-          <option>automation</option>
-          <option>integration</option>
-        </select>
-
-        <label class="mcp-label" for="input-tags">Tags (comma-separated)</label>
-        <input id="input-tags" class="mcp-input" type="text" placeholder="ai, weather, real-time" />
-
-        <label class="mcp-label" for="select-license">License</label>
-        <select id="select-license" class="mcp-input">
-          <option>MIT</option>
-          <option>Apache-2.0</option>
-          <option>GPL-3.0</option>
-        </select>
-      </div>
-
-      <div class="mcp-section">
-        <h2 class="section-title">API</h2>
-        <div id="apis-container" class="scrollable">
-          <div class="api-item">
-            <label class="mcp-label">API Name</label>
-            <input class="mcp-input api-name" type="text" placeholder="e.g. OpenWeather" />
-            <label class="mcp-label">Base URL</label>
-            <input class="mcp-input api-url" type="text" placeholder="https://api.example.com" />
-            <label class="mcp-label">Docs URL</label>
-            <input class="mcp-input api-docs" type="text" placeholder="https://docs.example.com" />
-            <label class="mcp-label">Rate Limit</label>
-            <input class="mcp-input api-rate" type="text" placeholder="1000 req/hour" />
+            <!-- Bell Striker -->
+            <line x1="50" y1="25" x2="50" y2="45" stroke="url(#bellGradient)" stroke-width="2"/>
+            <!-- Ornamental Rings -->
+            <circle cx="50" cy="60" r="18" fill="none" stroke="url(#bellGradient)" stroke-width="1" opacity="0.6"/>
+            <circle cx="50" cy="70" r="12" fill="none" stroke="url(#bellGradient)" stroke-width="1" opacity="0.4"/>
+          </svg>
+          <div class="sauron-eye">
+            <div class="sauron-pupil"></div>
           </div>
         </div>
-        <button id="btn-add-api" class="add-btn add-btn-green">+ Add API</button>
-      </div>
-    </div>
 
-    <!-- COLUMN 2: AUTH + TOOLS -->
-    <div>
-      <div class="mcp-section">
-        <h2 class="section-title">Authentication</h2>
-        <label class="mcp-label" for="select-auth-type">Auth Type</label>
-        <select id="select-auth-type" class="mcp-input">
-          <option>None</option>
-          <option>API Key</option>
-          <option>Bearer Token</option>
-          <option>OAuth2</option>
-        </select>
-
-        <label class="mcp-label" for="input-auth-header">Header Name</label>
-        <input id="input-auth-header" class="mcp-input" type="text" placeholder="X-API-Key" />
-
-        <label class="mcp-label" for="input-secret-name">Secret Name</label>
-        <input id="input-secret-name" class="mcp-input" type="text" placeholder="WEATHER_API_TOKEN" />
+        <div>
+          <div class="mcp-logo-text">DIE GLOCKE</div>
+          <div class="mcp-subtitle">MCP SERVER GENERATOR</div>
+          <div class="version">by Jan/IxI-Enki • v2.0.1</div>
+        </div>
       </div>
 
+      <button id="btn-generate" class="mcp-btn">⚡ GENERATE SERVER</button>
+
+      <!-- Occult Techno Scribbles Layer -->
+      <div class="occult-layer" id="occult-layer"></div>
+    </header>
+
+    <!-- TOOLS LIST -->
+    <div class="tools-wrapper">
       <div class="mcp-section">
         <h2 class="section-title">Tools</h2>
-        <div id="tools-container" class="scrollable">
-          <div class="tool-item">
-            <label class="mcp-label">Tool Name</label>
-            <input class="mcp-input tool-name" type="text" placeholder="fetch_weather" />
-            <label class="mcp-label">Description</label>
-            <input class="mcp-input tool-desc" type="text" placeholder="Single-line description" />
-            <label class="mcp-label">Parameters (comma-separated)</label>
-            <input class="mcp-input tool-params" type="text" placeholder="city, units" />
+        <div class="tools-list" id="tools-list">
+          <div class="tool-card" data-tool-id="mcp-generator">
+            <div class="tool-card-title">MCP Server Generator</div>
+            <div class="tool-card-desc">Design and configure MCP servers, Docker image, auth, and tooling.</div>
           </div>
         </div>
-        <button id="btn-add-tool" class="add-btn add-btn-cyan">+ Add Tool</button>
       </div>
     </div>
 
-    <!-- COLUMN 3: DOCKER + OUTPUT -->
-    <div>
-      <div class="mcp-section">
-        <h2 class="section-title">Docker</h2>
-        <label class="mcp-label" for="select-base-image">Base Image</label>
-        <select id="select-base-image" class="mcp-input">
-          <option>python:3.11-slim</option>
-          <option>python:3.12-slim</option>
-          <option>alpine:latest</option>
-        </select>
+    <!-- TOOL PANELS -->
+    <div class="tool-panel">
+      <div id="tool-mcp-generator" class="hidden">
+        <div class="container">
+          <!-- COLUMN 1: INFO + API -->
+          <div>
+            <div class="mcp-section">
+              <h2 class="section-title">Info</h2>
+              <label class="mcp-label" for="input-service-name">Service Name</label>
+              <input id="input-service-name" class="mcp-input" type="text" placeholder="e.g. WeatherAPI" />
 
-        <label class="mcp-label" for="input-workdir">Workdir</label>
-        <input id="input-workdir" class="mcp-input" type="text" value="/app" />
+              <label class="mcp-label" for="input-description">Description</label>
+              <input id="input-description" class="mcp-input" type="text" placeholder="What does it do?" />
 
-        <label class="mcp-label" for="input-user-id">User ID</label>
-        <input id="input-user-id" class="mcp-input" type="text" value="1000" />
+              <label class="mcp-label" for="input-author">Author</label>
+              <input id="input-author" class="mcp-input" type="text" placeholder="Your name" />
 
-        <label class="mcp-label" for="input-user-name">User Name</label>
-        <input id="input-user-name" class="mcp-input" type="text" value="mcpuser" />
+              <label class="mcp-label" for="select-category">Category</label>
+              <select id="select-category" class="mcp-input">
+                <option>productivity</option>
+                <option>monitoring</option>
+                <option>automation</option>
+                <option>integration</option>
+              </select>
 
-        <label class="mcp-label" for="input-docker-packages">Extra Packages</label>
-        <input id="input-docker-packages" class="mcp-input" type="text" placeholder="curl, jq" />
+              <label class="mcp-label" for="input-tags">Tags (comma-separated)</label>
+              <input id="input-tags" class="mcp-input" type="text" placeholder="ai, weather, real-time" />
 
-        <label><input type="checkbox" id="check-docker-network" /> Network Access</label>
-        <label><input type="checkbox" id="check-docker-privileged" /> Privileged Mode</label>
-      </div>
+              <label class="mcp-label" for="select-license">License</label>
+              <select id="select-license" class="mcp-input">
+                <option>MIT</option>
+                <option>Apache-2.0</option>
+                <option>GPL-3.0</option>
+              </select>
+            </div>
 
-      <div class="mcp-section">
-        <h2 class="section-title">Output</h2>
-        <label class="mcp-label" for="select-output-format">Format Style</label>
-        <select id="select-output-format" class="mcp-input">
-          <option>Emoji + Text</option>
-          <option>Plain Text</option>
-          <option>Markdown</option>
-        </select>
+            <div class="mcp-section">
+              <h2 class="section-title">API</h2>
+              <div id="apis-container" class="scrollable">
+                <div class="api-item">
+                  <label class="mcp-label">API Name</label>
+                  <input class="mcp-input api-name" type="text" placeholder="e.g. OpenWeather" />
+                  <label class="mcp-label">Base URL</label>
+                  <input class="mcp-input api-url" type="text" placeholder="https://api.example.com" />
+                  <label class="mcp-label">Docs URL</label>
+                  <input class="mcp-input api-docs" type="text" placeholder="https://docs.example.com" />
+                  <label class="mcp-label">Rate Limit</label>
+                  <input class="mcp-input api-rate" type="text" placeholder="1000 req/hour" />
+                </div>
+              </div>
+              <button id="btn-add-api" class="add-btn add-btn-green">+ Add API</button>
+            </div>
+          </div>
 
-        <label class="mcp-label" for="input-emoji-success">✅ Success</label>
-        <input id="input-emoji-success" class="mcp-input" type="text" value="✅" />
+          <!-- COLUMN 2: AUTH + TOOLS -->
+          <div>
+            <div class="mcp-section">
+              <h2 class="section-title">Authentication</h2>
+              <label class="mcp-label" for="select-auth-type">Auth Type</label>
+              <select id="select-auth-type" class="mcp-input">
+                <option>None</option>
+                <option>API Key</option>
+                <option>Bearer Token</option>
+                <option>OAuth2</option>
+              </select>
 
-        <label class="mcp-label" for="input-emoji-error">❌ Error</label>
-        <input id="input-emoji-error" class="mcp-input" type="text" value="❌" />
+              <label class="mcp-label" for="input-auth-header">Header Name</label>
+              <input id="input-auth-header" class="mcp-input" type="text" placeholder="X-API-Key" />
 
-        <label class="mcp-label" for="input-emoji-warning">⚠️ Warning</label>
-        <input id="input-emoji-warning" class="mcp-input" type="text" value="⚠️" />
+              <label class="mcp-label" for="input-secret-name">Secret Name</label>
+              <input id="input-secret-name" class="mcp-input" type="text" placeholder="WEATHER_API_TOKEN" />
+            </div>
 
-        <label class="mcp-label" for="input-emoji-info">ℹ️ Info</label>
-        <input id="input-emoji-info" class="mcp-input" type="text" value="ℹ️" />
+            <div class="mcp-section">
+              <h2 class="section-title">Tools</h2>
+              <div id="tools-container" class="scrollable">
+                <div class="tool-item">
+                  <label class="mcp-label">Tool Name</label>
+                  <input class="mcp-input tool-name" type="text" placeholder="fetch_weather" />
+                  <label class="mcp-label">Description</label>
+                  <input class="mcp-input tool-desc" type="text" placeholder="Single-line description" />
+                  <label class="mcp-label">Parameters (comma-separated)</label>
+                  <input class="mcp-input tool-params" type="text" placeholder="city, units" />
+                </div>
+              </div>
+              <button id="btn-add-tool" class="add-btn add-btn-cyan">+ Add Tool</button>
+            </div>
+          </div>
 
-        <label><input type="checkbox" id="check-color-output" checked /> Color Output</label>
-        <label><input type="checkbox" id="check-timestamps" checked /> Timestamps</label>
-        <label><input type="checkbox" id="check-verbose" /> Verbose Logging</label>
-      </div>
-    </div>
+          <!-- COLUMN 3: DOCKER + OUTPUT -->
+          <div>
+            <div class="mcp-section">
+              <h2 class="section-title">Docker</h2>
+              <label class="mcp-label" for="select-base-image">Base Image</label>
+              <select id="select-base-image" class="mcp-input">
+                <option>python:3.11-slim</option>
+                <option>python:3.12-slim</option>
+                <option>alpine:latest</option>
+              </select>
 
-    <!-- COLUMN 4: ADVANCED + DEPS + ENV -->
-    <div>
-      <div class="mcp-section">
-        <h2 class="section-title">Advanced</h2>
-        <label class="mcp-label" for="input-timeout">Timeout (s)</label>
-        <input id="input-timeout" class="mcp-input" type="text" value="10" />
+              <label class="mcp-label" for="input-workdir">Workdir</label>
+              <input id="input-workdir" class="mcp-input" type="text" value="/app" />
 
-        <label class="mcp-label" for="input-max-retries">Max Retries</label>
-        <input id="input-max-retries" class="mcp-input" type="text" value="3" />
+              <label class="mcp-label" for="input-user-id">User ID</label>
+              <input id="input-user-id" class="mcp-input" type="text" value="1000" />
 
-        <label class="mcp-label" for="select-log-level">Log Level</label>
-        <select id="select-log-level" class="mcp-input">
-          <option>INFO</option>
-          <option>DEBUG</option>
-          <option>WARNING</option>
-          <option>ERROR</option>
-        </select>
+              <label class="mcp-label" for="input-user-name">User Name</label>
+              <input id="input-user-name" class="mcp-input" type="text" value="mcpuser" />
 
-        <label class="mcp-label" for="select-cache">Caching</label>
-        <select id="select-cache" class="mcp-input">
-          <option>None</option>
-          <option>Memory</option>
-          <option>Redis</option>
-        </select>
+              <label class="mcp-label" for="input-docker-packages">Extra Packages</label>
+              <input id="input-docker-packages" class="mcp-input" type="text" placeholder="curl, jq" />
 
-        <label class="mcp-label" for="input-cache-ttl">Cache TTL (s)</label>
-        <input id="input-cache-ttl" class="mcp-input" type="text" value="300" />
+              <label><input type="checkbox" id="check-docker-network" /> Network Access</label>
+              <label><input type="checkbox" id="check-docker-privileged" /> Privileged Mode</label>
+            </div>
 
-        <label><input type="checkbox" id="check-health-check" /> Health Check Endpoint</label>
-        <label><input type="checkbox" id="check-metrics" /> Metrics Endpoint</label>
-        <label><input type="checkbox" id="check-graceful-shutdown" checked /> Graceful Shutdown</label>
-      </div>
+            <div class="mcp-section">
+              <h2 class="section-title">Output</h2>
+              <label class="mcp-label" for="select-output-format">Format Style</label>
+              <select id="select-output-format" class="mcp-input">
+                <option>Emoji + Text</option>
+                <option>Plain Text</option>
+                <option>Markdown</option>
+              </select>
 
-      <div class="mcp-section">
-        <h2 class="section-title">Dependencies</h2>
-        <label class="mcp-label" for="input-dependencies">Python Dependencies</label>
-        <textarea id="input-dependencies" class="mcp-input" rows="3">mcp[cli]>=1.2.0
-httpx</textarea>
+              <label class="mcp-label" for="input-emoji-success">✅ Success</label>
+              <input id="input-emoji-success" class="mcp-input" type="text" value="✅" />
 
-        <label><input type="checkbox" id="check-auto-deps" /> Auto-detect Dependencies</label>
+              <label class="mcp-label" for="input-emoji-error">❌ Error</label>
+              <input id="input-emoji-error" class="mcp-input" type="text" value="❌" />
 
-        <label class="mcp-label" for="input-sys-deps">System Packages</label>
-        <input id="input-sys-deps" class="mcp-input" type="text" placeholder="build-essential" />
-      </div>
+              <label class="mcp-label" for="input-emoji-warning">⚠️ Warning</label>
+              <input id="input-emoji-warning" class="mcp-input" type="text" value="⚠️" />
 
-      <div class="mcp-section">
-        <h2 class="section-title">Env Vars</h2>
-        <div id="env-vars-container" class="env-scrollable">
-          <div class="env-item">
-            <label class="mcp-label">Name</label>
-            <input class="mcp-input env-name" type="text" placeholder="API_URL" />
-            <label class="mcp-label">Value (optional)</label>
-            <input class="mcp-input env-value" type="text" placeholder="https://..." />
+              <label class="mcp-label" for="input-emoji-info">ℹ️ Info</label>
+              <input id="input-emoji-info" class="mcp-input" type="text" value="ℹ️" />
+
+              <label><input type="checkbox" id="check-color-output" checked /> Color Output</label>
+              <label><input type="checkbox" id="check-timestamps" checked /> Timestamps</label>
+              <label><input type="checkbox" id="check-verbose" /> Verbose Logging</label>
+            </div>
+          </div>
+
+          <!-- COLUMN 4: ADVANCED + DEPS + ENV -->
+          <div>
+            <div class="mcp-section">
+              <h2 class="section-title">Advanced</h2>
+              <label class="mcp-label" for="input-timeout">Timeout (s)</label>
+              <input id="input-timeout" class="mcp-input" type="text" value="10" />
+
+              <label class="mcp-label" for="input-max-retries">Max Retries</label>
+              <input id="input-max-retries" class="mcp-input" type="text" value="3" />
+
+              <label class="mcp-label" for="select-log-level">Log Level</label>
+              <select id="select-log-level" class="mcp-input">
+                <option>INFO</option>
+                <option>DEBUG</option>
+                <option>WARNING</option>
+                <option>ERROR</option>
+              </select>
+
+              <label class="mcp-label" for="select-cache">Caching</label>
+              <select id="select-cache" class="mcp-input">
+                <option>None</option>
+                <option>Memory</option>
+                <option>Redis</option>
+              </select>
+
+              <label class="mcp-label" for="input-cache-ttl">Cache TTL (s)</label>
+              <input id="input-cache-ttl" class="mcp-input" type="text" value="300" />
+
+              <label><input type="checkbox" id="check-health-check" /> Health Check Endpoint</label>
+              <label><input type="checkbox" id="check-metrics" /> Metrics Endpoint</label>
+              <label><input type="checkbox" id="check-graceful-shutdown" checked /> Graceful Shutdown</label>
+            </div>
+
+            <div class="mcp-section">
+              <h2 class="section-title">Dependencies</h2>
+              <label class="mcp-label" for="input-dependencies">Python Dependencies</label>
+              <textarea id="input-dependencies" class="mcp-input" rows="3">mcp[cli]>=1.2.0 httpx</textarea>
+
+              <label><input type="checkbox" id="check-auto-deps" /> Auto-detect Dependencies</label>
+
+              <label class="mcp-label" for="input-sys-deps">System Packages</label>
+              <input id="input-sys-deps" class="mcp-input" type="text" placeholder="build-essential" />
+            </div>
+
+            <div class="mcp-section">
+              <h2 class="section-title">Env Vars</h2>
+              <div id="env-vars-container" class="env-scrollable">
+                <div class="env-item">
+                  <label class="mcp-label">Name</label>
+                  <input class="mcp-input env-name" type="text" placeholder="API_URL" />
+                  <label class="mcp-label">Value (optional)</label>
+                  <input class="mcp-input env-value" type="text" placeholder="https://..." />
+                </div>
+              </div>
+              <button id="btn-add-env" class="add-btn add-btn-green">+ Add Env Var</button>
+            </div>
           </div>
         </div>
-        <button id="btn-add-env" class="add-btn add-btn-green">+ Add Env Var</button>
       </div>
     </div>
   </div>
 
   <script>
-    // Generate occult techno scribbles
+    // --- Utilities ---
+    function show(el) { el.classList.remove('hidden'); el.setAttribute('aria-hidden', 'false'); }
+    function hide(el) { el.classList.add('hidden'); el.setAttribute('aria-hidden', 'true'); }
+
+    function setLoginMessage(msg, ok) {
+      const m = document.getElementById('login-message');
+      m.textContent = msg;
+      m.className = ok ? 'login-success' : 'login-error';
+    }
+
+    function clearLoginMessage() {
+      const m = document.getElementById('login-message');
+      m.textContent = 'Tipp: Login ein-/ausblenden mit STRG + SHIFT + ALT(Gr) + Ö';
+      m.className = 'login-hint';
+    }
+
+    function toHex(buffer) {
+      const bytes = new Uint8Array(buffer);
+      let hex = '';
+      for (let i = 0; i < bytes.length; i++) {
+        const h = bytes[i].toString(16).padStart(2, '0');
+        hex += h;
+      }
+      return hex;
+    }
+
+    async function sha256Hex(text) {
+      const enc = new TextEncoder();
+      const data = enc.encode(text);
+      const digest = await crypto.subtle.digest('SHA-256', data);
+      return toHex(digest);
+    }
+
+    function constantTimeEqual(a, b) {
+      if (a.length !== b.length) return false;
+      let diff = 0;
+      for (let i = 0; i < a.length; i++) {
+        diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+      }
+      return diff === 0;
+    }
+
+    function getObfuscatedReference() {
+      const x = [63,52,49,51,96,46,105,126,46,15,126,105,40];
+      return String.fromCharCode.apply(null, x.map(n => n ^ 0x5A));
+    }
+
+    async function getExpectedHash() {
+      // Persist only the hash for comparison; never store cleartext
+      const key = 'PORTAL_CRED_SHA256';
+      let h = '';
+      try { h = localStorage.getItem(key) || ''; } catch (_) {}
+      if (h) return h;
+      const ref = getObfuscatedReference();
+      const digest = await sha256Hex(ref);
+      try { localStorage.setItem(key, digest); } catch (_) {}
+      return digest;
+    }
+
+    async function validateLogin(user, pass) {
+      if (!user || !pass) return false;
+      const expected = await getExpectedHash();
+      const provided = await sha256Hex(`${user}:${pass}`);
+      return constantTimeEqual(provided, expected);
+    }
+
+    function completeLogin() {
+      const portal = document.getElementById('portal-hero');
+      if (portal) hide(portal);
+      hide(document.getElementById('login-screen'));
+      show(document.getElementById('app-root'));
+    }
+
+    // --- Visual effects from original page ---
     function createScribbles() {
       const layer = document.getElementById('occult-layer');
+      if (!layer) return;
       const symbols = "Ψ∇℧℥⚡🌀🌀⚡℥℧∇Ψ01010101{}[]()<>|&^%$#@!~";
       const count = 30;
 
@@ -717,7 +966,6 @@ httpx</textarea>
         el.style.animation = `scribble-float ${3 + Math.random() * 4}s ease-in-out infinite`;
         layer.appendChild(el);
 
-        // Inject keyframes dynamically
         if (!document.getElementById('scribble-keyframes')) {
           const style = document.createElement('style');
           style.id = 'scribble-keyframes';
@@ -734,9 +982,9 @@ httpx</textarea>
       }
     }
 
-    // Create energy rings
     function createRings() {
       const root = document.getElementById('bell-root');
+      if (!root) return;
       for (let i = 0; i < 3; i++) {
         const ring = document.createElement('div');
         ring.className = 'quantum-ring';
@@ -747,9 +995,9 @@ httpx</textarea>
       }
     }
 
-    // Create floating particles
     function createParticles() {
       const root = document.getElementById('bell-root');
+      if (!root) return;
       for (let i = 0; i < 12; i++) {
         const p = document.createElement('div');
         p.className = 'particle';
@@ -761,9 +1009,9 @@ httpx</textarea>
       }
     }
 
-    // Create circuit lines
     function createCircuits() {
       const root = document.getElementById('bell-root');
+      if (!root) return;
       for (let i = 0; i < 6; i++) {
         const line = document.createElement('div');
         line.className = 'circuit-line';
@@ -779,9 +1027,9 @@ httpx</textarea>
       }
     }
 
-    // Create lightning
     function createLightning() {
       const root = document.getElementById('bell-root');
+      if (!root) return;
       for (let i = 0; i < 4; i++) {
         const l = document.createElement('div');
         l.className = 'lightning';
@@ -793,15 +1041,49 @@ httpx</textarea>
       }
     }
 
-    // Initialize all visual effects
+    // --- App init ---
     document.addEventListener('DOMContentLoaded', () => {
+      // Login UI
+      const btnLogin = document.getElementById('btn-login');
+      const inputUser = document.getElementById('login-username');
+      const inputPass = document.getElementById('login-password');
+
+      btnLogin.addEventListener('click', async () => {
+        clearLoginMessage();
+        const u = inputUser.value.trim();
+        const p = inputPass.value;
+        const ok = await validateLogin(u, p);
+        if (ok) {
+          completeLogin();
+        } else {
+          setLoginMessage('Invalid credentials.', false);
+        }
+      });
+
+      // Keyboard chord: Ctrl + Shift + Alt(Gr) + Ö to toggle login overlay
+      let loginVisible = false;
+      document.addEventListener('keydown', (e) => {
+        const key = (e.key || '').toLowerCase();
+        const hasAltGr = e.getModifierState && e.getModifierState('AltGraph');
+        const hasAlt = e.altKey || hasAltGr;
+        if (e.ctrlKey && e.shiftKey && hasAlt && (key === 'ö' || key === 'ø' || key === ';')) {
+          // ';' fallback for non-DE layouts roughly where Ö sits
+          e.preventDefault();
+          loginVisible = !loginVisible;
+          const login = document.getElementById('login-screen');
+          if (loginVisible) { show(login); } else { hide(login); }
+          clearLoginMessage();
+        }
+      });
+
+      // Visual FX (run even if hidden, harmless)
       createScribbles();
       createRings();
       createParticles();
       createCircuits();
       createLightning();
 
-      // Tool, API, Env adders
+      // Tool, API, Env adders (inside MCP generator tool)
       document.getElementById('btn-add-tool').addEventListener('click', () => {
         const container = document.getElementById('tools-container');
         const div = document.createElement('div');
@@ -847,8 +1129,24 @@ httpx</textarea>
         container.appendChild(div);
       });
 
+      // Header main button (kept behavior)
       document.getElementById('btn-generate').addEventListener('click', () => {
         alert('✨ MCP Server configuration captured! Ready for generation.');
+      });
+
+      // Tools list selection
+      const toolsList = document.getElementById('tools-list');
+      const toolPanels = {
+        'mcp-generator': document.getElementById('tool-mcp-generator')
+      };
+
+      toolsList.addEventListener('click', (e) => {
+        const card = e.target.closest('[data-tool-id]');
+        if (!card) return;
+        Object.values(toolPanels).forEach(hide);
+        const id = card.getAttribute('data-tool-id');
+        const panel = toolPanels[id];
+        if (panel) show(panel);
       });
     });
   </script>

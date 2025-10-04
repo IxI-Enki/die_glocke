@@ -1,2 +1,3 @@
-# die_glocke
-generic mcp server creator
+---
+titel: 'Die_Glocke'
+---
