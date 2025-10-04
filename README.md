@@ -1,3 +1,3 @@
 ---
-titel: 'Die_Glocke'
+title: 'Die_Glocke'
 ---
