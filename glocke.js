@@ -3,8 +3,8 @@
     var layer=document.getElementById(rootId||'occult-layer');
     if(!layer) return;
     // ASCII/Nerd-font safe symbols to avoid tofu boxes
-    var symbols="*+-.<>^~|/\\()[]{}#%&$@!?0123456789-=Ψ∇℧℥⊙⊛⊚⊗⋅⋄⋇⌖⨀⨉⨝αβδεζγκνιπφΩ";
-    var count=420;
+    var symbols="*+%&Ψ∇℧℥⊙⊛⊚⋄⋇⌖⨀⨝αβδεζγκνιπφΩ";
+    var count=100;
     for(var i=0;i<count;i++){
       var el=document.createElement('div');
       el.className='scribble';
