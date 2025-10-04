@@ -173,12 +173,10 @@
       transform: translateX(-50%); mix-blend-mode: screen; animation: beam-scan 3.6s linear infinite; }
     .portal-logo .spark { position:absolute; width:4px; height:4px; border-radius:50%; background: #00ff9d; box-shadow: 0 0 10px #00ff9d, 0 0 18px rgba(0,255,157,0.6);
       animation: spark-fly 2.8s ease-in-out infinite; opacity: 0.85; }
-    /* Orbiters around the bell */
-    .orbiter { position:absolute; left:50%; top:50%; font-family: 'FiraCode Nerd Font','Fira Code',monospace; font-size: 0.75rem; color: rgba(0,212,255,0.8); opacity: 0.85; will-change: transform, opacity; animation: orbit var(--duration) linear infinite; }
-    @keyframes orbit {
-      0% { transform: translate(-50%,-50%) rotate(0deg) translate(var(--radius)) rotate(0deg); }
-      100% { transform: translate(-50%,-50%) rotate(360deg) translate(var(--radius)) rotate(-360deg); }
-    }
+    /* Orbiters around the bell (chaotic) */
+    .orbiter { position:absolute; left:50%; top:50%; will-change: transform; }
+    .orbiter > span { display:block; font-family: 'FiraCode Nerd Font','Fira Code',monospace; font-size: 0.75rem; color: rgba(0,212,255,0.9); opacity: 0.95; animation: wobble var(--w,3.2s) ease-in-out infinite alternate; }
+    @keyframes wobble { 0% { transform: translate(0,0) scale(0.95);} 100% { transform: translate(var(--ox,1.6px), var(--oy,-1.6px)) scale(1.05);} }
 
     /* Burst particles from center */
     .particle { position:absolute; width: 4px; height: 4px; background: var(--color-accent-green); border-radius: 50%; opacity: 0.7; animation: particle-burst 2.8s ease-out infinite; }
@@ -227,10 +225,12 @@
     .bell-shimmer { stroke: rgba(255,255,255,0.9); stroke-width: 1.1; filter: drop-shadow(0 0 8px rgba(255,255,255,0.35)); animation: shimmer-run 2.4s linear infinite; }
     @keyframes shimmer-run { 0% { stroke-dashoffset: 140; } 100% { stroke-dashoffset: 0; } }
     /* AI eye */
-    .ai-eye { transform-origin: 60px 88px; animation: eye-wiggle 1.8s ease-in-out infinite; }
-    @keyframes eye-wiggle { 0%,100% { transform: translateX(-1px);} 50% { transform: translateX(1px);} }
+    .ai-eye { transform-origin: 60px 88px; }
     .eye-iris { filter: drop-shadow(0 0 8px rgba(0,255,200,0.5)) drop-shadow(0 0 18px rgba(77,124,255,0.45)); }
-    .eye-pupil { fill: #000; }
+    .eye-pupil { fill: #000; animation: glance 2.6s ease-in-out infinite; }
+    @keyframes glance { 0%,100% { transform: translateX(-1.6px);} 50% { transform: translateX(1.6px);} }
+    .eye-lid { transform-origin: 60px 88px; fill: #0a0e14; filter: drop-shadow(0 0 6px rgba(0,0,0,0.5)); animation: blink 6s ease-in-out infinite; opacity: 0.95; }
+    @keyframes blink { 0%,92%,100% { transform: scaleY(0.02); } 94% { transform: scaleY(1.2);} 96% { transform: scaleY(0.02);} }
 
     @keyframes float-bell {
       0%, 100% { transform: translateY(0); }

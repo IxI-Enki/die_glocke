@@ -92,13 +92,23 @@
       var orbitSymbols=['Ψ','∇','Ω','⊙','⊛','α','β','φ','*','+','~'];
       for(var i=0;i<14;i++){
         var o=document.createElement('div');
-        o.className='orbiter'; o.textContent=orbitSymbols[i % orbitSymbols.length];
-        o.style.setProperty('--radius', (40 + Math.random()*50)+'px');
-        o.style.setProperty('--duration', (8 + Math.random()*10)+'s');
-        o.style.opacity = (0.6 + Math.random()*0.4).toString();
+        o.className='orbiter';
+        var s=document.createElement('span'); s.textContent=orbitSymbols[i % orbitSymbols.length];
+        s.style.setProperty('--w', (2.6+Math.random()*2)+'s');
+        s.style.setProperty('--ox', (Math.random()*3-1.5)+'px');
+        s.style.setProperty('--oy', (Math.random()*3-1.5)+'px');
+        o.appendChild(s);
+        var radius=(40 + Math.random()*60);
+        var duration=(6 + Math.random()*14);
+        // Use JS-driven orbit for chaos
+        (function(el,r,d){
+          var t=Math.random()*Math.PI*2;
+          function step(){ t+=0.008*(60/d); var x=Math.cos(t)*r; var y=Math.sin(t)*r; el.style.transform='translate(-50%,-50%) translate('+x+'px,'+y+'px)'; requestAnimationFrame(step); }
+          step();
+        })(o,radius,duration);
         bell.appendChild(o);
       }
-      for(var p=0;p<28;p++){
+      for(var p=0;p<36;p++){
         var pr=document.createElement('div'); pr.className='particle';
         pr.style.left='50%'; pr.style.top='50%';
         var angle=Math.random()*Math.PI*2; var r=60+Math.random()*120;
