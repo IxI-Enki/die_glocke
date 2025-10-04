@@ -502,6 +502,19 @@
       50% { letter-spacing: 0.42em; filter: drop-shadow(0 0 60px rgba(0,212,255,0.35)); }
     }
 
+    .portal-version {
+      position: relative;
+      margin-top: 0.4rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(0.7rem, 2vw, 0.9rem);
+      color: var(--color-accent-cyan);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      filter: drop-shadow(0 0 10px rgba(0,212,255,0.25));
+      animation: subtitle-pulse 3s ease-in-out infinite;
+      z-index: 2;
+    }
+
     .mcp-btn {
       font-family: 'Source Code Pro', monospace;
       background: linear-gradient(135deg, var(--color-accent-green) 0%, var(--color-accent-cyan) 100%);
@@ -720,7 +733,10 @@
 
   <!-- PORTAL HERO (DEFAULT VIEW) -->
   <div id="portal-hero" class="portal-hero">
-    <div class="portal-title">PORTAL</div>
+    <div>
+      <div class="portal-title">PORTAL</div>
+      <div id="portal-version" class="portal-version">v0.0.0</div>
+    </div>
   </div>
 
   

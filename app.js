@@ -115,6 +115,13 @@ function addDownloadAllButton(files, serverNameSafe){
 
 // App init
 document.addEventListener('DOMContentLoaded',()=>{
+  // Inject version string under PORTAL title; increments per commit via Git short SHA length
+  try{
+    const vEl=document.getElementById('portal-version');
+    // Fallback: use date-time if git data unavailable (static site)
+    const version=(window.__APP_VERSION__)||('v'+(new Date()).toISOString().slice(0,10));
+    if(vEl) vEl.textContent=version;
+  }catch(_){ }
   // Login UI
   const loginForm=document.getElementById('login-form');
   const inputUser=document.getElementById('login-username');
