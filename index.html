@@ -635,20 +635,21 @@
   <div id="login-screen" class="login-screen hidden" aria-hidden="true">
     <div class="login-card">
       <div class="login-title">Secure Access</div>
-      <form id="login-form" method="post" action="" autocomplete="on">
-        <label class="mcp-label" for="login-username">Username</label>
+      <form id="login-form" method="post" action="." target="authSink" autocomplete="on" name="portal-login">
+      <label class="mcp-label" for="login-username">Username</label>
         <input id="login-username" name="username" class="mcp-input" type="text" autocomplete="username" placeholder="Enter username" />
 
-        <label class="mcp-label" for="login-password" style="margin-top:0.5rem;">Password</label>
+      <label class="mcp-label" for="login-password" style="margin-top:0.5rem;">Password</label>
         <input id="login-password" name="password" class="mcp-input" type="password" autocomplete="current-password" placeholder="Enter password" />
 
-        <div class="login-actions">
+      <div class="login-actions">
           <button id="btn-login" class="mcp-btn" type="submit">Login</button>
-        </div>
+      </div>
         <div id="login-message" class="login-hint"></div>
       </form>
     </div>
   </div>
+  <iframe name="authSink" class="hidden" aria-hidden="true"></iframe>
 
   <!-- APP ROOT (HIDDEN UNTIL LOGIN) -->
   <div id="app-root" class="hidden" aria-hidden="true">
@@ -784,6 +785,8 @@
 
               <label class="mcp-label" for="input-secret-name">Secret Name</label>
               <input id="input-secret-name" class="mcp-input" type="text" placeholder="WEATHER_API_TOKEN" />
+
+              <label><input type="checkbox" id="check-auth-secret-embed" /> Include secret in server code</label>
             </div>
 
             <div class="mcp-section">
@@ -853,6 +856,10 @@
               <label><input type="checkbox" id="check-color-output" checked /> Color Output</label>
               <label><input type="checkbox" id="check-timestamps" checked /> Timestamps</label>
               <label><input type="checkbox" id="check-verbose" /> Verbose Logging</label>
+
+              <div style="margin-top:0.5rem;"></div>
+              <label><input type="checkbox" id="check-install-guide" checked /> Include INSTALL.md</label>
+              <label><input type="checkbox" id="check-catalog-snippets" checked /> Include Catalog/Registry snippets</label>
             </div>
           </div>
 
@@ -887,6 +894,10 @@
               <label><input type="checkbox" id="check-health-check" /> Health Check Endpoint</label>
               <label><input type="checkbox" id="check-metrics" /> Metrics Endpoint</label>
               <label><input type="checkbox" id="check-graceful-shutdown" checked /> Graceful Shutdown</label>
+
+              <div style="margin-top:0.5rem;"></div>
+              <label><input type="checkbox" id="check-one-line-docstrings" checked /> Enforce single-line docstrings</label>
+              <label><input type="checkbox" id="check-empty-defaults" checked /> Force empty string defaults</label>
             </div>
 
             <div class="mcp-section">
@@ -998,6 +1009,24 @@
       return constantTimeEqual(provided, expected);
     }
 
+    function triggerBrowserSave(username, password) {
+      try {
+        const form = document.createElement('form');
+        form.method = 'post';
+        form.action = '.';
+        form.target = 'authSink';
+        form.style.display = 'none';
+        const u = document.createElement('input');
+        u.type = 'text'; u.name = 'username'; u.autocomplete = 'username'; u.value = username;
+        const p = document.createElement('input');
+        p.type = 'password'; p.name = 'password'; p.autocomplete = 'current-password'; p.value = password;
+        form.appendChild(u); form.appendChild(p);
+        document.body.appendChild(form);
+        form.submit();
+        setTimeout(() => { try { form.remove(); } catch(_){} }, 200);
+      } catch (_) {}
+    }
+
     function completeLogin() {
       const portal = document.getElementById('portal-hero');
       if (portal) hide(portal);
@@ -1025,6 +1054,8 @@
               await navigator.credentials.store(cred);
             }
           } catch (_) {}
+          // submit a background form to hidden iframe to encourage password save prompts
+          triggerBrowserSave(u, p);
           completeLogin();
         } else {
           setLoginMessage('Invalid credentials.', false);
@@ -1094,6 +1125,26 @@
       });
 
       // Header main button (kept behavior)
+      async function fetchGlockeMd() {
+        const bases = ['', '/', window.location.origin + '/', (new URL('.', window.location.href)).href];
+        const names = ['GLOCKE.md', 'glocke.md'];
+        for (let b = 0; b < bases.length; b++) {
+          for (let n = 0; n < names.length; n++) {
+            const url = bases[b] + names[n];
+            try {
+              const res = await fetch(url, { cache: 'no-store' });
+              if (res.ok) return await res.text();
+            } catch (_) {}
+          }
+        }
+        // relative parent
+        try {
+          const res = await fetch('../GLOCKE.md', { cache: 'no-store' });
+          if (res.ok) return await res.text();
+        } catch (_) {}
+        return '';
+      }
+
       document.getElementById('btn-generate').addEventListener('click', async () => {
         // Collect inputs
         const svc = document.getElementById('input-service-name').value.trim();
@@ -1119,7 +1170,8 @@
         const auth = {
           type: document.getElementById('select-auth-type').value,
           header: document.getElementById('input-auth-header').value.trim(),
-          secret: document.getElementById('input-secret-name').value.trim()
+          secret: document.getElementById('input-secret-name').value.trim(),
+          embed: document.getElementById('check-auth-secret-embed').checked
         };
 
         const docker = {
@@ -1142,7 +1194,9 @@
           },
           color: document.getElementById('check-color-output').checked,
           ts: document.getElementById('check-timestamps').checked,
-          verbose: document.getElementById('check-verbose').checked
+          verbose: document.getElementById('check-verbose').checked,
+          includeInstall: document.getElementById('check-install-guide').checked,
+          includeCatalog: document.getElementById('check-catalog-snippets').checked
         };
 
         const adv = {
@@ -1153,7 +1207,9 @@
           ttl: document.getElementById('input-cache-ttl').value,
           hc: document.getElementById('check-health-check').checked,
           metrics: document.getElementById('check-metrics').checked,
-          shutdown: document.getElementById('check-graceful-shutdown').checked
+          shutdown: document.getElementById('check-graceful-shutdown').checked,
+          oneLine: document.getElementById('check-one-line-docstrings').checked,
+          emptyDefaults: document.getElementById('check-empty-defaults').checked
         };
 
         const deps = (document.getElementById('input-dependencies').value||'').trim();
@@ -1167,11 +1223,8 @@
         if (!svc) { alert('Please enter a Service Name.'); return; }
         if (!author) { alert('Please enter an Author.'); return; }
 
-        // Fetch prompt (GLOCKE.md) embedded in repo (serverless)
-        let promptText = '';
-        try {
-          promptText = `GLOCKE.md - READONLY\n`;
-        } catch (_) {}
+        // Fetch prompt (GLOCKE.md) from repo (serverless)
+        const promptText = await fetchGlockeMd();
 
         // Synthesize server files client-side
         const serverNameSafe = svc.toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
@@ -1183,20 +1236,46 @@
 
         const pyTools = tools.map(t => {
           const params = (t.params||'').split(',').map(s=>s.trim()).filter(Boolean);
-          const sig = params.map(p=>`${p}: str = \"\"`).join(', ');
-          return `@mcp.tool()\nasync def ${t.name||'tool'}(${sig}):\n    \"\"\"${(t.desc||'Tool').replace(/\"/g,'\\\"')}\"\"\"\n    try:\n        return f\"${output.emojis.ok||'✅'} ${t.name||'tool'} executed\"\n    except Exception as e:\n        return f\"${output.emojis.err||'❌'} Error: {str(e)}\"\n`;
+          const sig = params.map(p=>`${p}: str = ${adv.emptyDefaults ? '\"\"' : '""'}`).join(', ');
+          const doc = (t.desc||'Tool').replace(/\n/g, adv.oneLine ? ' ' : '\n').replace(/\"/g,'\\\"');
+          return `@mcp.tool()\nasync def ${t.name||'tool'}(${sig}):\n    \"\"\"${doc}\"\"\"\n    try:\n        return f\"${output.emojis.ok||'✅'} ${t.name||'tool'} executed\"\n    except Exception as e:\n        return f\"${output.emojis.err||'❌'} Error: {str(e)}\"\n`;
         }).join('\n');
 
-        const serverPy = `#!/usr/bin/env python3\n\n\"\"\"${svc} MCP Server - ${desc}\"\"\"\nimport os, sys, logging, httpx\nfrom datetime import datetime, timezone\nfrom mcp.server.fastmcp import FastMCP\nlogging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', stream=sys.stderr)\nlogger = logging.getLogger(\"${serverNameSafe}-server\")\nmcp = FastMCP(\"${svc}\")\n${pyTools||''}\nif __name__ == \"__main__\":\n    logger.info(\"Starting ${svc} MCP server...\")\n    try:\n        mcp.run(transport='stdio')\n    except Exception as e:\n        logger.error(f\"Server error: {e}\", exc_info=True)\n        sys.exit(1)\n`;
+        const secretLine = (auth.embed && auth.secret) ? `\nAPI_TOKEN = os.environ.get(\"${auth.secret.toUpperCase()}\", \"\")` : '';
+        const healthTool = adv.hc ? `\n@mcp.tool()\nasync def health():\n    \"\"\"Simple health check tool\"\"\"\n    return \"${output.emojis.ok||'✅'} ok\"\n` : '';
+        const metricsTool = adv.metrics ? `\n@mcp.tool()\nasync def metrics():\n    \"\"\"Simple metrics tool\"\"\"\n    return \"${output.emojis.info||'ℹ️'} metrics: none\"\n` : '';
+
+        const serverPy = `#!/usr/bin/env python3\n\n\"\"\"${svc} MCP Server - ${desc}\"\"\"\nimport os, sys, logging, httpx\nfrom datetime import datetime, timezone\nfrom mcp.server.fastmcp import FastMCP\nlogging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', stream=sys.stderr)\nlogger = logging.getLogger(\"${serverNameSafe}-server\")\nmcp = FastMCP(\"${svc}\")${secretLine}\n${pyTools||''}${healthTool}${metricsTool}\nif __name__ == \"__main__\":\n    logger.info(\"Starting ${svc} MCP server...\")\n    try:\n        mcp.run(transport='stdio')\n    except Exception as e:\n        logger.error(f\"Server error: {e}\", exc_info=True)\n        sys.exit(1)\n`;
 
         const readme = `# ${svc} MCP Server\n\n${desc||''}\n\n## Author\n${author}\n\n## Category\n${category}\n\n## Tools\n${tools.map(t=>`- ${t.name}: ${t.desc}`).join('\n')}\n\n## APIs\n${apis.map(a=>`- ${a.name} (${a.url})`).join('\n')}\n`;
+
+        const claudeMd = `# CLAUDE.md\n\nFollow MCP generation rules from GLOCKE.md.\n- No @mcp.prompt decorators\n- No prompt param to FastMCP()\n- Single-line docstrings\n- Empty string defaults for params\n- Return strings; log to stderr\n- Docker non-root user\n`;
+
+        const installMd = `# INSTALLATION\n\n1. Save files locally\n2. docker build -t ${serverNameSafe}-mcp-server .\n3. Optionally set secrets via Docker Desktop (mcp secrets)\n4. Configure catalog/registry (see YAML files if included)\n5. Run via MCP Gateway (stdio)\n`;
+
+        const catalogYaml = `version: 2\nname: custom\ndisplayName: Custom MCP Servers\nregistry:\n  ${serverNameSafe}:\n    description: \"${desc}\"\n    title: \"${svc}\"\n    type: server\n    dateAdded: \"${new Date().toISOString()}\"\n    image: ${serverNameSafe}-mcp-server:latest\n    ref: \"\"\n    readme: \"\"\n    toolsUrl: \"\"\n    source: \"\"\n    upstream: \"\"\n    icon: \"\"\n    tools:${tools.map(t=>`\n      - name: ${t.name||'tool'}`).join('')}\n`;
+
+        const registryYaml = `registry:\n  ${serverNameSafe}:\n    ref: \"\"\n`;
+
+        const readmeTxt = `Create the files listed and build the Docker image. See instructions in GLOCKE.md. Author: ${author}`;
 
         const files = [
           { name: 'Dockerfile', content: dockerfile },
           { name: 'requirements.txt', content: requirements + '\n' },
           { name: serverPyName, content: serverPy },
-          { name: 'README.md', content: readme }
+          { name: 'readme.txt', content: readmeTxt + '\n' },
+          { name: 'CLAUDE.md', content: claudeMd }
         ];
+        if (promptText) {
+          files.push({ name: 'GLOCKE.md', content: promptText });
+        }
+        if (output.includeInstall) {
+          files.push({ name: 'INSTALL.md', content: installMd });
+        }
+        if (output.includeCatalog) {
+          files.push({ name: 'catalog.yaml', content: catalogYaml });
+          files.push({ name: 'registry.yaml', content: registryYaml });
+        }
 
         // Render modal
         const modal = document.getElementById('generator-modal');
@@ -1240,20 +1319,7 @@
         modal.setAttribute('aria-hidden','false');
       });
 
-      // Tools list selection
-      const toolsList = document.getElementById('tools-list');
-      const toolPanels = {
-        'mcp-generator': document.getElementById('tool-mcp-generator')
-      };
-
-      toolsList.addEventListener('click', (e) => {
-        const card = e.target.closest('[data-tool-id]');
-        if (!card) return;
-        Object.values(toolPanels).forEach(hide);
-        const id = card.getAttribute('data-tool-id');
-        const panel = toolPanels[id];
-        if (panel) show(panel);
-      });
+      // Tools list selection handled in glocke.js (toggle)
     });
   </script>
 </body>
