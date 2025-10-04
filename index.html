@@ -216,15 +216,21 @@
     }
 
     /* Hyper-detailed bell for tool */
-    .tool-bell-svg { width: 120px; height: 150px; filter: url(#toolBellGlow); animation: bell-swing 3.8s ease-in-out infinite; }
+    .tool-bell-svg { width: 120px; height: 150px; filter: url(#toolBellGlow) saturate(1.15); animation: bell-swing 3.8s ease-in-out infinite, bell-hue 16s linear infinite; }
     @keyframes bell-swing { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
-    .bell-metal { fill: url(#metalGradient); stroke: rgba(255,255,255,0.15); stroke-width: 0.6; }
+    @keyframes bell-hue { 0% { filter: url(#toolBellGlow) hue-rotate(0deg) saturate(1.15);} 50% { filter: url(#toolBellGlow) hue-rotate(18deg) saturate(1.35);} 100% { filter: url(#toolBellGlow) hue-rotate(0deg) saturate(1.15);} }
+    .bell-metal { fill: url(#cyberMetalGradient); stroke: rgba(140,200,255,0.2); stroke-width: 0.6; }
     .bell-engrave { stroke: rgba(255, 223, 140, 0.7); stroke-width: 0.8; fill: none; opacity: 0.8; }
-    .bell-rim { fill: url(#rimGradient); }
-    .bell-clapper { fill: url(#clapperGradient); transform-origin: 60px 108px; animation: clapper-swing 3.8s ease-in-out infinite; }
+    .bell-rim { fill: url(#rimNeonGradient); }
+    .bell-clapper { fill: url(#clapperNeonGradient); transform-origin: 60px 108px; animation: clapper-swing 3.8s ease-in-out infinite; }
     @keyframes clapper-swing { 0%,100% { transform: rotate(10deg); } 50% { transform: rotate(-10deg); } }
     .bell-shimmer { stroke: rgba(255,255,255,0.9); stroke-width: 1.1; filter: drop-shadow(0 0 8px rgba(255,255,255,0.35)); animation: shimmer-run 2.4s linear infinite; }
     @keyframes shimmer-run { 0% { stroke-dashoffset: 140; } 100% { stroke-dashoffset: 0; } }
+    /* AI eye */
+    .ai-eye { transform-origin: 60px 88px; animation: eye-wiggle 1.8s ease-in-out infinite; }
+    @keyframes eye-wiggle { 0%,100% { transform: translateX(-1px);} 50% { transform: translateX(1px);} }
+    .eye-iris { filter: drop-shadow(0 0 8px rgba(0,255,200,0.5)) drop-shadow(0 0 18px rgba(77,124,255,0.45)); }
+    .eye-pupil { fill: #000; }
 
     @keyframes float-bell {
       0%, 100% { transform: translateY(0); }
@@ -766,29 +772,40 @@
                 <div class="bell-container" id="tool-bell">
                   <svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg" class="tool-bell-svg">
                     <defs>
-                      <linearGradient id="metalGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#caa862"/>
-                        <stop offset="35%" stop-color="#f5d793"/>
-                        <stop offset="65%" stop-color="#b8904e"/>
-                        <stop offset="100%" stop-color="#e8c981"/>
+                      <linearGradient id="cyberMetalGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#224b62"/>
+                        <stop offset="30%" stop-color="#1a2a42"/>
+                        <stop offset="60%" stop-color="#0f2138"/>
+                        <stop offset="100%" stop-color="#18304a"/>
                       </linearGradient>
-                      <linearGradient id="rimGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#f7e3a7"/>
-                        <stop offset="100%" stop-color="#a67c37"/>
+                      <linearGradient id="rimNeonGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#00e5ff"/>
+                        <stop offset="100%" stop-color="#00ff9d"/>
                       </linearGradient>
-                      <linearGradient id="clapperGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#7a5a1e"/>
-                        <stop offset="100%" stop-color="#e8c981"/>
+                      <linearGradient id="clapperNeonGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#00b3ff"/>
+                        <stop offset="100%" stop-color="#00ffa8"/>
                       </linearGradient>
+                      <radialGradient id="irisGradient" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#00fff5"/>
+                        <stop offset="45%" stop-color="#00b3ff"/>
+                        <stop offset="80%" stop-color="rgba(0,0,0,0.2)"/>
+                        <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+                      </radialGradient>
                       <filter id="toolBellGlow" x="-50%" y="-50%" width="200%" height="200%">
                         <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="b"/>
                         <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
                       </filter>
+                      <filter id="plasma" x="-50%" y="-50%" width="200%" height="200%">
+                        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="t"/>
+                        <feColorMatrix type="hueRotate" values="20"/>
+                        <feDisplacementMap in="SourceGraphic" in2="t" scale="2"/>
+                      </filter>
                     </defs>
                     <!-- Vajra-like crown -->
-                    <path class="bell-metal" d="M60 8 C58 8 54 12 54 16 L54 22 C54 24 52 26 50 26 C48 26 46 24 46 22 L46 16 C46 12 42 8 40 8 C41 13 41 19 41 21 C41 24 42.5 27 45 29 C47 31 48 33 48 35 L72 35 C72 33 73 31 75 29 C77.5 27 79 24 79 21 C79 19 79 13 80 8 C78 8 74 12 74 16 L74 22 C74 24 72 26 70 26 C68 26 66 24 66 22 L66 16 C66 12 62 8 60 8 Z"/>
+                    <path class="bell-metal" d="M60 6 C59 6 56 10 56 14 L56 22 C56 24 54.5 26 53 26 C51.5 26 50 24 50 22 L50 14 C50 10 47 6 46 6 C47 12 47 18 47 20 C47 23 48.3 26 50.5 28 C52.3 29.7 53 31.5 53 33 L67 33 C67 31.5 67.7 29.7 69.5 28 C71.7 26 73 23 73 20 C73 18 73 12 74 6 C72 6 69 10 69 14 L69 22 C69 24 67.5 26 66 26 C64.5 26 63 24 63 22 L63 14 C63 10 61 6 60 6 Z"/>
                     <!-- Bell body -->
-                    <path class="bell-metal" d="M30 40 C30 40 28 58 34 78 C38 92 48 108 60 120 C72 108 82 92 86 78 C92 58 90 40 90 40 C90 40 80 36 60 36 C40 36 30 40 30 40 Z"/>
+                    <path class="bell-metal" d="M30 40 C30 40 28 58 34 78 C38 92 48 108 60 120 C72 108 82 92 86 78 C92 58 90 40 90 40 C90 40 80 36 60 36 C40 36 30 40 30 40 Z" filter="url(#plasma)"/>
                     <!-- Engravings -->
                     <path class="bell-engrave" d="M36 50 C48 48 72 48 84 50"/>
                     <path class="bell-engrave" d="M34 60 C48 58 72 58 88 60"/>
@@ -800,6 +817,11 @@
                     <path class="bell-rim" d="M22 118 C40 122 80 122 98 118 L98 129 C80 134 40 134 22 129 Z"/>
                     <!-- Shimmer path -->
                     <path class="bell-shimmer" d="M28 42 C40 38 80 38 92 42" stroke-dasharray="140 140"/>
+                    <!-- AI Eye inside bell -->
+                    <g class="ai-eye">
+                      <circle class="eye-iris" cx="60" cy="88" r="12" fill="url(#irisGradient)" />
+                      <ellipse class="eye-pupil" cx="60" cy="88" rx="3.2" ry="7"/>
+                    </g>
                     <!-- Clapper -->
                     <circle class="bell-clapper" cx="60" cy="110" r="6"/>
                   </svg>
