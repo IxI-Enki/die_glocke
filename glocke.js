@@ -79,45 +79,14 @@
     }
   }
   document.addEventListener('DOMContentLoaded',function(){
+    // Keep header scribbles only; remove tool scribbles and animations for a clean slate
     createScribbles('occult-layer');
-    createScribbles('tool-occult');
-    createRings();
-    createParticles();
-    createCircuits();
-    createLightning();
 
-    // Extra orbiters and center-burst around tool bell
+    // Cleanup any residual tool-layer elements
+    var toolOccult=document.getElementById('tool-occult');
+    if(toolOccult){ toolOccult.innerHTML=''; }
     var bell=document.getElementById('tool-bell');
-    if(bell){
-      var orbitSymbols=['Ψ','∇','Ω','⊙','⊛','α','β','φ','*','+','~'];
-      for(var i=0;i<14;i++){
-        var o=document.createElement('div');
-        o.className='orbiter';
-        var s=document.createElement('span'); s.textContent=orbitSymbols[i % orbitSymbols.length];
-        s.style.setProperty('--w', (2.6+Math.random()*2)+'s');
-        s.style.setProperty('--ox', (Math.random()*3-1.5)+'px');
-        s.style.setProperty('--oy', (Math.random()*3-1.5)+'px');
-        o.appendChild(s);
-        var radius=(40 + Math.random()*60);
-        var duration=(6 + Math.random()*14);
-        // Use JS-driven orbit for chaos
-        (function(el,r,d){
-          var t=Math.random()*Math.PI*2;
-          function step(){ t+=0.008*(60/d); var x=Math.cos(t)*r; var y=Math.sin(t)*r; el.style.transform='translate(-50%,-50%) translate('+x+'px,'+y+'px)'; requestAnimationFrame(step); }
-          step();
-        })(o,radius,duration);
-        bell.appendChild(o);
-      }
-      for(var p=0;p<36;p++){
-        var pr=document.createElement('div'); pr.className='particle';
-        pr.style.left='50%'; pr.style.top='50%';
-        var angle=Math.random()*Math.PI*2; var r=60+Math.random()*120;
-        pr.style.setProperty('--dx', Math.cos(angle)*r+'px');
-        pr.style.setProperty('--dy', Math.sin(angle)*r+'px');
-        pr.style.animationDelay=(Math.random()*2)+'s';
-        bell.appendChild(pr);
-      }
-    }
+    if(bell){ bell.innerHTML=''; }
 
     // Tools list toggle behavior
     var toolsList=document.getElementById('tools-list');
