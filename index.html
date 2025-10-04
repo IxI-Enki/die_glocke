@@ -231,14 +231,6 @@
     @keyframes eye-wiggle { 0%,100% { transform: translateX(-1px);} 50% { transform: translateX(1px);} }
     .eye-iris { filter: drop-shadow(0 0 8px rgba(0,255,200,0.5)) drop-shadow(0 0 18px rgba(77,124,255,0.45)); }
     .eye-pupil { fill: #000; }
-    /* Orbit rings + beams */
-    .orbit-ring { fill:none; stroke: rgba(0,212,255,0.35); stroke-width: 1; animation: orbit-pulse var(--t,8s) ease-in-out infinite alternate; }
-    .orbit-ring.alt { stroke: rgba(0,255,157,0.28); }
-    @keyframes orbit-pulse { 0% { opacity: 0.6; filter: blur(0px);} 100% { opacity: 1; filter: blur(0.6px);} }
-    .vert-beam { fill: url(#beamGrad); opacity: 0.55; animation: beam-drop var(--d,3.2s) linear infinite; }
-    @keyframes beam-drop { 0% { transform: translateY(-20px);} 100% { transform: translateY(20px);} }
-    .body-dot { fill: rgba(0,255,214,0.8); opacity: 0.8; animation: dot-drift var(--dd,4s) ease-in-out infinite alternate; }
-    @keyframes dot-drift { 0% { transform: translate(0,0) scale(0.9);} 100% { transform: translate(var(--dx,2px), var(--dy,-2px)) scale(1.05);} }
 
     @keyframes float-bell {
       0%, 100% { transform: translateY(0); }
@@ -809,44 +801,28 @@
                         <feColorMatrix type="hueRotate" values="20"/>
                         <feDisplacementMap in="SourceGraphic" in2="t" scale="2"/>
                       </filter>
-                      <linearGradient id="beamGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="rgba(0,255,157,0)"/>
-                        <stop offset="50%" stop-color="rgba(0,255,157,0.65)"/>
-                        <stop offset="100%" stop-color="rgba(0,255,157,0)"/>
-                      </linearGradient>
                     </defs>
-                    <!-- Background orbit rings behind eye -->
-                    <g opacity="0.9">
-                      <circle class="orbit-ring" cx="60" cy="34" r="20" style="--t:7s"/>
-                      <circle class="orbit-ring alt" cx="60" cy="34" r="28" style="--t:9s"/>
-                      <circle class="orbit-ring" cx="60" cy="34" r="36" style="--t:12s"/>
-                    </g>
-                    <!-- Vertical energy beams -->
-                    <rect class="vert-beam" x="56" y="10" width="2" height="46" style="--d:3.4s"/>
-                    <rect class="vert-beam" x="62" y="8" width="2" height="50" style="--d:4s"/>
-                    <rect class="vert-beam" x="52" y="12" width="2" height="44" style="--d:3s"/>
-                    <!-- Vajra-like crown / slim stem top -->
-                    <path class="bell-metal" d="M60 6 C59 6 56 10 56 14 L56 22 C56 24 54.5 26 53 26 C51.5 26 50 24 50 22 L50 14 C50 10 47 6 46 6 C47 12 47 18 47 20 C47 23 48.3 26 50.5 28 C52.3 29.7 53 31.5 53 33 L67 33 C67 31.5 67.7 29.7 69.5 28 C71.7 26 73 23 73 20 C73 18 73 12 74 6 C72 6 69 10 69 14 L69 22 C69 24 67.5 26 66 26 C64.5 26 63 24 63 22 L63 14 C63 10 61 6 60 6 Z"/>
-                    <!-- Bell body -->
-                    <path class="bell-metal" d="M48 50 L72 50 L72 70 C78 76 83 88 84 98 C85 112 78 121 60 124 C42 121 35 112 36 98 C37 88 42 76 48 70 Z" filter="url(#plasma)"/>
-                    <!-- Base ring -->
-                    <ellipse class="bell-rim" cx="60" cy="126" rx="26" ry="5"/>
-                    <!-- Engravings -->
-                    <path class="bell-engrave" d="M48 58 C54 56 66 56 72 58"/>
-                    <path class="bell-engrave" d="M47 66 C54 64 66 64 73 66"/>
-                    <!-- Decorative motifs -->
-                    <circle class="body-dot" cx="54" cy="76" r="2" style="--dx:-2px; --dy:-1px; --dd:3.6s"/>
-                    <circle class="body-dot" cx="66" cy="82" r="2" style="--dx:1px; --dy:-2px; --dd:4.2s"/>
-                    <circle class="body-dot" cx="60" cy="92" r="2" style="--dx:0px; --dy:2px; --dd:3.2s"/>
-                    <!-- Shimmer path -->
-                    <path class="bell-shimmer" d="M28 42 C40 38 80 38 92 42" stroke-dasharray="140 140"/>
-                    <!-- AI Eye inside bell -->
-                    <g class="ai-eye">
-                      <circle class="eye-iris" cx="60" cy="34" r="14" fill="url(#irisGradient)" />
-                      <ellipse class="eye-pupil" cx="60" cy="34" rx="3.6" ry="8"/>
-                    </g>
-                    <!-- Clapper -->
-                    <circle class="bell-clapper" cx="60" cy="112" r="6"/>
+                     <!-- Neon eye stack (square glow + eye) -->
+                     <rect x="46" y="12" width="28" height="28" rx="6" ry="6" fill="rgba(0,255,157,0.12)" style="filter: blur(2px)"/>
+                     <g class="ai-eye">
+                       <circle class="eye-iris" cx="60" cy="26" r="13" fill="url(#irisGradient)" />
+                       <ellipse class="eye-pupil" cx="60" cy="26" rx="3.6" ry="7.6"/>
+                     </g>
+                     <!-- Slim stem -->
+                     <rect x="56" y="34" width="8" height="18" fill="url(#rimNeonGradient)" rx="1"/>
+                     <!-- Small connector -->
+                     <rect x="50" y="52" width="20" height="5" fill="rgba(0,212,255,0.4)"/>
+                     <!-- Bell body outline (screenshot shape) -->
+                     <path d="M44 58 C52 52 68 52 76 58 L78 96 C72 116 50 126 42 96 Z" fill="none" stroke="url(#rimNeonGradient)" stroke-width="4"/>
+                     <!-- Inner glass fill -->
+                     <path d="M46 60 C54 55 66 55 74 60 L75 94 C70 112 50 120 45 94 Z" fill="rgba(0,212,255,0.12)"/>
+                     <!-- Base rings -->
+                     <ellipse cx="60" cy="126" rx="26" ry="5" fill="rgba(0,255,157,0.18)"/>
+                     <ellipse cx="60" cy="126" rx="22" ry="3.4" fill="rgba(0,212,255,0.28)"/>
+                     <!-- Floating body dots -->
+                     <circle class="body-dot" cx="54" cy="74" r="2" style="--dx:-2px; --dy:-1px; --dd:3.6s"/>
+                     <circle class="body-dot" cx="66" cy="80" r="2" style="--dx:1px; --dy:-2px; --dd:4.2s"/>
+                     <circle class="body-dot" cx="60" cy="90" r="2" style="--dx:0px; --dy:2px; --dd:3.2s"/>
                   </svg>
                 </div>
                 <div>
