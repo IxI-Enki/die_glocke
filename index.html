@@ -71,7 +71,7 @@
         radial-gradient(900px 500px at 80% 80%, rgba(0,212,255,0.07), transparent 60%),
         radial-gradient(1200px 600px at 50% 50%, rgba(77,124,255,0.05), transparent 65%),
         conic-gradient(from 0deg, rgba(0,255,157,0.04), rgba(0,212,255,0.04), rgba(77,124,255,0.04), rgba(0,255,157,0.04));
-      animation: header-pulse 8s ease-in-out infinite alternate, header-rotate 24s linear infinite;
+      animation: header-pulse 8s ease-in-out infinite alternate;
       pointer-events: none;
     }
 
@@ -710,16 +710,14 @@
     .bell-fill { fill: url(#bellFillGrad); }
     .bell-outline { fill: none; stroke: url(#bellLineGrad); stroke-width: 6; }
     /* Bring the mascot to life */
-    #tool-bell .bell-entity { transform-box: fill-box; transform-origin: 50% 60%; animation: bellFloat 9s ease-in-out infinite, bellBreath 6.5s ease-in-out infinite, bellSway 5.5s ease-in-out infinite, bellSquish 7.5s ease-in-out infinite; filter: drop-shadow(0 10px 24px rgba(0,255,157,0.1)) drop-shadow(0 0 24px rgba(0,212,255,0.08)); }
+    #tool-bell .bell-entity { transform-box: fill-box; transform-origin: 50% 18%; animation: ringSwing 2.8s ease-in-out infinite, bellFloat 9s ease-in-out infinite, bellBreath 6.5s ease-in-out infinite, bellSquish 7.5s ease-in-out infinite; filter: drop-shadow(0 10px 24px rgba(0,255,157,0.1)) drop-shadow(0 0 24px rgba(0,212,255,0.08)); }
     #tool-bell .eye-group { transform-box: fill-box; transform-origin: center; }
     #tool-bell .eye-ball { transform-box: fill-box; transform-origin: center; }
     #tool-bell .pupil { animation: eyeLook 5.8s ease-in-out infinite, pupilDart 9s ease-in-out infinite; }
     #tool-bell .aura-ring { mix-blend-mode: screen; filter: blur(6px); }
     #tool-bell .ar1 { animation: auraRotate 10s linear infinite; }
     #tool-bell .ar2 { animation: auraRotate 14s linear infinite reverse; opacity: 0.6; }
-    #tool-bell .eyelid { fill: #0a0e14; opacity: 0.96; }
-    #tool-bell .top-eyelid { transform-origin: 0% 0%; animation: eyelidBlink 7.2s ease-in-out infinite; }
-    #tool-bell .bottom-eyelid { transform-origin: 0% 100%; animation: eyelidBlink 7.2s ease-in-out infinite; animation-delay: .02s; }
+    /* eyelids removed per user request */
     #tool-bell .wisp { stroke: url(#wispGrad); stroke-width: 2; fill: none; stroke-linecap: round; filter: blur(1.2px); stroke-dasharray: 140 320; animation: wispDash 6s linear infinite; opacity: 0.55; }
     #tool-bell .wisp.w2 { animation-duration: 8s; opacity: 0.35; }
     #tool-bell .wisp.w3 { animation-duration: 10s; opacity: 0.25; }
@@ -751,17 +749,14 @@
       0%,100% { transform: translateY(0) rotate(0deg); }
       50% { transform: translateY(-6px) rotate(-0.4deg); }
     }
-    @keyframes bellSway { 0%,100% { transform: rotate(0deg);} 25% { transform: rotate(0.8deg);} 75% { transform: rotate(-0.8deg);} }
+    @keyframes ringSwing { 0% { transform: rotate(-6deg);} 50% { transform: rotate(6deg);} 100% { transform: rotate(-6deg);} }
     @keyframes bellSquish { 0%,100% { transform: scaleX(1) scaleY(1);} 50% { transform: scaleX(1.012) scaleY(0.992);} }
     @keyframes bellBreath { 0%,100% { transform: scale(1); } 50% { transform: scale(1.02);} }
     @keyframes eyeLook {
-      0% { transform: translate(-7px, -1px); }
-      18% { transform: translate(-7px, -1px); }
-      28% { transform: translate(0px, 0px); }
-      50% { transform: translate(8px, 1px); }
-      66% { transform: translate(8px, -1px); }
-      80% { transform: translate(0px, 1px); }
-      100% { transform: translate(-7px, -1px); }
+      0% { transform: translate(-10px, -0.5px); }
+      40% { transform: translate(10px, 0.5px); }
+      60% { transform: translate(10px, 0.5px); }
+      100% { transform: translate(-10px, -0.5px); }
     }
     @keyframes pupilDart {
       0% { transform: translate(-4px, -0.5px); }
@@ -770,16 +765,7 @@
       70% { transform: translate(1px, 1.5px); }
       100% { transform: translate(-4px, -0.5px); }
     }
-    /* New blink sequence using eyelids with partial blinks */
-    @keyframes eyelidBlink {
-      0%, 14%, 22%, 44%, 100% { transform: scaleY(0); }
-      15% { transform: scaleY(1.05); }
-      16% { transform: scaleY(0); }
-      23% { transform: scaleY(0.35); }
-      24% { transform: scaleY(0); }
-      45% { transform: scaleY(1.1); }
-      46% { transform: scaleY(0); }
-    }
+    /* blink animations removed */
     @keyframes auraRotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg);} }
     @keyframes wispDash { from { stroke-dashoffset: 320; } to { stroke-dashoffset: 0; } }
     @keyframes orbitSpin { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
@@ -968,7 +954,7 @@
 
                     <g class="bell-entity variant variant-a">
                        <!-- Thin stem -->
-                       <rect x="76" y="52" width="8" height="22" fill="url(#bellLineGrad)" rx="1"/>
+                       <rect x="76" y="52" width="8" height="32" fill="url(#bellLineGrad)" rx="1"/>
                       <!-- Hyperspace haze behind bell -->
                       <ellipse cx="80" cy="156" rx="62" ry="52" fill="url(#eyeAuraGrad)" opacity="0.2"/>
                       <!-- Bell body fill: narrow top, bell-like wide base with gentle flatness -->
@@ -1039,7 +1025,7 @@
                     <!-- Variant B: simplified iconic bell fused with eye, over-the-top effects intensified -->
                     <g class="bell-entity variant variant-b">
                       <!-- stem -->
-                      <rect x="76" y="52" width="8" height="22" fill="url(#bellLineGrad)" rx="1"/>
+                      <rect x="76" y="52" width="8" height="32" fill="url(#bellLineGrad)" rx="1"/>
                       <!-- iconic bell shape -->
                       <path class="bell-fill" d="M80 88 C58 106 48 134 48 156 C48 176 62 196 80 198 C98 196 112 176 112 156 C112 134 102 106 80 88 Z"/>
                       <path class="bell-outline" d="M80 88 C58 106 48 134 48 156 C48 176 62 196 80 198 C98 196 112 176 112 156 C112 134 102 106 80 88 Z"/>
@@ -1049,7 +1035,7 @@
                       <circle cx="80" cy="156" r="28" class="flame"/>
                       <circle cx="80" cy="156" r="22" class="flame f2"/>
                       <!-- eye centered higher -->
-                      <g class="eye-group" transform="translate(80,148)">
+                      <g class="eye-group gaze" transform="translate(80,148)">
                         <circle r="32" fill="url(#eyeAuraGrad)" class="aura-ring ar1" opacity="0.6"/>
                         <circle r="24" fill="#e6f7ff" class="eye-ball"/>
                         <circle r="16" fill="url(#irisGrad)" class="eye-ball"/>
