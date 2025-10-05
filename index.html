@@ -734,6 +734,10 @@
     /* Clapper + rim wobble */
     #tool-bell .clapper { transform-origin: 80px 176px; animation: clapperSwing 3.8s ease-in-out infinite; }
     #tool-bell .ring { transform-origin: 80px 198px; animation: ringWobble 3.8s ease-in-out infinite; }
+    /* Variant swap to show two styles */
+    #tool-bell .variant { animation: variantCycle 16s linear infinite; }
+    #tool-bell .variant-b { animation-delay: 8s; }
+    .bg-orbits { opacity: 0.35; }
 
     @keyframes bellFloat {
       0%,100% { transform: translateY(0) rotate(0deg); }
@@ -775,6 +779,7 @@
     @keyframes cometSpin { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
     @keyframes clapperSwing { 0%,100% { transform: rotate(-8deg);} 50% { transform: rotate(8deg);} }
     @keyframes ringWobble { 0%,100% { transform: scaleX(1);} 50% { transform: scaleX(1.06);} }
+    @keyframes variantCycle { 0%,45% { opacity: 1; } 50%,95% { opacity: 0; } 100% { opacity: 1; } }
     .bell-rim { fill: url(#bellRimGrad); }
     .bell-line { stroke: rgba(0,255,200,0.5); stroke-width: 1.2; fill: none; opacity: 0.6; }
     .vajra-fill { fill: url(#vajraGrad); }
@@ -920,10 +925,21 @@
                          <feGaussianBlur stdDeviation="4"/>
                        </filter>
                      </defs>
-                     <!-- Vajra crown (stylized) -->
+                    <!-- Vajra crown (stylized) -->
                      <path class="vajra-fill" d="M80 12 C76 12 70 18 70 24 L70 36 C70 39 67 42 64 42 C61 42 58 39 58 36 L58 24 C58 18 52 12 48 12 C50 22 50 30 50 33 C50 37 52.5 41 57 44 C60 46 62 49 62 52 L98 52 C98 49 100 46 103 44 C107.5 41 110 37 110 33 C110 30 110 22 112 12 C108 12 102 18 102 24 L102 36 C102 39 99 42 96 42 C93 42 90 39 90 36 L90 24 C90 18 84 12 80 12 Z"/>
                      <path class="vajra-line" d="M50 33 C60 38 100 38 110 33"/>
-                     <g class="bell-entity">
+                    <!-- Background orbits further out (behind the bell) -->
+                    <g class="bg-orbits" transform="translate(0,0) scale(1.6)">
+                      <g class="orbit" style="transform-origin:80px 156px;">
+                        <circle class="sigil" cx="80" cy="124" r="1.8"/>
+                        <circle class="sigil" cx="108" cy="150" r="1.2"/>
+                      </g>
+                      <g class="orbit r" style="transform-origin:80px 156px;">
+                        <rect class="sigil" x="62" y="130" width="2.4" height="2.4" rx="0.6"/>
+                      </g>
+                    </g>
+
+                    <g class="bell-entity variant variant-a">
                        <!-- Thin stem -->
                        <rect x="76" y="52" width="8" height="22" fill="url(#bellLineGrad)" rx="1"/>
                       <!-- Hyperspace haze behind bell -->
@@ -985,22 +1001,41 @@
                          <rect class="eyelid bottom-eyelid" x="-26" y="2" width="52" height="16" rx="8"/>
                        </g>
 
-                       <!-- Orbiting sigils around the eye -->
-                       <g class="orbit" style="transform-origin:80px 156px;">
-                         <circle class="sigil" cx="80" cy="124" r="2"/>
-                         <circle class="sigil" cx="106" cy="146" r="1.6"/>
-                         <rect class="sigil" x="60" y="138" width="2.8" height="2.8" rx="0.6"/>
-                       </g>
-                       <g class="orbit r" style="transform-origin:80px 156px;">
-                         <polygon class="sigil" points="80,128 82,132 78,132"/>
-                         <circle class="sigil" cx="92" cy="132" r="1.6"/>
-                       </g>
+                      <!-- foreground orbits disabled (handled by bg-orbits) -->
 
                        <!-- Trailing comets -->
                        <g class="comet" style="--spd:7s;">
                          <path class="tail" d="M80 156 L 112 140"/>
                          <circle class="head" cx="114" cy="140" r="2.6"/>
-                       </g>
+                    </g>
+                    
+                    <!-- Variant B: simplified iconic bell fused with eye, over-the-top effects intensified -->
+                    <g class="bell-entity variant variant-b">
+                      <!-- stem -->
+                      <rect x="76" y="52" width="8" height="22" fill="url(#bellLineGrad)" rx="1"/>
+                      <!-- iconic bell shape -->
+                      <path class="bell-fill" d="M80 88 C58 106 48 134 48 156 C48 176 62 196 80 198 C98 196 112 176 112 156 C112 134 102 106 80 88 Z"/>
+                      <path class="bell-outline" d="M80 88 C58 106 48 134 48 156 C48 176 62 196 80 198 C98 196 112 176 112 156 C112 134 102 106 80 88 Z"/>
+                      <ellipse class="bell-rim" cx="80" cy="198" rx="54" ry="7"/>
+                      <!-- eye centered higher -->
+                      <g class="eye-group" transform="translate(80,148)">
+                        <circle r="32" fill="url(#eyeAuraGrad)" class="aura-ring ar1" opacity="0.6"/>
+                        <circle r="24" fill="#e6f7ff" class="eye-ball"/>
+                        <circle r="16" fill="url(#irisGrad)" class="eye-ball"/>
+                        <circle class="pupil" r="7.2" fill="#061018"/>
+                        <rect class="scan" x="-1.5" y="-22" width="3" height="44" fill="url(#scanGrad)"/>
+                        <rect class="eyelid top-eyelid" x="-26" y="-18" width="52" height="16" rx="8"/>
+                        <rect class="eyelid bottom-eyelid" x="-26" y="2" width="52" height="16" rx="8"/>
+                      </g>
+                      <!-- extra wisps -->
+                      <path class="wisp" d="M40 164 C60 144 100 144 120 164"/>
+                      <path class="wisp w2" d="M42 174 C66 156 94 156 118 174"/>
+                      <!-- comets -->
+                      <g class="comet" style="--spd:9s;">
+                        <path class="tail" d="M80 156 L 120 150"/>
+                        <circle class="head" cx="122" cy="150" r="2.4"/>
+                      </g>
+                    </g>
                        <g class="comet" style="--spd:10s;">
                          <path class="tail" d="M80 156 L 54 170"/>
                          <circle class="head" cx="52" cy="170" r="2"/>
