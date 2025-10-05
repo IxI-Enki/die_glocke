@@ -712,7 +712,7 @@
     /* Bring the mascot to life */
     #tool-bell .bell-entity { transform-box: fill-box; transform-origin: 50% 60%; animation: bellFloat 9s ease-in-out infinite, bellBreath 6.5s ease-in-out infinite, bellSway 5.5s ease-in-out infinite, bellSquish 7.5s ease-in-out infinite; filter: drop-shadow(0 10px 24px rgba(0,255,157,0.1)) drop-shadow(0 0 24px rgba(0,212,255,0.08)); }
     #tool-bell .eye-group { transform-box: fill-box; transform-origin: center; }
-    #tool-bell .eye-ball { transform-box: fill-box; transform-origin: center; animation: eyeBlink 7.2s ease-in-out infinite; }
+    #tool-bell .eye-ball { transform-box: fill-box; transform-origin: center; }
     #tool-bell .pupil { animation: eyeLook 5.8s ease-in-out infinite, pupilDart 9s ease-in-out infinite; }
     #tool-bell .aura-ring { mix-blend-mode: screen; filter: blur(6px); }
     #tool-bell .ar1 { animation: auraRotate 10s linear infinite; }
@@ -743,36 +743,30 @@
     @keyframes bellSquish { 0%,100% { transform: scaleX(1) scaleY(1);} 50% { transform: scaleX(1.012) scaleY(0.992);} }
     @keyframes bellBreath { 0%,100% { transform: scale(1); } 50% { transform: scale(1.02);} }
     @keyframes eyeLook {
-      0% { transform: translateX(-6px); }
-      20% { transform: translateX(-6px); }
-      30% { transform: translateX(0); }
-      55% { transform: translateX(7px); }
-      70% { transform: translateX(7px); }
-      85% { transform: translateX(0); }
-      100% { transform: translateX(-6px); }
+      0% { transform: translate(-7px, -1px); }
+      18% { transform: translate(-7px, -1px); }
+      28% { transform: translate(0px, 0px); }
+      50% { transform: translate(8px, 1px); }
+      66% { transform: translate(8px, -1px); }
+      80% { transform: translate(0px, 1px); }
+      100% { transform: translate(-7px, -1px); }
     }
     @keyframes pupilDart {
-      0% { transform: translate(-3px, 0px); }
-      25% { transform: translate(3px, -1px); }
-      50% { transform: translate(5px, 1px); }
-      75% { transform: translate(-4px, -1px); }
-      100% { transform: translate(-3px, 0px); }
+      0% { transform: translate(-4px, -0.5px); }
+      22% { transform: translate(2px, -1.5px); }
+      48% { transform: translate(6px, 1px); }
+      70% { transform: translate(1px, 1.5px); }
+      100% { transform: translate(-4px, -0.5px); }
     }
-    /* A couple of quick blinks per cycle */
-    @keyframes eyeBlink {
-      0%,6%,14%,100% { transform: scaleY(1); }
-      7% { transform: scaleY(0.18); }
-      8% { transform: scaleY(1); }
-      12% { transform: scaleY(1); }
-      13% { transform: scaleY(0.14); }
-    }
+    /* New blink sequence using eyelids with partial blinks */
     @keyframes eyelidBlink {
-      0%, 6%, 14%, 60%, 100% { transform: scaleY(0); }
-      7% { transform: scaleY(1); }
-      8% { transform: scaleY(0); }
-      12% { transform: scaleY(0); }
-      13% { transform: scaleY(1); }
-      40% { transform: scaleY(0.55); }
+      0%, 14%, 22%, 44%, 100% { transform: scaleY(0); }
+      15% { transform: scaleY(1.05); }
+      16% { transform: scaleY(0); }
+      23% { transform: scaleY(0.35); }
+      24% { transform: scaleY(0); }
+      45% { transform: scaleY(1.1); }
+      46% { transform: scaleY(0); }
     }
     @keyframes auraRotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg);} }
     @keyframes wispDash { from { stroke-dashoffset: 320; } to { stroke-dashoffset: 0; } }
