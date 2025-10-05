@@ -118,12 +118,14 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Inject version string under PORTAL title; increments per commit via Git short SHA length
   try{
     const vEl=document.getElementById('portal-version');
+    const hv=document.getElementById('header-version');
     // Prefer window.__APP_VERSION__, then version.json (static), fallback to date string
     if(window.__APP_VERSION__){ if(vEl) vEl.textContent=window.__APP_VERSION__; }
     else {
       fetch('version.json', { cache: 'no-store' }).then(r=>r.ok?r.json():null).then(j=>{
-        if(j && vEl){ vEl.textContent = `${j.version} • ${j.date}`; }
-        else if(vEl){ vEl.textContent = 'v0.0.0 • '+(new Date()).toISOString().slice(0,10); }
+        const text = j ? `${j.version} • ${j.date}` : 'v0.0.0 • '+(new Date()).toISOString().slice(0,10);
+        if(vEl) vEl.textContent = text;
+        if(hv) hv.textContent = text;
       }).catch(()=>{ if(vEl) vEl.textContent='v0.0.0 • '+(new Date()).toISOString().slice(0,10); });
     }
   }catch(_){ }
