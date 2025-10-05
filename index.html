@@ -995,7 +995,7 @@
                        </g>
 
                        <!-- Living eye -->
-                       <g class="eye-group" transform="translate(80,156)">
+                       <g class="eye-group gaze" transform="translate(80,156)">
                          <!-- aura -->
                          <circle r="34" fill="url(#eyeAuraGrad)" class="aura-ring ar1" opacity="0.55"/>
                          <circle r="30" fill="url(#eyeAuraGrad)" class="aura-ring ar2" opacity="0.4"/>
@@ -1008,10 +1008,7 @@
                          <!-- pupil -->
                          <circle class="pupil" r="7" fill="#061018"/>
                          <!-- scan bar across the eye -->
-                         <rect class="scan" x="-1.5" y="-22" width="3" height="44" fill="url(#scanGrad)"/>
-                         <!-- eyelids -->
-                         <rect class="eyelid top-eyelid" x="-26" y="-18" width="52" height="16" rx="8"/>
-                         <rect class="eyelid bottom-eyelid" x="-26" y="2" width="52" height="16" rx="8"/>
+                        <rect class="scan" x="-1.5" y="-22" width="3" height="44" fill="url(#scanGrad)"/>
                        </g>
 
                       <!-- foreground orbits disabled (handled by bg-orbits) -->
@@ -1041,8 +1038,6 @@
                         <circle r="16" fill="url(#irisGrad)" class="eye-ball"/>
                         <circle class="pupil" r="7.2" fill="#061018"/>
                         <rect class="scan" x="-1.5" y="-22" width="3" height="44" fill="url(#scanGrad)"/>
-                        <rect class="eyelid top-eyelid" x="-26" y="-18" width="52" height="16" rx="8"/>
-                        <rect class="eyelid bottom-eyelid" x="-26" y="2" width="52" height="16" rx="8"/>
                       </g>
                       <!-- sound energy rings -->
                       <circle cx="80" cy="160" r="24" class="sound-ring"/>
