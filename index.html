@@ -708,7 +708,7 @@
     /* Stylized Bell (tool-bell) */
     .bell-svg { width: 140px; height: 180px; filter: drop-shadow(0 0 12px rgba(0,255,180,0.15)); }
     .bell-fill { fill: url(#bellFillGrad); }
-    .bell-outline { fill: none; stroke: url(#bellLineGrad); stroke-width: 3; }
+    .bell-outline { fill: none; stroke: url(#bellLineGrad); stroke-width: 6; }
     .bell-rim { fill: url(#bellRimGrad); }
     .bell-line { stroke: rgba(0,255,200,0.5); stroke-width: 1.2; fill: none; opacity: 0.6; }
     .vajra-fill { fill: url(#vajraGrad); }
@@ -821,28 +821,25 @@
                      <path class="vajra-line" d="M50 33 C60 38 100 38 110 33"/>
                      <!-- Thin stem -->
                      <rect x="76" y="52" width="8" height="22" fill="url(#bellLineGrad)" rx="1"/>
-                     <!-- Bell body: Tibetan hand bell profile (based on reference) -->
-                     <path class="bell-fill" d="M50 88
-                       C52 80 62 76 80 76
-                       C98 76 108 80 110 88
-                       C112 110 106 136 98 152
-                       C92 164 88 172 80 180
-                       C72 172 68 164 62 152
-                       C54 136 48 110 50 88 Z"/>
+                     <!-- Top rim (thick ring) -->
+                     <ellipse cx="80" cy="100" rx="38" ry="16" fill="none" stroke="url(#bellLineGrad)" stroke-width="10" opacity="0.95"/>
+                     <!-- Bell body fill (pointed bottom) -->
+                     <path class="bell-fill" d="M42 100
+                       C44 130 60 160 80 188
+                       C100 160 116 130 118 100
+                       C118 96 110 90 80 90
+                       C50 90 42 96 42 100 Z"/>
                      <!-- Ornament bands -->
-                     <path class="bell-line" d="M40 96 C60 92 100 92 120 96"/>
-                     <path class="bell-line" d="M36 108 C58 104 102 104 124 108"/>
-                     <!-- Rim and foot -->
-                     <ellipse class="bell-rim" cx="80" cy="182" rx="46" ry="7"/>
-                     <ellipse class="bell-rim" cx="80" cy="176" rx="42" ry="4.5"/>
+                     <path class="bell-line" d="M46 126 C64 122 96 122 114 126"/>
+                     <path class="bell-line" d="M44 140 C64 136 96 136 116 140"/>
+                     <!-- Foot (shadow rim hint) -->
+                     <ellipse class="bell-rim" cx="80" cy="184" rx="44" ry="6.5"/>
                      <!-- Outer neon outline for clarity of silhouette -->
-                     <path class="bell-outline" d="M50 88
-                       C52 80 62 76 80 76
-                       C98 76 108 80 110 88
-                       C112 110 106 136 98 152
-                       C92 164 88 172 80 180
-                       C72 172 68 164 62 152
-                       C54 136 48 110 50 88 Z"/>
+                     <path class="bell-outline" d="M42 100
+                       C44 130 60 160 80 188
+                       C100 160 116 130 118 100
+                       C118 96 110 90 80 90
+                       C50 90 42 96 42 100 Z"/>
                    </svg>
                  </div>
                 <div>
