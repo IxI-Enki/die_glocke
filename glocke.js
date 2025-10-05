@@ -79,14 +79,11 @@
     }
   }
   document.addEventListener('DOMContentLoaded',function(){
-    // Keep header scribbles only; remove tool scribbles and animations for a clean slate
+    // Header scribbles
     createScribbles('occult-layer');
-
-    // Cleanup any residual tool-layer elements
+    // Ensure tool occult layer is present but do not clear the bell SVG
     var toolOccult=document.getElementById('tool-occult');
-    if(toolOccult){ toolOccult.innerHTML=''; }
-    var bell=document.getElementById('tool-bell');
-    if(bell){ bell.innerHTML=''; }
+    if(toolOccult && toolOccult.children.length===0){ createScribbles('tool-occult'); }
 
     // Tools list toggle behavior
     var toolsList=document.getElementById('tools-list');
