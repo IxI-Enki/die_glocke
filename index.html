@@ -710,7 +710,7 @@
     .bell-fill { fill: url(#bellFillGrad); }
     .bell-outline { fill: none; stroke: url(#bellLineGrad); stroke-width: 6; }
     /* Bring the mascot to life */
-    #tool-bell .bell-entity { transform-box: fill-box; transform-origin: 50% 60%; animation: bellFloat 9s ease-in-out infinite, bellBreath 6.5s ease-in-out infinite; }
+    #tool-bell .bell-entity { transform-box: fill-box; transform-origin: 50% 60%; animation: bellFloat 9s ease-in-out infinite, bellBreath 6.5s ease-in-out infinite, bellSway 5.5s ease-in-out infinite, bellSquish 7.5s ease-in-out infinite; filter: drop-shadow(0 10px 24px rgba(0,255,157,0.1)) drop-shadow(0 0 24px rgba(0,212,255,0.08)); }
     #tool-bell .eye-group { transform-box: fill-box; transform-origin: center; }
     #tool-bell .eye-ball { transform-box: fill-box; transform-origin: center; animation: eyeBlink 7.2s ease-in-out infinite; }
     #tool-bell .pupil { animation: eyeLook 5.8s ease-in-out infinite, pupilDart 9s ease-in-out infinite; }
@@ -727,15 +727,29 @@
     #tool-bell .orbit.r { animation-duration: 12s; animation-direction: reverse; }
     #tool-bell .sigil { fill: rgba(0,255,157,0.9); }
     #tool-bell .scan { animation: scanMove 2.8s ease-in-out infinite; mix-blend-mode: screen; }
+    /* Comets orbiting */
+    #tool-bell .comet { transform-origin: 80px 156px; animation: cometSpin var(--spd,8s) linear infinite; }
+    #tool-bell .comet .head { fill: #00ffcf; filter: drop-shadow(0 0 8px rgba(0,255,200,0.8)); }
+    #tool-bell .comet .tail { stroke: url(#cometGrad); stroke-width: 2.2; stroke-linecap: round; fill: none; }
+    /* Clapper + rim wobble */
+    #tool-bell .clapper { transform-origin: 80px 176px; animation: clapperSwing 3.8s ease-in-out infinite; }
+    #tool-bell .ring { transform-origin: 80px 198px; animation: ringWobble 3.8s ease-in-out infinite; }
 
     @keyframes bellFloat {
       0%,100% { transform: translateY(0) rotate(0deg); }
       50% { transform: translateY(-6px) rotate(-0.4deg); }
     }
+    @keyframes bellSway { 0%,100% { transform: rotate(0deg);} 25% { transform: rotate(0.8deg);} 75% { transform: rotate(-0.8deg);} }
+    @keyframes bellSquish { 0%,100% { transform: scaleX(1) scaleY(1);} 50% { transform: scaleX(1.012) scaleY(0.992);} }
     @keyframes bellBreath { 0%,100% { transform: scale(1); } 50% { transform: scale(1.02);} }
     @keyframes eyeLook {
-      0%,100% { transform: translateX(-4px); }
-      50% { transform: translateX(5px); }
+      0% { transform: translateX(-6px); }
+      20% { transform: translateX(-6px); }
+      30% { transform: translateX(0); }
+      55% { transform: translateX(7px); }
+      70% { transform: translateX(7px); }
+      85% { transform: translateX(0); }
+      100% { transform: translateX(-6px); }
     }
     @keyframes pupilDart {
       0% { transform: translate(-3px, 0px); }
@@ -764,6 +778,9 @@
     @keyframes wispDash { from { stroke-dashoffset: 320; } to { stroke-dashoffset: 0; } }
     @keyframes orbitSpin { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
     @keyframes scanMove { 0% { transform: translateY(-14px);} 50% { transform: translateY(14px);} 100% { transform: translateY(-14px);} }
+    @keyframes cometSpin { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
+    @keyframes clapperSwing { 0%,100% { transform: rotate(-8deg);} 50% { transform: rotate(8deg);} }
+    @keyframes ringWobble { 0%,100% { transform: scaleX(1);} 50% { transform: scaleX(1.06);} }
     .bell-rim { fill: url(#bellRimGrad); }
     .bell-line { stroke: rgba(0,255,200,0.5); stroke-width: 1.2; fill: none; opacity: 0.6; }
     .vajra-fill { fill: url(#vajraGrad); }
@@ -892,6 +909,11 @@
                          <stop offset="50%" stop-color="rgba(0,212,255,0.9)"/>
                          <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
                        </linearGradient>
+                       <linearGradient id="cometGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                         <stop offset="0%" stop-color="rgba(0,255,200,0)"/>
+                         <stop offset="40%" stop-color="rgba(0,212,255,0.9)"/>
+                         <stop offset="100%" stop-color="rgba(0,255,157,0.0)"/>
+                       </linearGradient>
                        <filter id="bellOuterGlow" x="-30%" y="-30%" width="160%" height="160%">
                          <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
                          <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0  0 1 0 0 0.5  0 0 1 0 0.7  0 0 0 1 0" result="colored"/>
@@ -910,17 +932,21 @@
                      <g class="bell-entity">
                        <!-- Thin stem -->
                        <rect x="76" y="52" width="8" height="22" fill="url(#bellLineGrad)" rx="1"/>
-                      <!-- Bell body fill: narrow top, VERY wide flattened base -->
+                      <!-- Hyperspace haze behind bell -->
+                      <ellipse cx="80" cy="156" rx="62" ry="52" fill="url(#eyeAuraGrad)" opacity="0.2"/>
+                      <!-- Bell body fill: narrow top, bell-like wide base with gentle flatness -->
                       <path class="bell-fill" d="M80 90
-                        C 66 104, 50 126, 36 150
-                        C 30 170, 46 190, 80 194
-                        C 114 190, 130 170, 124 150
-                        C 110 126, 94 104, 80 90 Z"/>
+                        C 64 106, 48 128, 40 150
+                        C 36 168, 52 192, 80 198
+                        C 108 192, 124 168, 120 150
+                        C 112 128, 96 106, 80 90 Z"/>
                       <!-- Ornament bands (lower third, wider) -->
                       <path class="bell-line" d="M40 162 C62 158 98 158 120 162"/>
                       <path class="bell-line" d="M42 174 C64 170 96 170 118 174"/>
                       <!-- Foot (shadow rim hint) -->
-                      <ellipse class="bell-rim" cx="80" cy="194" rx="52" ry="8"/>
+                      <ellipse class="bell-rim" cx="80" cy="198" rx="56" ry="8"/>
+                      <!-- subtle animated rim wobble line -->
+                      <ellipse class="bell-rim ring" cx="80" cy="198" rx="48" ry="4" opacity="0.35"/>
                        <!-- Outer neon outline for clarity of silhouette -->
                        <path class="bell-outline" d="M80 90
                         C 66 104, 50 126, 36 150
@@ -935,12 +961,18 @@
                          C 110 126, 94 104, 80 90 Z" style="stroke-width:10; opacity:.35; filter:url(#bellOuterGlow)"/>
 
                        <!-- Plasma wisps inside the body -->
-                       <path class="wisp" d="M44 160 C 64 138 96 138 116 160"/>
-                       <path class="wisp w2" d="M48 170 C 70 150 90 150 112 170"/>
-                       <path class="wisp w3" d="M40 150 C 64 128 96 128 120 150"/>
+                      <path class="wisp" d="M36 162 C 58 140 102 140 124 162"/>
+                      <path class="wisp w2" d="M42 172 C 66 154 94 154 118 172"/>
+                      <path class="wisp w3" d="M34 152 C 60 132 100 132 126 152"/>
+
+                       <!-- Clapper -->
+                       <g class="clapper">
+                         <line x1="80" y1="176" x2="80" y2="186" stroke="url(#bellLineGrad)" stroke-width="2"/>
+                         <circle cx="80" cy="190" r="4" fill="url(#irisGrad)"/>
+                       </g>
 
                        <!-- Living eye -->
-                       <g class="eye-group" transform="translate(80,152)">
+                       <g class="eye-group" transform="translate(80,156)">
                          <!-- aura -->
                          <circle r="34" fill="url(#eyeAuraGrad)" class="aura-ring ar1" opacity="0.55"/>
                          <circle r="30" fill="url(#eyeAuraGrad)" class="aura-ring ar2" opacity="0.4"/>
@@ -953,18 +985,35 @@
                          <!-- pupil -->
                          <circle class="pupil" r="7" fill="#061018"/>
                          <!-- scan bar across the eye -->
-                         <rect class="scan" x="-1.5" y="-20" width="3" height="40" fill="url(#scanGrad)"/>
+                         <rect class="scan" x="-1.5" y="-22" width="3" height="44" fill="url(#scanGrad)"/>
                          <!-- eyelids -->
                          <rect class="eyelid top-eyelid" x="-26" y="-18" width="52" height="16" rx="8"/>
                          <rect class="eyelid bottom-eyelid" x="-26" y="2" width="52" height="16" rx="8"/>
                        </g>
 
                        <!-- Orbiting sigils around the eye -->
-                       <g class="orbit" style="transform-origin:80px 152px;">
-                         <circle class="sigil" cx="80" cy="128" r="2"/>
+                       <g class="orbit" style="transform-origin:80px 156px;">
+                         <circle class="sigil" cx="80" cy="124" r="2"/>
+                         <circle class="sigil" cx="106" cy="146" r="1.6"/>
+                         <rect class="sigil" x="60" y="138" width="2.8" height="2.8" rx="0.6"/>
                        </g>
-                       <g class="orbit r" style="transform-origin:80px 152px;">
-                         <rect class="sigil" x="79" y="118" width="3" height="3" rx="1"/>
+                       <g class="orbit r" style="transform-origin:80px 156px;">
+                         <polygon class="sigil" points="80,128 82,132 78,132"/>
+                         <circle class="sigil" cx="92" cy="132" r="1.6"/>
+                       </g>
+
+                       <!-- Trailing comets -->
+                       <g class="comet" style="--spd:7s;">
+                         <path class="tail" d="M80 156 L 112 140"/>
+                         <circle class="head" cx="114" cy="140" r="2.6"/>
+                       </g>
+                       <g class="comet" style="--spd:10s;">
+                         <path class="tail" d="M80 156 L 54 170"/>
+                         <circle class="head" cx="52" cy="170" r="2"/>
+                       </g>
+                       <g class="comet" style="--spd:12s;">
+                         <path class="tail" d="M80 156 L 96 182"/>
+                         <circle class="head" cx="98" cy="182" r="2.2"/>
                        </g>
                      </g>
                    </svg>
