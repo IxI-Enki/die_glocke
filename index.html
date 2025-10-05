@@ -738,6 +738,14 @@
     #tool-bell .variant { animation: variantCycle 16s linear infinite; }
     #tool-bell .variant-b { animation-delay: 8s; }
     .bg-orbits { opacity: 0.35; }
+    /* Evil eye flames and sound rings */
+    #tool-bell .flame { stroke: url(#flameGrad); stroke-width: 8; fill: none; filter: url(#flameNoise); opacity: 0.85; animation: flamePulse 2.6s ease-in-out infinite; }
+    #tool-bell .flame.f2 { stroke-width: 5; opacity: 0.55; animation-duration: 3.4s; }
+    #tool-bell .sound-ring { stroke: url(#bellLineGrad); stroke-width: 1.4; fill: none; opacity: 0.4; transform-box: fill-box; transform-origin: 50% 60%; animation: soundExpand 2.8s linear infinite; }
+    #tool-bell .sound-ring.s2 { animation-delay: .6s; }
+    #tool-bell .sound-ring.s3 { animation-delay: 1.2s; }
+    #tool-bell .runes { opacity: 0.35; mix-blend-mode: screen; transform-origin: 80px 156px; animation: runesSpin 20s linear infinite; }
+    #tool-bell .wander { animation: wander 6s ease-in-out infinite alternate; }
 
     @keyframes bellFloat {
       0%,100% { transform: translateY(0) rotate(0deg); }
@@ -780,6 +788,10 @@
     @keyframes clapperSwing { 0%,100% { transform: rotate(-8deg);} 50% { transform: rotate(8deg);} }
     @keyframes ringWobble { 0%,100% { transform: scaleX(1);} 50% { transform: scaleX(1.06);} }
     @keyframes variantCycle { 0%,45% { opacity: 1; } 50%,95% { opacity: 0; } 100% { opacity: 1; } }
+    @keyframes flamePulse { 0%,100% { stroke-width: 7; opacity: .8; } 50% { stroke-width: 10; opacity: 1; } }
+    @keyframes soundExpand { 0% { transform: scale(0.6); opacity: .45; } 100% { transform: scale(2.2); opacity: 0; } }
+    @keyframes runesSpin { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
+    @keyframes wander { from { transform: translate(-2px,-1px) scale(.9);} to { transform: translate(2px,1px) scale(1.1);} }
     .bell-rim { fill: url(#bellRimGrad); }
     .bell-line { stroke: rgba(0,255,200,0.5); stroke-width: 1.2; fill: none; opacity: 0.6; }
     .vajra-fill { fill: url(#vajraGrad); }
@@ -802,7 +814,7 @@
 </head>
 <body>
 
-  <!-- PORTAL HERO (DEFAULT VIEW) -->
+  <!-- PORTAL (DEFAULT VIEW) -->
   <div id="portal-hero" class="portal-hero">
     <div>
       <div class="portal-title">PORTAL</div>
@@ -810,7 +822,6 @@
     </div>
   </div>
 
-  
   <div id="login-screen" class="login-screen hidden" aria-hidden="true">
     <div class="login-card">
       <div class="login-title">Secure Access</div>
@@ -908,6 +919,22 @@
                          <stop offset="50%" stop-color="rgba(0,212,255,0.9)"/>
                          <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
                        </linearGradient>
+                       <radialGradient id="flameGrad" cx="50%" cy="50%" r="60%">
+                         <stop offset="0%" stop-color="#ff8c00"/>
+                         <stop offset="40%" stop-color="#ff3b00"/>
+                         <stop offset="75%" stop-color="rgba(255,120,0,0.6)"/>
+                         <stop offset="100%" stop-color="rgba(255,120,0,0)"/>
+                       </radialGradient>
+                       <radialGradient id="voidGrad" cx="50%" cy="50%" r="70%">
+                         <stop offset="0%" stop-color="#041018"/>
+                         <stop offset="45%" stop-color="#071c28"/>
+                         <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+                       </radialGradient>
+                       <filter id="flameNoise" x="-50%" y="-50%" width="200%" height="200%">
+                         <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" seed="2" result="noise"/>
+                         <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G"/>
+                         <animate xlink:href="#flameNoise feTurbulence" attributeName="baseFrequency" dur="2.4s" values="0.012;0.02;0.014" repeatCount="indefinite"/>
+                       </filter>
                        <linearGradient id="cometGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                          <stop offset="0%" stop-color="rgba(0,255,200,0)"/>
                          <stop offset="40%" stop-color="rgba(0,212,255,0.9)"/>
@@ -929,7 +956,7 @@
                      <path class="vajra-fill" d="M80 12 C76 12 70 18 70 24 L70 36 C70 39 67 42 64 42 C61 42 58 39 58 36 L58 24 C58 18 52 12 48 12 C50 22 50 30 50 33 C50 37 52.5 41 57 44 C60 46 62 49 62 52 L98 52 C98 49 100 46 103 44 C107.5 41 110 37 110 33 C110 30 110 22 112 12 C108 12 102 18 102 24 L102 36 C102 39 99 42 96 42 C93 42 90 39 90 36 L90 24 C90 18 84 12 80 12 Z"/>
                      <path class="vajra-line" d="M50 33 C60 38 100 38 110 33"/>
                     <!-- Background orbits further out (behind the bell) -->
-                    <g class="bg-orbits" transform="translate(0,0) scale(1.6)">
+                    <g class="bg-orbits" transform="translate(0,0) scale(1.9)">
                       <g class="orbit" style="transform-origin:80px 156px;">
                         <circle class="sigil" cx="80" cy="124" r="1.8"/>
                         <circle class="sigil" cx="108" cy="150" r="1.2"/>
@@ -1017,6 +1044,10 @@
                       <path class="bell-fill" d="M80 88 C58 106 48 134 48 156 C48 176 62 196 80 198 C98 196 112 176 112 156 C112 134 102 106 80 88 Z"/>
                       <path class="bell-outline" d="M80 88 C58 106 48 134 48 156 C48 176 62 196 80 198 C98 196 112 176 112 156 C112 134 102 106 80 88 Z"/>
                       <ellipse class="bell-rim" cx="80" cy="198" rx="54" ry="7"/>
+                      <!-- void and flame around the eye -->
+                      <circle cx="80" cy="156" r="38" fill="url(#voidGrad)" opacity="0.65"/>
+                      <circle cx="80" cy="156" r="28" class="flame"/>
+                      <circle cx="80" cy="156" r="22" class="flame f2"/>
                       <!-- eye centered higher -->
                       <g class="eye-group" transform="translate(80,148)">
                         <circle r="32" fill="url(#eyeAuraGrad)" class="aura-ring ar1" opacity="0.6"/>
@@ -1027,6 +1058,16 @@
                         <rect class="eyelid top-eyelid" x="-26" y="-18" width="52" height="16" rx="8"/>
                         <rect class="eyelid bottom-eyelid" x="-26" y="2" width="52" height="16" rx="8"/>
                       </g>
+                      <!-- sound energy rings -->
+                      <circle cx="80" cy="160" r="24" class="sound-ring"/>
+                      <circle cx="80" cy="160" r="24" class="sound-ring s2"/>
+                      <circle cx="80" cy="160" r="24" class="sound-ring s3"/>
+                      <!-- occult techno runes -->
+                      <g class="runes">
+                        <circle cx="40" cy="140" r="1.4" fill="#00ff9d"/>
+                        <rect x="118" y="160" width="2.6" height="2.6" rx="0.4" fill="#00d4ff"/>
+                        <polygon points="100,132 102,136 98,136" fill="#4d7cff"/>
+                      </g>
                       <!-- extra wisps -->
                       <path class="wisp" d="M40 164 C60 144 100 144 120 164"/>
                       <path class="wisp w2" d="M42 174 C66 156 94 156 118 174"/>
@@ -1035,6 +1076,9 @@
                         <path class="tail" d="M80 156 L 120 150"/>
                         <circle class="head" cx="122" cy="150" r="2.4"/>
                       </g>
+                      <!-- wandering sparks -->
+                      <circle class="head wander" cx="56" cy="170" r="1.6" style="animation-duration:5.5s"/>
+                      <circle class="head wander" cx="104" cy="142" r="1.4" style="animation-duration:4.6s"/>
                     </g>
                        <g class="comet" style="--spd:10s;">
                          <path class="tail" d="M80 156 L 54 170"/>
@@ -1292,6 +1336,23 @@
   <script src="glocke.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
   <script src="app.js"></script>
+  <script>
+    (async () => {
+      try {
+        const res = await fetch('version.json', { cache: 'no-store' });
+        const data = await res.json();
+        const ver = data?.version || '';
+        const date = data?.date ? ` • ${data.date}` : '';
+        const portalEl = document.getElementById('portal-version');
+        if (portalEl) portalEl.textContent = ver;
+        const headerEl = document.getElementById('header-version');
+        if (headerEl) headerEl.textContent = `${ver}${date}`;
+        window.__APP_VERSION__ = ver;
+      } catch (err) {
+        // ignore: version display is non-critical
+      }
+    })();
+  </script>
   
 </body>
 </html>
