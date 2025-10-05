@@ -710,18 +710,32 @@
     .bell-fill { fill: url(#bellFillGrad); }
     .bell-outline { fill: none; stroke: url(#bellLineGrad); stroke-width: 6; }
     /* Bring the mascot to life */
-    #tool-bell .bell-entity { transform-box: fill-box; transform-origin: 50% 60%; animation: bellFloat 9s ease-in-out infinite; }
+    #tool-bell .bell-entity { transform-box: fill-box; transform-origin: 50% 60%; animation: bellFloat 9s ease-in-out infinite, bellBreath 6.5s ease-in-out infinite; }
     #tool-bell .eye-group { transform-box: fill-box; transform-origin: center; }
     #tool-bell .eye-ball { transform-box: fill-box; transform-origin: center; animation: eyeBlink 7.2s ease-in-out infinite; }
-    #tool-bell .pupil { animation: eyeLook 5.8s ease-in-out infinite; }
+    #tool-bell .pupil { animation: eyeLook 5.8s ease-in-out infinite, pupilDart 9s ease-in-out infinite; }
+    #tool-bell .aura-ring { mix-blend-mode: screen; filter: blur(6px); }
+    #tool-bell .ar1 { animation: auraRotate 10s linear infinite; }
+    #tool-bell .ar2 { animation: auraRotate 14s linear infinite reverse; opacity: 0.6; }
+    #tool-bell .eyelid { fill: #0a0e14; opacity: 0.96; }
+    #tool-bell .top-eyelid { transform-origin: 0% 0%; animation: eyelidBlink 7.2s ease-in-out infinite; }
+    #tool-bell .bottom-eyelid { transform-origin: 0% 100%; animation: eyelidBlink 7.2s ease-in-out infinite; animation-delay: .02s; }
 
     @keyframes bellFloat {
       0%,100% { transform: translateY(0) rotate(0deg); }
       50% { transform: translateY(-6px) rotate(-0.4deg); }
     }
+    @keyframes bellBreath { 0%,100% { transform: scale(1); } 50% { transform: scale(1.02);} }
     @keyframes eyeLook {
       0%,100% { transform: translateX(-4px); }
       50% { transform: translateX(5px); }
+    }
+    @keyframes pupilDart {
+      0% { transform: translate(-3px, 0px); }
+      25% { transform: translate(3px, -1px); }
+      50% { transform: translate(5px, 1px); }
+      75% { transform: translate(-4px, -1px); }
+      100% { transform: translate(-3px, 0px); }
     }
     /* A couple of quick blinks per cycle */
     @keyframes eyeBlink {
@@ -731,6 +745,15 @@
       12% { transform: scaleY(1); }
       13% { transform: scaleY(0.14); }
     }
+    @keyframes eyelidBlink {
+      0%, 6%, 14%, 60%, 100% { transform: scaleY(0); }
+      7% { transform: scaleY(1); }
+      8% { transform: scaleY(0); }
+      12% { transform: scaleY(0); }
+      13% { transform: scaleY(1); }
+      40% { transform: scaleY(0.55); }
+    }
+    @keyframes auraRotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg);} }
     .bell-rim { fill: url(#bellRimGrad); }
     .bell-line { stroke: rgba(0,255,200,0.5); stroke-width: 1.2; fill: none; opacity: 0.6; }
     .vajra-fill { fill: url(#vajraGrad); }
@@ -843,6 +866,22 @@
                          <stop offset="70%" stop-color="#00d4ff"/>
                          <stop offset="100%" stop-color="#00ff9d"/>
                        </radialGradient>
+                       <radialGradient id="eyeAuraGrad" cx="50%" cy="50%" r="65%">
+                         <stop offset="0%" stop-color="rgba(255,140,0,0.9)"/>
+                         <stop offset="40%" stop-color="rgba(0,212,255,0.7)"/>
+                         <stop offset="100%" stop-color="rgba(0,255,157,0.0)"/>
+                       </radialGradient>
+                       <filter id="bellOuterGlow" x="-30%" y="-30%" width="160%" height="160%">
+                         <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+                         <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0  0 1 0 0 0.5  0 0 1 0 0.7  0 0 0 1 0" result="colored"/>
+                         <feMerge>
+                           <feMergeNode in="colored"/>
+                           <feMergeNode in="SourceGraphic"/>
+                         </feMerge>
+                       </filter>
+                       <filter id="eyeGlow" x="-50%" y="-50%" width="200%" height="200%">
+                         <feGaussianBlur stdDeviation="4"/>
+                       </filter>
                      </defs>
                      <!-- Vajra crown (stylized) -->
                      <path class="vajra-fill" d="M80 12 C76 12 70 18 70 24 L70 36 C70 39 67 42 64 42 C61 42 58 39 58 36 L58 24 C58 18 52 12 48 12 C50 22 50 30 50 33 C50 37 52.5 41 57 44 C60 46 62 49 62 52 L98 52 C98 49 100 46 103 44 C107.5 41 110 37 110 33 C110 30 110 22 112 12 C108 12 102 18 102 24 L102 36 C102 39 99 42 96 42 C93 42 90 39 90 36 L90 24 C90 18 84 12 80 12 Z"/>
@@ -861,23 +900,35 @@
                       <path class="bell-line" d="M42 174 C64 170 96 170 118 174"/>
                       <!-- Foot (shadow rim hint) -->
                       <ellipse class="bell-rim" cx="80" cy="194" rx="52" ry="8"/>
-                      <!-- Outer neon outline for clarity of silhouette -->
-                      <path class="bell-outline" d="M80 90
+                       <!-- Outer neon outline for clarity of silhouette -->
+                       <path class="bell-outline" d="M80 90
                         C 66 104, 50 126, 36 150
                         C 30 170, 46 190, 80 194
                         C 114 190, 130 170, 124 150
-                        C 110 126, 94 104, 80 90 Z"/>
+                         C 110 126, 94 104, 80 90 Z"/>
+                       <!-- Soft outer glow -->
+                       <path class="bell-outline" d="M80 90
+                         C 66 104, 50 126, 36 150
+                         C 30 170, 46 190, 80 194
+                         C 114 190, 130 170, 124 150
+                         C 110 126, 94 104, 80 90 Z" style="stroke-width:10; opacity:.35; filter:url(#bellOuterGlow)"/>
 
                        <!-- Living eye -->
                        <g class="eye-group" transform="translate(80,152)">
+                         <!-- aura -->
+                         <circle r="34" fill="url(#eyeAuraGrad)" class="aura-ring ar1" opacity="0.55"/>
+                         <circle r="30" fill="url(#eyeAuraGrad)" class="aura-ring ar2" opacity="0.4"/>
                          <!-- glow ring -->
-                         <circle r="26" fill="url(#irisGrad)" opacity="0.9" class="eye-ball"/>
+                         <circle r="26" fill="url(#irisGrad)" opacity="0.9" class="eye-ball" filter="url(#eyeGlow)"/>
                          <!-- sclera -->
                          <ellipse rx="22" ry="16" fill="#e6f7ff" opacity="0.9" class="eye-ball"/>
                          <!-- iris -->
                          <ellipse rx="14" ry="12" fill="url(#irisGrad)" class="eye-ball"/>
                          <!-- pupil -->
                          <circle class="pupil" r="7" fill="#061018"/>
+                         <!-- eyelids -->
+                         <rect class="eyelid top-eyelid" x="-26" y="-18" width="52" height="16" rx="8"/>
+                         <rect class="eyelid bottom-eyelid" x="-26" y="2" width="52" height="16" rx="8"/>
                        </g>
                      </g>
                    </svg>
