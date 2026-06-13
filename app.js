@@ -161,44 +161,27 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     const promptText=await fetchGlockeMd();
 
-    const serverNameSafe=svc.toLowerCase().replace(/[^a-z0-9_-]+/g,'-');
-    const serverPyName=`${serverNameSafe}_server.py`;
+    // New (optional) modern controls — read defensively so the form works
+    // whether or not the markup is present yet.
+    const val=(id,def)=>{ const el=document.getElementById(id); return el?el.value:def; };
+    const chk=(id,def)=>{ const el=document.getElementById(id); return el?el.checked:def; };
 
-    const requirements=(deps?deps.split(/\s+/).join('\n'):'mcp[cli]>=1.2.0\nhttpx').trim();
+    const config={
+      svc, desc, author, category, tags, license,
+      apis, tools, auth, docker, output, adv, deps, sysdeps, envs, promptText,
+      transport: val('select-transport','stdio'),
+      httpPort: val('input-http-port','8000'),
+      annotations:{
+        readOnly: chk('check-ann-readonly', true),
+        idempotent: chk('check-ann-idempotent', true),
+        openWorld: chk('check-ann-openworld', true)
+      }
+    };
+    config.output=Object.assign({}, output, { structured: chk('check-structured-output', false) });
 
-    const dockerfile=`FROM ${docker.base}\nWORKDIR ${docker.workdir}\nENV PYTHONUNBUFFERED=1\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY ${serverPyName} .\nRUN useradd -m -u ${docker.uid||'1000'} ${docker.uname||'mcpuser'} \\n && chown -R ${docker.uname||'mcpuser'}:${docker.uname||'mcpuser'} ${docker.workdir}\nUSER ${docker.uname||'mcpuser'}\nCMD [\"python\", \"${serverPyName}\"]\n`;
-
-    const pyTools=tools.map(t=>{
-      const params=(t.params||'').split(',').map(s=>s.trim()).filter(Boolean);
-      const sig=params.map(p=>`${p}: str = ${adv.emptyDefaults?'\"\"':'""'}`).join(', ');
-      const doc=(t.desc||'Tool').replace(/\n/g, adv.oneLine?' ':'\n').replace(/\"/g,'\\\"');
-      return `@mcp.tool()\nasync def ${t.name||'tool'}(${sig}):\n    \"\"\"${doc}\"\"\"\n    try:\n        return f\"${output.emojis.ok||'✅'} ${t.name||'tool'} executed\"\n    except Exception as e:\n        return f\"${output.emojis.err||'❌'} Error: {str(e)}\"\n`;
-    }).join('\n');
-
-    const secretLine=(auth.embed&&auth.secret)?`\nAPI_TOKEN = os.environ.get(\"${auth.secret.toUpperCase()}\", \"\")`:'';
-    const healthTool=adv.hc?`\n@mcp.tool()\nasync def health():\n    \"\"\"Simple health check tool\"\"\"\n    return \"${output.emojis.ok||'✅'} ok\"\n`:'';
-    const metricsTool=adv.metrics?`\n@mcp.tool()\nasync def metrics():\n    \"\"\"Simple metrics tool\"\"\"\n    return \"${output.emojis.info||'ℹ️'} metrics: none\"\n`:'';
-
-    const serverPy=`#!/usr/bin/env python3\n\n\"\"\"${svc} MCP Server - ${desc}\"\"\"\nimport os, sys, logging, httpx\nfrom datetime import datetime, timezone\nfrom mcp.server.fastmcp import FastMCP\nlogging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', stream=sys.stderr)\nlogger = logging.getLogger(\"${serverNameSafe}-server\")\nmcp = FastMCP(\"${svc}\")${secretLine}\n${pyTools||''}${healthTool}${metricsTool}\nif __name__ == \"__main__\":\n    logger.info(\"Starting ${svc} MCP server...\")\n    try:\n        mcp.run(transport='stdio')\n    except Exception as e:\n        logger.error(f\"Server error: {e}\", exc_info=True)\n        sys.exit(1)\n`;
-
-    const claudeMd=`# CLAUDE.md\n\nFollow MCP generation rules from GLOCKE.md.\n- No @mcp.prompt decorators\n- No prompt param to FastMCP()\n- Single-line docstrings\n- Empty string defaults for params\n- Return strings; log to stderr\n- Docker non-root user\n`;
-    const installMd=`# INSTALLATION\n\n1. Save files locally\n2. docker build -t ${serverNameSafe}-mcp-server .\n3. Optionally set secrets via Docker Desktop (mcp secrets)\n4. Configure catalog/registry (see YAML files if included)\n5. Run via MCP Gateway (stdio)\n`;
-    const catalogYaml=`version: 2\nname: custom\ndisplayName: Custom MCP Servers\nregistry:\n  ${serverNameSafe}:\n    description: \"${desc}\"\n    title: \"${svc}\"\n    type: server\n    dateAdded: \"${new Date().toISOString()}\"\n    image: ${serverNameSafe}-mcp-server:latest\n    ref: \"\"\n    readme: \"\"\n    toolsUrl: \"\"\n    source: \"\"\n    upstream: \"\"\n    icon: \"\"\n    tools:${tools.map(t=>`\n      - name: ${t.name||'tool'}`).join('')}\n`;
-    const registryYaml=`registry:\n  ${serverNameSafe}:\n    ref: \"\"\n`;
-    const readmeTxt=`Create the files listed and build the Docker image. See instructions in GLOCKE.md. Author: ${author}`;
-    const readme=`# ${svc} MCP Server\n\n${desc||''}\n\n## Author\n${author}\n\n## Category\n${category}\n\n## Tools\n${tools.map(t=>`- ${t.name}: ${t.desc}`).join('\n')}\n\n## APIs\n${apis.map(a=>`- ${a.name} (${a.url})`).join('\n')}\n`;
-
-    const files=[
-      {name:'Dockerfile', content:dockerfile},
-      {name:'requirements.txt', content:requirements+'\n'},
-      {name:serverPyName, content:serverPy},
-      {name:'README.md', content:readme},
-      {name:'readme.txt', content:readmeTxt+'\n'},
-      {name:'CLAUDE.md', content:claudeMd}
-    ];
-    if(promptText){ files.push({name:'GLOCKE.md', content:promptText}); }
-    if(output.includeInstall){ files.push({name:'INSTALL.md', content:installMd}); }
-    if(output.includeCatalog){ files.push({name:'catalog.yaml', content:catalogYaml}); files.push({name:'registry.yaml', content:registryYaml}); }
+    const built=window.GlockeGenerator.buildServerFiles(config);
+    const serverNameSafe=built.serverNameSafe;
+    const files=built.files;
 
     const modal=document.getElementById('generator-modal');
     const content=document.getElementById('modal-content');
