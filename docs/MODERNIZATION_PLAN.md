@@ -29,12 +29,14 @@ Generator-Logik aus `app.js` (DOM-gekoppelt) in **`generator.js`** extrahieren:
 
 ## Phasen
 
-- [ ] **A — Login raus.** `index.html`: `portal-hero`/`login-screen`/`authSink` entfernen, `app-root` direkt sichtbar. `app.js`: Login-/SHA-/Obfuscation-/Keystroke-Funktionen entfernen, Init bereinigen. Design bleibt (Header/Logo/Generator unverändert). Test: Seite lädt direkt in Generator.
-- [ ] **B1 — `generator.js` extrahieren.** Pure Build-Logik, dual-export. `app.js` ruft sie. Verhalten identisch zu vorher (Regressionsschutz).
-- [ ] **B2 — Modernisieren.** Transport-Option (stdio/streamable-http/sse); Tool-Annotations; moderner Dockerfile (HEALTHCHECK bei HTTP, OCI-Labels, pin); `pyproject.toml`; `.dockerignore` + `.gitignore`; deps bump; structured-output-Option; Context-Logging optional.
-- [ ] **C — Tests.** `tests/` mit Node-Runner: Datei-Set + Struktur asserten; generierte `*_server.py` → `py_compile` + Import gegen `mcp`; Dockerfile/YAML-Validierung; alte vs. neue Option-Matrix.
-- [ ] **D — Docs.** `GLOCKE.md`/`TEMPLATES.md`/`README.md` an neuen Output angleichen; ins Repo holen (GLOCKE.md fehlt im Repo → `fetchGlockeMd` robust machen).
-- [ ] **E — Verify+Commit.** Browser-Preview: generieren, Modal, ZIP. Alle Tests grün. Push (Retry-Logik).
+- [x] **A — Login raus.** Portal/Login/authSink-Markup + alle Login-JS-Funktionen entfernt, `app-root` direkt sichtbar, verwaiste show/hide entfernt. Browser-verifiziert. (Commit `b00c733`)
+- [x] **B1 — `generator.js` extrahiert.** Pure `buildServerFiles(config)`, dual-export; `app.js` sammelt nur DOM → config. (Commit Teil von B)
+- [x] **B2 — Modernisiert.** Transport stdio/streamable-http/sse; Tool-Annotations; moderner Dockerfile (HEALTHCHECK/EXPOSE bei HTTP, OCI-Labels, apt/apk, non-root); `pyproject.toml`; `.dockerignore`+`.gitignore`; deps-Pin >=1.12.0; structured-output; UI-Controls ergänzt. (Commits B-core + UI)
+- [x] **C — Tests.** `tests/run-tests.js`: 17 Checks (Struktur + echtes `py_compile` + Import gegen `mcp` mit `list_tools()`). Alle grün.
+- [x] **D — Docs.** Repo-`README.md` neu; aktuelle `GLOCKE.md` ins Repo (fetchGlockeMd findet sie same-dir → Embed auf Pages); `version.json` → v0.1.0.
+- [ ] **E — Verify+Commit+Push.** Browser-Preview ok; Push mit Retry-Logik (Netz).
+
+> Offen/Notiz: tote Login-CSS-Regeln (`.portal-hero`, `.login-*`) bleiben im `<style>` (harmlos, kein Design-Effekt); Cleanup optional. Parent `00_Die_Glocke/` (nicht im Repo) behält alte GLOCKE.md/TEMPLATES.md.
 
 ## Risiken / Vorsicht (User AFK)
 
