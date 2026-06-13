@@ -1155,8 +1155,9 @@
               <h2 class="section-title">Docker</h2>
               <label class="mcp-label" for="select-base-image">Base Image</label>
               <select id="select-base-image" class="mcp-input">
-                <option>python:3.11-slim</option>
                 <option>python:3.12-slim</option>
+                <option>python:3.13-slim</option>
+                <option>python:3.11-slim</option>
                 <option>alpine:latest</option>
               </select>
 
@@ -1178,6 +1179,16 @@
 
             <div class="mcp-section">
               <h2 class="section-title">Output</h2>
+              <label class="mcp-label" for="select-transport">Transport</label>
+              <select id="select-transport" class="mcp-input">
+                <option value="stdio">stdio (Docker Gateway / desktop)</option>
+                <option value="streamable-http">streamable-http (remote)</option>
+                <option value="sse">sse (legacy remote)</option>
+              </select>
+
+              <label class="mcp-label" for="input-http-port">HTTP Port</label>
+              <input id="input-http-port" class="mcp-input" type="text" value="8000" />
+
               <label class="mcp-label" for="select-output-format">Format Style</label>
               <select id="select-output-format" class="mcp-input">
                 <option>Emoji + Text</option>
@@ -1245,12 +1256,19 @@
               <div style="margin-top:0.5rem;"></div>
               <label><input type="checkbox" id="check-one-line-docstrings" checked /> Enforce single-line docstrings</label>
               <label><input type="checkbox" id="check-empty-defaults" checked /> Force empty string defaults</label>
+
+              <div style="margin-top:0.5rem;"></div>
+              <label class="mcp-label">Tool Annotations</label>
+              <label><input type="checkbox" id="check-ann-readonly" checked /> readOnlyHint</label>
+              <label><input type="checkbox" id="check-ann-idempotent" checked /> idempotentHint</label>
+              <label><input type="checkbox" id="check-ann-openworld" checked /> openWorldHint</label>
+              <label><input type="checkbox" id="check-structured-output" /> Structured output</label>
             </div>
 
             <div class="mcp-section">
               <h2 class="section-title">Dependencies</h2>
               <label class="mcp-label" for="input-dependencies">Python Dependencies</label>
-              <textarea id="input-dependencies" class="mcp-input" rows="3">mcp[cli]>=1.2.0 httpx</textarea>
+              <textarea id="input-dependencies" class="mcp-input" rows="3">mcp[cli]>=1.12.0</textarea>
 
               <label><input type="checkbox" id="check-auto-deps" /> Auto-detect Dependencies</label>
 
