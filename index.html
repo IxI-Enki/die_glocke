@@ -800,35 +800,8 @@
 </head>
 <body>
 
-  <!-- PORTAL (DEFAULT VIEW) -->
-  <div id="portal-hero" class="portal-hero">
-    <div>
-      <div class="portal-title">PORTAL</div>
-      <div id="portal-version" class="portal-version">v0.0.0</div>
-    </div>
-  </div>
-
-  <div id="login-screen" class="login-screen hidden" aria-hidden="true">
-    <div class="login-card">
-      <div class="login-title">Secure Access</div>
-      <form id="login-form" method="post" action="." target="authSink" autocomplete="on" name="portal-login">
-      <label class="mcp-label" for="login-username">Username</label>
-        <input id="login-username" name="username" class="mcp-input" type="text" autocomplete="username" placeholder="Enter username" />
-
-      <label class="mcp-label" for="login-password" style="margin-top:0.5rem;">Password</label>
-        <input id="login-password" name="password" class="mcp-input" type="password" autocomplete="current-password" placeholder="Enter password" />
-
-      <div class="login-actions">
-          <button id="btn-login" class="mcp-btn" type="submit">Login</button>
-      </div>
-        <div id="login-message" class="login-hint"></div>
-      </form>
-    </div>
-  </div>
-  <iframe name="authSink" class="hidden" aria-hidden="true"></iframe>
-
-  <!-- APP ROOT (HIDDEN UNTIL LOGIN) -->
-  <div id="app-root" class="hidden" aria-hidden="true">
+  <!-- APP ROOT -->
+  <div id="app-root">
     <header class="mcp-header">
       <div class="logo-container">
         <div class="portal-logo">
