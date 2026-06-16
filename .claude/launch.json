@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "glocke",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8401", "--directory", "D:/_Repositories/00_Die_Glocke/die_glocke"],
+      "port": 8401
+    }
+  ]
+}
