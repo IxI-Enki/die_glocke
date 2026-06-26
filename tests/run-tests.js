@@ -187,10 +187,168 @@ if (!pythonAvailable()) {
   });
 }
 
-// --- summary ---------------------------------------------------------------
+// --- DokuWiki Plugin Wizard tests ------------------------------------------
 
-console.log('\n' + passed + ' passed, ' + failures.length + ' failed');
-if (failures.length) {
-  failures.forEach(f => console.log('FAIL: ' + f.name + ' — ' + (f.e && f.e.message)));
-  process.exit(1);
+const {
+  buildPluginFiles,
+  sanitizeBase,
+  phpIdent,
+  normalizeConfig
+} = require('../dokuwiki-generator.js');
+const LlmConnector = require('../llm-connector.js');
+
+function dwFilemap(files) {
+  const m = {};
+  files.forEach(f => { m[f.name] = f.content; });
+  return m;
 }
+
+const dwBaseCfg = {
+  plugin_base: 'weather_box',
+  plugin_name: 'Weather Box',
+  author: 'Jan Ritt',
+  email: 'jan@example.com',
+  url: 'https://example.com',
+  desc: 'Shows weather info',
+  plugin_type: 'syntax',
+  complexity: 'advanced',
+  assets: { css: true, js: true, conf: true, lang: true }
+};
+
+console.log('\nDokuWikiGenerator scaffold tests');
+
+test('DokuWikiGenerator module loads', () => {
+  assert(typeof buildPluginFiles === 'function');
+});
+
+test('syntax scaffold has required methods and guards', () => {
+  const m = dwFilemap(buildPluginFiles(dwBaseCfg));
+  const php = m['syntax.php'];
+  assert(php, 'missing syntax.php');
+  assert(/if\s*\(\s*!defined\s*\(\s*'DOKU_INC'\s*\)\s*\)\s*die\s*\(\s*\)\s*;/.test(php), 'DOKU_INC guard');
+  assert(/extends\s+DokuWiki_Syntax_Plugin/.test(php));
+  assert(/function\s+getType\s*\(/.test(php));
+  assert(/function\s+getSort\s*\(/.test(php));
+  assert(/function\s+connectTo\s*\(/.test(php));
+  assert(/function\s+handle\s*\(/.test(php));
+  assert(/function\s+render\s*\(/.test(php));
+  const info = m['plugin.info.txt'];
+  assert(/base\s+weather_box/.test(info));
+  assert(/author\s+Jan Ritt/.test(info));
+  assert(/email\s+jan@example.com/.test(info));
+  assert(/name\s+Weather Box/.test(info));
+  assert(/desc\s+Shows weather info/.test(info));
+  assert(/url\s+https:\/\/example.com/.test(info));
+  assert(/level\s+advanced/.test(info));
+});
+
+test('action scaffold uses DokuWiki_Action_Plugin', () => {
+  const cfg = Object.assign({}, dwBaseCfg, { plugin_type: 'action' });
+  const php = dwFilemap(buildPluginFiles(cfg))['action.php'];
+  assert(/extends\s+DokuWiki_Action_Plugin/.test(php));
+  assert(/function\s+register\s*\(/.test(php));
+  assert(/if\s*\(\s*!defined\s*\(\s*'DOKU_INC'\s*\)\s*\)\s*die\s*\(\s*\)\s*;/.test(php));
+});
+
+test('admin scaffold uses DokuWiki_Admin_Plugin', () => {
+  const cfg = Object.assign({}, dwBaseCfg, { plugin_type: 'admin' });
+  const php = dwFilemap(buildPluginFiles(cfg))['admin.php'];
+  assert(/extends\s+DokuWiki_Admin_Plugin/.test(php));
+  assert(/function\s+getMenuSort\s*\(/.test(php));
+  assert(/function\s+forAdminOnly\s*\(/.test(php));
+  assert(/function\s+handle\s*\(/.test(php));
+  assert(/function\s+html\s*\(/.test(php));
+  assert(/if\s*\(\s*!defined\s*\(\s*'DOKU_INC'\s*\)\s*\)\s*die\s*\(\s*\)\s*;/.test(php));
+});
+
+test('helper scaffold uses DokuWiki_Helper_Plugin', () => {
+  const cfg = Object.assign({}, dwBaseCfg, { plugin_type: 'helper' });
+  const php = dwFilemap(buildPluginFiles(cfg))['helper.php'];
+  assert(/extends\s+DokuWiki_Helper_Plugin/.test(php));
+  assert(/function\s+getMethods\s*\(/.test(php));
+  assert(/function\s+getData\s*\(/.test(php));
+  assert(/if\s*\(\s*!defined\s*\(\s*'DOKU_INC'\s*\)\s*\)\s*die\s*\(\s*\)\s*;/.test(php));
+});
+
+test('asset toggles on include expected files', () => {
+  const cfg = Object.assign({}, dwBaseCfg, {
+    complexity: 'advanced',
+    assets: { css: true, js: true, conf: true, lang: true }
+  });
+  const m = dwFilemap(buildPluginFiles(cfg));
+  ['style/all.css', 'script.js', 'conf/default.php', 'conf/metadata.php', 'lang/en/lang.php', 'lang/de/lang.php']
+    .forEach(n => assert(m[n] !== undefined, 'missing ' + n));
+});
+
+test('asset toggles off omit optional files', () => {
+  const cfg = Object.assign({}, dwBaseCfg, {
+    assets: { css: false, js: false, conf: false, lang: false }
+  });
+  const m = dwFilemap(buildPluginFiles(cfg));
+  ['style/all.css', 'script.js', 'conf/default.php', 'conf/metadata.php', 'lang/en/lang.php', 'lang/de/lang.php']
+    .forEach(n => assert(m[n] === undefined, 'should omit ' + n));
+});
+
+test('identifier sanitization for non-ASCII and reserved tokens', () => {
+  const cfg = {
+    plugin_base: 'Météo Café',
+    plugin_name: 'class',
+    author: 'Author',
+    email: 'a@b.c',
+    url: 'https://x',
+    desc: 'd',
+    plugin_type: 'syntax',
+    complexity: 'basic',
+    assets: { css: false, js: false, conf: false, lang: false }
+  };
+  const norm = normalizeConfig(cfg);
+  assert.strictEqual(norm.plugin_base, 'm_t_o_caf');
+  const php = dwFilemap(buildPluginFiles(cfg))['syntax.php'];
+  assert(/class\s+syntax_plugin_m_t_o_caf\s+extends/.test(php));
+  assert.strictEqual(sanitizeBase('Météo Café'), 'm_t_o_caf');
+  assert.strictEqual(phpIdent('class', 'tool'), 'tool_class');
+});
+
+console.log('\nLlmConnector tests');
+
+async function runAsyncTests() {
+  try {
+    const mockFetchOk = async () => ({
+      ok: true,
+      json: async () => ({ choices: [{ message: { content: 'hello from mock' } }] })
+    });
+    const r1 = await LlmConnector.chat('http://localhost:9999/v1', 'test-model',
+      [{ role: 'user', content: 'hi' }], '', { fetchImpl: mockFetchOk, timeoutMs: 5000 });
+    assert.strictEqual(r1.content, 'hello from mock');
+    assert.strictEqual(r1.status, 'ok');
+    passed++; console.log('  ✓ connector mock success returns content');
+
+    const mockFetchFail = async () => { throw new Error('Failed to fetch'); };
+    const r2 = await LlmConnector.chat('http://localhost:1/v1', 'm',
+      [{ role: 'user', content: 'hi' }], '', { fetchImpl: mockFetchFail, timeoutMs: 100 });
+    assert.strictEqual(r2.content, null);
+    assert(r2.status, 'expected status string');
+    passed++; console.log('  ✓ connector failure returns null content without throw');
+
+    const mockFetchHttp = async () => ({ ok: false, status: 503, json: async () => ({}) });
+    const r3 = await LlmConnector.chat('http://localhost:2/v1', 'm',
+      [{ role: 'user', content: 'x' }], '', { fetchImpl: mockFetchHttp });
+    assert.strictEqual(r3.content, null);
+    assert(/503/.test(r3.status));
+    passed++; console.log('  ✓ connector HTTP error degrades gracefully');
+  } catch (e) {
+    failures.push({ name: 'async connector tests', e });
+    console.log('  ✗ async connector tests\n      ' + (e && e.message));
+  }
+}
+
+runAsyncTests().then(function () {
+  console.log('\n' + passed + ' passed, ' + failures.length + ' failed');
+  if (failures.length) {
+    failures.forEach(f => console.log('FAIL: ' + f.name + ' — ' + (f.e && f.e.message)));
+    process.exit(1);
+  }
+}).catch(function (e) {
+  console.error(e);
+  process.exit(1);
+});
