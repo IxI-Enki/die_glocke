@@ -1,55 +1,61 @@
-# Die Glocke — MCP Server Generator
+# Die Glocke — MCP Server Generator & DokuWiki Plugin Wizard
 
-A single-page, browser-only generator for **Model Context Protocol (MCP)** servers.
-Fill in a form, get a complete, ready-to-build server bundle — copy, download, or grab a ZIP.
-No build step, no backend; just open `index.html`.
+A single-page, browser-only portal with two generators:
 
-## What it generates
+1. **MCP Server Generator** — Model Context Protocol Python servers
+2. **DokuWiki Plugin Wizard** — offline DokuWiki plugin scaffolds (syntax / action / admin / helper)
 
-Targets the official **MCP Python SDK** (`mcp`, FastMCP) with current (2026) standards:
+No build step, no backend; open `index.html`.
 
-- `*_server.py` — `from __future__ import annotations`, typed `-> str` tools, a `ToolAnnotations`
-  preset (read-only / idempotent / open-world, all toggleable), env-var config, a `main()` entry,
-  and your chosen transport.
-- **Transports:** `stdio` (Docker MCP Gateway / desktop clients), `streamable-http`, or `sse`.
-  HTTP transports set host/port and add `EXPOSE` + `HEALTHCHECK` to the Dockerfile.
-- **Packaging:** `requirements.txt` (`mcp[cli]>=1.12.0`), `pyproject.toml`, `.dockerignore`, `.gitignore`.
-- **Hardened Dockerfile:** pinned base, OCI labels, apt/apk-aware extra packages, non-root user.
-- **Docs & catalog:** `README.md`, `CLAUDE.md`, `INSTALL.md`, `catalog.yaml` + `registry.yaml`,
-  and the `GLOCKE.md` builder prompt (when present).
+## MCP generator
 
-Free-text tool names are sanitized into valid Python identifiers, and a working example tool
-is emitted when you don't define any.
+Fill in a form, get a complete MCP server bundle — copy, download, or ZIP.
+
+Targets the official **MCP Python SDK** (`mcp`, FastMCP) with current (2026) standards.
+
+## DokuWiki Plugin Wizard
+
+Second tool-card in the portal. Produces a deterministic DokuWiki plugin ZIP:
+
+- `plugin.info.txt` in DokuWiki format (includes complexity level)
+- Type-correct PHP scaffold for syntax, action, admin, or helper plugins
+- Optional assets: `style/all.css`, `script.js`, conf/lang files (toggleable)
+- Complexity: **basic** / **advanced** / **pro** changes scaffold structure
+- Fully offline — no network required for generation
+
+### Optional local LLM connector
+
+Configure an OpenAI-compatible endpoint (presets: LM Studio `http://localhost:1234/v1`, Ollama `http://localhost:11434/v1`, vLLM custom):
+
+- Improve description
+- AI code preview (shown alongside deterministic scaffold; opt-in to replace)
+- Deployment guide (Docker primary, manual install secondary)
+
+Settings persist in `localStorage` only — never committed. If the connector is offline or CORS-blocked, AI buttons stay disabled and deterministic generation still works.
+
+**CORS:** enable cross-origin requests on your local LLM server when using the portal from GitHub Pages or another origin.
 
 ## Use
 
 1. Open `index.html` (or the GitHub Page).
-2. Click the **Die Glocke** tool card.
-3. Fill in service name, tools, transport, Docker and output options.
-4. **Generate** → copy / download individual files or **Download all** as a ZIP.
+2. Click a tool card (**Die Glocke** or **DokuWiki Plugin Wizard**).
+3. Fill the form and **Generate** → copy / download / ZIP.
 
 ## Develop & test
 
-The generation logic lives in `generator.js` as a pure `buildServerFiles(config)` (no DOM),
-exported for both the browser and Node. `app.js` only gathers the form into a config and calls it.
+| File | Role |
+| --- | --- |
+| `generator.js` | MCP `buildServerFiles(config)` (pure, tested) |
+| `dokuwiki-generator.js` | DokuWiki `buildPluginFiles(config)` (pure, tested) |
+| `llm-connector.js` | Optional local OpenAI-compatible client |
+| `app.js` | DOM wiring for both generators |
+| `glocke.js` | Logo / tool-card panel switching |
+| `tests/run-tests.js` | Node test suite (MCP + DokuWiki + connector mock) |
 
 ```bash
 node tests/run-tests.js
 ```
 
-The suite asserts the output structure **and** proves correctness: every generated server is
-`py_compile`d and imported against the installed `mcp` SDK, confirming its tools register.
-Requires `python` on PATH with `mcp` importable.
-
-## Files
-
-| File | Role |
-| --- | --- |
-| `index.html` | UI + inline styling |
-| `generator.js` | pure file-generation logic (tested) |
-| `app.js` | DOM wiring → config → generator |
-| `glocke.js` | logo / tool-card behaviour |
-| `tests/run-tests.js` | Node + Python test suite |
-| `GLOCKE.md` | LLM builder prompt (embedded into output) |
+MCP integration tests also `py_compile` generated Python and import against `mcp` when available.
 
 — made by Jan / IxI-Enki
