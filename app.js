@@ -208,4 +208,271 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
 
   // Tools toggle behavior remains in glocke.js
+
+  // --- DokuWiki Plugin Wizard ------------------------------------------------
+  initDokuWikiWizard();
 });
+
+function fieldVal(id, placeholderDefault) {
+  const el = document.getElementById(id);
+  if (!el) return '';
+  const v = String(el.value || '').trim();
+  return v || (placeholderDefault != null ? String(placeholderDefault) : '');
+}
+
+function setDwStatus(msg) {
+  const el = document.getElementById('dw-status');
+  if (el) el.textContent = msg || '';
+}
+
+function setDwFieldError(id, msg) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = msg || '';
+}
+
+function clearDwValidation() {
+  ['dw-err-base', 'dw-err-email', 'dw-err-type'].forEach(id => setDwFieldError(id, ''));
+}
+
+function isValidEmail(s) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || ''));
+}
+
+function collectDwConfig() {
+  const basePh = document.getElementById('dw-input-base')?.getAttribute('placeholder') || 'my_plugin';
+  const namePh = document.getElementById('dw-input-name')?.getAttribute('placeholder') || basePh;
+  const authorPh = document.getElementById('dw-input-author')?.getAttribute('placeholder') || 'Jan Ritt';
+  const emailPh = document.getElementById('dw-input-email')?.getAttribute('placeholder') || 'jan@example.com';
+  const urlPh = document.getElementById('dw-input-url')?.getAttribute('placeholder') || 'https://github.com/IxI-Enki';
+  const descPh = document.getElementById('dw-input-desc')?.getAttribute('placeholder') || 'A DokuWiki plugin scaffold';
+
+  return window.DokuWikiGenerator.normalizeConfig({
+    plugin_base: fieldVal('dw-input-base', basePh),
+    plugin_name: fieldVal('dw-input-name', namePh),
+    author: fieldVal('dw-input-author', authorPh),
+    email: fieldVal('dw-input-email', emailPh),
+    url: fieldVal('dw-input-url', urlPh),
+    desc: fieldVal('dw-input-desc', descPh),
+    plugin_type: document.getElementById('dw-select-type')?.value || 'syntax',
+    complexity: document.getElementById('dw-select-complexity')?.value || 'advanced',
+    assets: {
+      css: document.getElementById('dw-check-css')?.checked !== false,
+      js: document.getElementById('dw-check-js')?.checked !== false,
+      conf: document.getElementById('dw-check-conf')?.checked !== false,
+      lang: document.getElementById('dw-check-lang')?.checked !== false
+    }
+  });
+}
+
+function validateDwForm() {
+  clearDwValidation();
+  const cfg = collectDwConfig();
+  let ok = true;
+  if (!cfg.plugin_base) {
+    setDwFieldError('dw-err-base', 'Plugin base name is required.');
+    ok = false;
+  }
+  if (!isValidEmail(cfg.email)) {
+    setDwFieldError('dw-err-email', 'Enter a valid email address.');
+    ok = false;
+  }
+  const validTypes = ['syntax', 'action', 'admin', 'helper'];
+  if (validTypes.indexOf(cfg.plugin_type) < 0) {
+    setDwFieldError('dw-err-type', 'Unsupported plugin type.');
+    ok = false;
+  }
+  return ok ? cfg : null;
+}
+
+function showDwModal(files, pluginBase, title) {
+  const modal = document.getElementById('generator-modal');
+  const content = document.getElementById('modal-content');
+  const titleEl = document.getElementById('modal-title');
+  if (titleEl) titleEl.textContent = title || 'Generated DokuWiki Plugin Files';
+  content.innerHTML = '';
+
+  const bar = document.createElement('div');
+  bar.style.display = 'flex';
+  bar.style.justifyContent = 'flex-end';
+  bar.style.gap = '0.5rem';
+  bar.style.margin = '0 0 0.5rem 0';
+
+  const dlAll = document.createElement('button');
+  dlAll.className = 'mcp-btn';
+  dlAll.textContent = 'Download ZIP';
+  dlAll.addEventListener('click', async () => {
+    try {
+      if (!window.JSZip) throw new Error('JSZip not loaded');
+      const zip = new JSZip();
+      const dir = zip.folder(pluginBase);
+      files.forEach(f => { dir.file(f.name, f.content); });
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = pluginBase + '.zip';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setDwStatus('ZIP download started.');
+    } catch (e) {
+      setDwStatus('ZIP download failed — try again or use individual file downloads.');
+      console.error(e);
+    }
+  });
+  bar.appendChild(dlAll);
+  content.appendChild(bar);
+
+  files.forEach(f => {
+    const wrap = document.createElement('div');
+    wrap.className = 'file-block';
+    const name = document.createElement('div');
+    name.className = 'file-name';
+    name.textContent = f.name;
+    const actions = document.createElement('div');
+    actions.className = 'file-actions';
+    const btnCopy = document.createElement('button');
+    btnCopy.className = 'add-btn';
+    btnCopy.textContent = 'Copy';
+    btnCopy.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(f.content);
+        btnCopy.textContent = 'Copied';
+        setTimeout(() => { btnCopy.textContent = 'Copy'; }, 1200);
+      } catch (_) {}
+    });
+    const btnDl = document.createElement('button');
+    btnDl.className = 'add-btn';
+    btnDl.textContent = 'Download';
+    btnDl.addEventListener('click', () => {
+      const blob = new Blob([f.content], { type: 'text/plain;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = f.name.replace(/\//g, '_');
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    });
+    actions.appendChild(btnCopy);
+    actions.appendChild(btnDl);
+    const pre = document.createElement('pre');
+    pre.className = 'code-block';
+    pre.textContent = f.content;
+    wrap.appendChild(name);
+    wrap.appendChild(actions);
+    wrap.appendChild(pre);
+    content.appendChild(wrap);
+  });
+
+  document.getElementById('modal-close').onclick = () => {
+    modal.classList.add('hidden');
+    modal.setAttribute('aria-hidden', 'true');
+  };
+  modal.classList.remove('hidden');
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+function updateDwAiButtons(connectorReady) {
+  ['dw-btn-ai-desc', 'dw-btn-ai-preview', 'dw-btn-ai-deploy'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    if (connectorReady) {
+      btn.classList.remove('is-disabled');
+      btn.disabled = false;
+    } else {
+      btn.classList.add('is-disabled');
+      btn.disabled = true;
+    }
+  });
+  const hint = document.getElementById('dw-llm-hint');
+  if (hint && !connectorReady) {
+    hint.textContent = 'Lokale LLM-Instanz verbinden — AI buttons disabled until endpoint + model are saved.';
+  }
+}
+
+function initDokuWikiWizard() {
+  if (!window.DokuWikiGenerator || !window.LlmConnector) return;
+
+  const cfg = window.LlmConnector.loadConfig();
+  if (cfg.endpoint) document.getElementById('dw-llm-endpoint').value = cfg.endpoint;
+  if (cfg.model) document.getElementById('dw-llm-model').value = cfg.model;
+  if (cfg.key) document.getElementById('dw-llm-key').value = cfg.key;
+  updateDwAiButtons(!!(cfg.endpoint && cfg.model));
+
+  document.getElementById('dw-llm-preset')?.addEventListener('change', (e) => {
+    const p = window.LlmConnector.PRESETS[e.target.value];
+    if (p && p.endpoint) document.getElementById('dw-llm-endpoint').value = p.endpoint;
+  });
+
+  document.getElementById('dw-btn-llm-save')?.addEventListener('click', async () => {
+    const connectorCfg = {
+      endpoint: document.getElementById('dw-llm-endpoint').value.trim(),
+      model: document.getElementById('dw-llm-model').value.trim(),
+      key: document.getElementById('dw-llm-key').value.trim()
+    };
+    window.LlmConnector.saveConfig(connectorCfg);
+    const reach = await window.LlmConnector.checkReachability(connectorCfg.endpoint, connectorCfg.key, { model: connectorCfg.model });
+    updateDwAiButtons(!!(connectorCfg.endpoint && connectorCfg.model));
+    setDwStatus(reach.ok ? 'Connector saved and reachable.' : ('Connector saved — ' + reach.status));
+  });
+
+  let aiPreviewContent = null;
+
+  document.getElementById('dw-btn-ai-desc')?.addEventListener('click', async () => {
+    const formCfg = collectDwConfig();
+    setDwStatus('Improving description...');
+    const result = await window.LlmConnector.improveDescription(formCfg.desc, formCfg.plugin_name);
+    if (result.content) {
+      document.getElementById('dw-input-desc').value = result.content.trim();
+      setDwStatus('Description improved.');
+    } else {
+      setDwStatus('AI unavailable: ' + result.status);
+    }
+  });
+
+  document.getElementById('dw-btn-ai-preview')?.addEventListener('click', async () => {
+    const formCfg = collectDwConfig();
+    setDwStatus('Generating code preview...');
+    const result = await window.LlmConnector.previewCode(formCfg.plugin_type, formCfg.plugin_base, formCfg.plugin_name, formCfg.desc);
+    const box = document.getElementById('dw-ai-preview');
+    if (result.content) {
+      aiPreviewContent = result.content;
+      if (box) {
+        box.style.display = 'block';
+        box.textContent = result.content;
+      }
+      setDwStatus('Code preview ready (shown alongside deterministic scaffold).');
+    } else {
+      setDwStatus('AI preview unavailable: ' + result.status);
+    }
+  });
+
+  document.getElementById('dw-btn-ai-deploy')?.addEventListener('click', async () => {
+    const formCfg = collectDwConfig();
+    setDwStatus('Generating deployment guide...');
+    const result = await window.LlmConnector.generateDeployment(formCfg.plugin_base, formCfg.plugin_name);
+    if (result.content) {
+      showDwModal([{ name: 'DEPLOYMENT_GUIDE.md', content: result.content }], formCfg.plugin_base, 'Deployment Guide');
+      setDwStatus('Deployment guide generated.');
+    } else {
+      setDwStatus('Deployment guide unavailable: ' + result.status);
+    }
+  });
+
+  document.getElementById('dw-btn-generate')?.addEventListener('click', () => {
+    const cfg = validateDwForm();
+    if (!cfg) {
+      setDwStatus('Fix validation errors before generating.');
+      return;
+    }
+    let files = window.DokuWikiGenerator.buildPluginFiles(cfg);
+    const replaceAi = document.getElementById('dw-check-ai-replace')?.checked;
+    if (replaceAi && aiPreviewContent) {
+      const type = cfg.plugin_type;
+      files = files.map(f => (f.name === type + '.php' ? { name: f.name, content: aiPreviewContent.replace(/```php|```/g, '') } : f));
+    } else if (aiPreviewContent) {
+      files = files.concat([{ name: '_ai_preview.php.txt', content: aiPreviewContent }]);
+    }
+    showDwModal(files, cfg.plugin_base, 'Generated DokuWiki Plugin Files');
+    setDwStatus('Plugin scaffold generated.');
+  });
+}

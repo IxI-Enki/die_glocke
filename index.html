@@ -688,6 +688,11 @@
     .tool-card:hover { border-color: var(--color-accent-green); box-shadow: 0 0 10px rgba(0,255,157,0.12); transform: translateY(-2px); }
     .tool-card-title { font-weight: 700; color: var(--color-accent-blue); font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
     .tool-card-desc { font-size: 0.75rem; color: var(--color-text-primary); opacity: 0.85; margin-top: 0.25rem; }
+    .dw-field-error { font-size: 0.7rem; color: #f87171; margin-top: 0.15rem; min-height: 0.9rem; }
+    .dw-status { font-size: 0.75rem; margin: 0.5rem 0; color: var(--color-accent-cyan); min-height: 1rem; }
+    .dw-ai-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+    .mcp-btn.is-disabled, .add-btn.is-disabled { opacity: 0.45; pointer-events: none; cursor: not-allowed; }
+    .dw-llm-hint { font-size: 0.7rem; color: var(--color-text-secondary); margin-top: 0.35rem; }
 
     .tool-panel { padding: 0 1rem 1rem; }
 
@@ -1314,6 +1319,23 @@
               <div class="occult-layer" id="tool-occult"></div>
             </div>
           </div>
+          <div class="tool-card full" data-tool-id="dokuwiki-wizard">
+            <div class="tool-card-hero">
+              <div class="logo-container">
+                <div class="portal-logo" aria-hidden="true">
+                  <div class="halo"></div>
+                  <div class="ring r1"></div>
+                  <div class="ring r2"></div>
+                  <div class="core"></div>
+                </div>
+                <div>
+                  <div class="tool-card-title">DokuWiki Plugin Wizard</div>
+                  <div class="tool-card-desc">Offline DokuWiki plugin scaffolds — syntax, action, admin, helper</div>
+                  <div class="version">optional local LLM · ZIP download</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1566,13 +1588,98 @@
           </div>
         </div>
       </div>
+
+      <div id="tool-dokuwiki-wizard" class="hidden">
+        <div class="container">
+          <div class="mcp-section">
+            <h2 class="section-title">Plugin Identity</h2>
+            <label class="mcp-label" for="dw-input-base">Plugin base name</label>
+            <input id="dw-input-base" class="mcp-input" type="text" placeholder="my_plugin" value="" />
+            <div id="dw-err-base" class="dw-field-error" role="alert"></div>
+
+            <label class="mcp-label" for="dw-input-name">Display name</label>
+            <input id="dw-input-name" class="mcp-input" type="text" placeholder="My Plugin" value="" />
+
+            <label class="mcp-label" for="dw-input-author">Author</label>
+            <input id="dw-input-author" class="mcp-input" type="text" placeholder="Jan Ritt" value="" />
+
+            <label class="mcp-label" for="dw-input-email">Email</label>
+            <input id="dw-input-email" class="mcp-input" type="email" placeholder="jan@example.com" value="" />
+            <div id="dw-err-email" class="dw-field-error" role="alert"></div>
+
+            <label class="mcp-label" for="dw-input-url">Project URL</label>
+            <input id="dw-input-url" class="mcp-input" type="url" placeholder="https://github.com/IxI-Enki" value="" />
+
+            <label class="mcp-label" for="dw-input-desc">Description</label>
+            <textarea id="dw-input-desc" class="mcp-input" rows="3" placeholder="A DokuWiki plugin scaffold"></textarea>
+          </div>
+
+          <div class="mcp-section">
+            <h2 class="section-title">Plugin Type &amp; Complexity</h2>
+            <label class="mcp-label" for="dw-select-type">Plugin type</label>
+            <select id="dw-select-type" class="mcp-input">
+              <option value="syntax">syntax</option>
+              <option value="action">action</option>
+              <option value="admin">admin</option>
+              <option value="helper">helper</option>
+            </select>
+            <div id="dw-err-type" class="dw-field-error" role="alert"></div>
+
+            <label class="mcp-label" for="dw-select-complexity">Complexity level</label>
+            <select id="dw-select-complexity" class="mcp-input">
+              <option value="basic">basic — minimal methods</option>
+              <option value="advanced" selected>advanced — optional methods + conf</option>
+              <option value="pro">pro — hooks, lang, richer bodies</option>
+            </select>
+          </div>
+
+          <div class="mcp-section">
+            <h2 class="section-title">Optional Assets</h2>
+            <label><input type="checkbox" id="dw-check-css" checked /> style/all.css</label><br/>
+            <label><input type="checkbox" id="dw-check-js" checked /> script.js</label><br/>
+            <label><input type="checkbox" id="dw-check-conf" checked /> conf/default.php + metadata.php</label><br/>
+            <label><input type="checkbox" id="dw-check-lang" checked /> lang/en + lang/de</label>
+          </div>
+
+          <div class="mcp-section" id="dw-llm-section">
+            <h2 class="section-title">Local LLM (optional)</h2>
+            <label class="mcp-label" for="dw-llm-preset">Preset</label>
+            <select id="dw-llm-preset" class="mcp-input">
+              <option value="lmstudio">LM Studio (localhost:1234)</option>
+              <option value="ollama">Ollama (localhost:11434)</option>
+              <option value="vllm">vLLM (custom)</option>
+              <option value="custom">Custom</option>
+            </select>
+            <label class="mcp-label" for="dw-llm-endpoint">Endpoint</label>
+            <input id="dw-llm-endpoint" class="mcp-input" type="text" placeholder="http://localhost:1234/v1" />
+            <label class="mcp-label" for="dw-llm-model">Model</label>
+            <input id="dw-llm-model" class="mcp-input" type="text" placeholder="local-model" />
+            <label class="mcp-label" for="dw-llm-key">API key (optional)</label>
+            <input id="dw-llm-key" class="mcp-input" type="password" placeholder="" autocomplete="off" />
+            <button type="button" id="dw-btn-llm-save" class="add-btn add-btn-cyan">Save connector</button>
+            <p class="dw-llm-hint" id="dw-llm-hint">Connect a local LLM instance (LM Studio / Ollama). Enable CORS on the local server.</p>
+            <div class="dw-ai-row">
+              <button type="button" id="dw-btn-ai-desc" class="add-btn is-disabled" disabled>Beschreibung optimieren</button>
+              <button type="button" id="dw-btn-ai-preview" class="add-btn is-disabled" disabled>Code-Vorschau</button>
+              <button type="button" id="dw-btn-ai-deploy" class="add-btn is-disabled" disabled>Deployment</button>
+            </div>
+            <label><input type="checkbox" id="dw-check-ai-replace" /> Use AI code preview instead of deterministic scaffold (opt-in)</label>
+            <div id="dw-ai-preview" class="code-block" style="display:none; margin-top:0.5rem; max-height:200px; overflow:auto;"></div>
+          </div>
+
+          <div class="mcp-section">
+            <div id="dw-status" class="dw-status" aria-live="polite"></div>
+            <button type="button" id="dw-btn-generate" class="mcp-btn">Generate Plugin ZIP</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Modal container (hidden initially) -->
     <div id="generator-modal" class="modal-overlay hidden" aria-hidden="true">
       <div class="modal-card">
         <div class="modal-header">
-          <div class="modal-title">Generated MCP Server Files</div>
+          <div class="modal-title" id="modal-title">Generated MCP Server Files</div>
           <div id="modal-close" class="modal-close">✕</div>
         </div>
         <div id="modal-content"></div>
@@ -1583,6 +1690,8 @@
   <script src="glocke.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
   <script src="generator.js"></script>
+  <script src="dokuwiki-generator.js"></script>
+  <script src="llm-connector.js"></script>
   <script src="app.js"></script>
   <script>
     /* Theme: dark default, light fusion theme, persisted in localStorage */
