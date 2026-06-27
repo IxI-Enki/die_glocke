@@ -1,61 +1,61 @@
 {
   ".claude/launch.json": {
-    "mtime": 1781596422.0177765,
-    "ast_hash": "361363e4cab74f06bc058cd4b5a02de7",
+    "mtime": 1782520143.7861884,
+    "ast_hash": "3feebdf2e7b3774845ecb552a95cd809",
     "semantic_hash": ""
   },
   "app.js": {
-    "mtime": 1782517581.7603881,
+    "mtime": 1782520143.788309,
     "ast_hash": "199f1abbe0e823c33e8c92e262a0d624",
     "semantic_hash": ""
   },
   "dokuwiki-generator.js": {
-    "mtime": 1782517309.2262256,
-    "ast_hash": "6f9555a2ea1916c2ea47d85c164ba70d",
+    "mtime": 1782520143.7898917,
+    "ast_hash": "ad00d4ff7301002e31e9d714f6f436b5",
     "semantic_hash": ""
   },
   "generator.js": {
-    "mtime": 1781352927.5647242,
-    "ast_hash": "4476502b6be4fba271f6400758ffdf80",
+    "mtime": 1782520143.790417,
+    "ast_hash": "5688e6d4346fda1c35afe26e0c5cbd20",
     "semantic_hash": ""
   },
   "glocke.js": {
-    "mtime": 1782517552.6224132,
+    "mtime": 1782520143.7909346,
     "ast_hash": "a662144fe265f9e9ebf290d2dbfa1f65",
     "semantic_hash": ""
   },
   "llm-connector.js": {
-    "mtime": 1782517328.931623,
-    "ast_hash": "8c4773a550847f3efe4d5359ef1a8483",
+    "mtime": 1782520143.8004818,
+    "ast_hash": "5ff0257e6a288517bb279ee269b88808",
     "semantic_hash": ""
   },
   "tests/run-tests.js": {
-    "mtime": 1782517448.0901146,
-    "ast_hash": "3a61a09a7bd6dbc92b35c3ebb38d5d8f",
+    "mtime": 1782520143.8010087,
+    "ast_hash": "7551dd01cee385a9dd938eceb4fc34a8",
     "semantic_hash": ""
   },
   "version.json": {
-    "mtime": 1782517600.9070885,
-    "ast_hash": "049fc87612903c6c5edc747ed314d5a3",
+    "mtime": 1782520143.80153,
+    "ast_hash": "2de7523b22ac225789dbb8234f863fc7",
     "semantic_hash": ""
   },
   "GLOCKE.md": {
-    "mtime": 1781353341.8215108,
-    "ast_hash": "6cebee90a46afeb4a580ce535cfabad1",
+    "mtime": 1782520143.7872622,
+    "ast_hash": "a1991223dd80e9180af0c57e90f0dcff",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1782517600.5714366,
-    "ast_hash": "9d153bf18edfce95320df59dfedd4d39",
+    "mtime": 1782520143.787788,
+    "ast_hash": "d25b040e98e3791a922febbf6aacbe44",
     "semantic_hash": ""
   },
   "docs/MODERNIZATION_PLAN.md": {
-    "mtime": 1781353380.7209413,
-    "ast_hash": "bd793013777d8934c3fcc161e59eb70e",
+    "mtime": 1782521145.1865258,
+    "ast_hash": "0ffba74be89c87018b552fb70a9840fe",
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1782517544.1171055,
+    "mtime": 1782520143.7999482,
     "ast_hash": "e7f57541a5730bf2f172d22d234e36bf",
     "semantic_hash": ""
   }

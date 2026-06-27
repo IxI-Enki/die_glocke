@@ -1,7 +1,7 @@
 # Graph Report - die_glocke  (2026-06-27)
 
 ## Corpus Check
-- 11 files · ~19,165 words
+- 11 files · ~19,228 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `054f87e7`
+- Built from commit: `25f2caec`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -48,11 +48,11 @@
 
 ### Community 0 - "Community 0"
 Cohesion: 0.11
-Nodes (15): assert, {
-  buildPluginFiles,
-  sanitizeBase,
-  phpIdent,
-  normalizeConfig
+Nodes (15): assert, {
+  buildPluginFiles,
+  sanitizeBase,
+  phpIdent,
+  normalizeConfig
 }, { buildServerFiles }, cfgHttp, cfgMinimal, cfgStdio, dwBaseCfg, failures (+7 more)
 
 ### Community 1 - "Community 1"
