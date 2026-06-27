@@ -1,0 +1,62 @@
+{
+  ".claude/launch.json": {
+    "mtime": 1781596422.0177765,
+    "ast_hash": "361363e4cab74f06bc058cd4b5a02de7",
+    "semantic_hash": ""
+  },
+  "app.js": {
+    "mtime": 1782517581.7603881,
+    "ast_hash": "199f1abbe0e823c33e8c92e262a0d624",
+    "semantic_hash": ""
+  },
+  "dokuwiki-generator.js": {
+    "mtime": 1782517309.2262256,
+    "ast_hash": "6f9555a2ea1916c2ea47d85c164ba70d",
+    "semantic_hash": ""
+  },
+  "generator.js": {
+    "mtime": 1781352927.5647242,
+    "ast_hash": "4476502b6be4fba271f6400758ffdf80",
+    "semantic_hash": ""
+  },
+  "glocke.js": {
+    "mtime": 1782517552.6224132,
+    "ast_hash": "a662144fe265f9e9ebf290d2dbfa1f65",
+    "semantic_hash": ""
+  },
+  "llm-connector.js": {
+    "mtime": 1782517328.931623,
+    "ast_hash": "8c4773a550847f3efe4d5359ef1a8483",
+    "semantic_hash": ""
+  },
+  "tests/run-tests.js": {
+    "mtime": 1782517448.0901146,
+    "ast_hash": "3a61a09a7bd6dbc92b35c3ebb38d5d8f",
+    "semantic_hash": ""
+  },
+  "version.json": {
+    "mtime": 1782517600.9070885,
+    "ast_hash": "049fc87612903c6c5edc747ed314d5a3",
+    "semantic_hash": ""
+  },
+  "GLOCKE.md": {
+    "mtime": 1781353341.8215108,
+    "ast_hash": "6cebee90a46afeb4a580ce535cfabad1",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1782517600.5714366,
+    "ast_hash": "9d153bf18edfce95320df59dfedd4d39",
+    "semantic_hash": ""
+  },
+  "docs/MODERNIZATION_PLAN.md": {
+    "mtime": 1781353380.7209413,
+    "ast_hash": "bd793013777d8934c3fcc161e59eb70e",
+    "semantic_hash": ""
+  },
+  "index.html": {
+    "mtime": 1782517544.1171055,
+    "ast_hash": "e7f57541a5730bf2f172d22d234e36bf",
+    "semantic_hash": ""
+  }
+}
