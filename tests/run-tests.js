@@ -289,6 +289,18 @@ test('asset toggles off omit optional files', () => {
     .forEach(n => assert(m[n] === undefined, 'should omit ' + n));
 });
 
+
+test('basic complexity omits conf and lang when assets on', () => {
+  const cfg = Object.assign({}, dwBaseCfg, {
+    complexity: 'basic',
+    assets: { css: true, js: true, conf: true, lang: true }
+  });
+  const m = dwFilemap(buildPluginFiles(cfg));
+  assert(/level\s+basic/.test(m['plugin.info.txt']), 'plugin.info level basic');
+  ['conf/default.php', 'conf/metadata.php', 'lang/en/lang.php', 'lang/de/lang.php']
+    .forEach(n => assert(m[n] === undefined, 'basic should omit ' + n));
+  assert(m['style/all.css'] !== undefined, 'basic may include css');
+});
 test('identifier sanitization for non-ASCII and reserved tokens', () => {
   const cfg = {
     plugin_base: 'Météo Café',
