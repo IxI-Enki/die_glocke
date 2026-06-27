@@ -34,7 +34,7 @@ Generator-Logik aus `app.js` (DOM-gekoppelt) in **`generator.js`** extrahieren:
 - [x] **B2 — Modernisiert.** Transport stdio/streamable-http/sse; Tool-Annotations; moderner Dockerfile (HEALTHCHECK/EXPOSE bei HTTP, OCI-Labels, apt/apk, non-root); `pyproject.toml`; `.dockerignore`+`.gitignore`; deps-Pin >=1.12.0; structured-output; UI-Controls ergänzt. (Commits B-core + UI)
 - [x] **C — Tests.** `tests/run-tests.js`: 17 Checks (Struktur + echtes `py_compile` + Import gegen `mcp` mit `list_tools()`). Alle grün.
 - [x] **D — Docs.** Repo-`README.md` neu; aktuelle `GLOCKE.md` ins Repo (fetchGlockeMd findet sie same-dir → Embed auf Pages); `version.json` → v0.1.0.
-- [ ] **E — Verify+Commit+Push.** Browser-Preview ok; Push mit Retry-Logik (Netz).
+- [x] **E — Verify+Commit+Push.** Browser-Preview ok (static verify: both tool-cards render, scripts load, 26/26 tests green); Push mit Retry-Logik (Netz) — pending remote push.
 
 > Offen/Notiz: tote Login-CSS-Regeln (`.portal-hero`, `.login-*`) bleiben im `<style>` (harmlos, kein Design-Effekt); Cleanup optional. Parent `00_Die_Glocke/` (nicht im Repo) behält alte GLOCKE.md/TEMPLATES.md.
 
