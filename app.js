@@ -1,82 +1,4 @@
 // Utilities
-function show(el){ el.classList.remove('hidden'); el.setAttribute('aria-hidden','false'); }
-function hide(el){ el.classList.add('hidden'); el.setAttribute('aria-hidden','true'); }
-
-function setLoginMessage(msg, ok){
-  const m=document.getElementById('login-message');
-  m.textContent=msg;
-  m.className=ok?'login-success':'login-error';
-}
-
-function clearLoginMessage(){
-  const m=document.getElementById('login-message');
-  m.textContent='';
-  m.className='login-hint';
-}
-
-function toHex(buffer){
-  const bytes=new Uint8Array(buffer);
-  let hex='';
-  for(let i=0;i<bytes.length;i++){ hex+=bytes[i].toString(16).padStart(2,'0'); }
-  return hex;
-}
-
-async function sha256Hex(text){
-  const enc=new TextEncoder();
-  const data=enc.encode(text);
-  const digest=await crypto.subtle.digest('SHA-256', data);
-  return toHex(digest);
-}
-
-function constantTimeEqual(a,b){
-  if(a.length!==b.length) return false;
-  let diff=0; for(let i=0;i<a.length;i++){ diff|=a.charCodeAt(i)^b.charCodeAt(i); }
-  return diff===0;
-}
-
-function getObfuscatedReference(){
-  const x=[63,52,49,51,96,46,105,126,46,15,126,105,40];
-  return String.fromCharCode.apply(null, x.map(n=>n^0x5A));
-}
-
-async function getExpectedHash(){
-  const key='PORTAL_CRED_SHA256';
-  let h=''; try{ h=localStorage.getItem(key)||''; }catch(_){}
-  if(h) return h;
-  const ref=getObfuscatedReference();
-  const digest=await sha256Hex(ref);
-  try{ localStorage.setItem(key,digest); }catch(_){}
-  return digest;
-}
-
-async function validateLogin(user,pass){
-  if(!user||!pass) return false;
-  const expected=await getExpectedHash();
-  const provided=await sha256Hex(`${user}:${pass}`);
-  return constantTimeEqual(provided, expected);
-}
-
-function triggerBrowserSave(username,password){
-  try{
-    const form=document.createElement('form');
-    form.method='post'; form.action='.'; form.target='authSink'; form.style.display='none';
-    form.setAttribute('name','portal-login-shadow');
-    form.setAttribute('autocomplete','on');
-    const u=document.createElement('input'); u.type='text'; u.name='username'; u.autocomplete='username'; u.value=username;
-    const p=document.createElement('input'); p.type='password'; p.name='password'; p.autocomplete='current-password'; p.value=password;
-    form.appendChild(u); form.appendChild(p);
-    document.body.appendChild(form);
-    form.submit();
-    setTimeout(()=>{ try{ form.remove(); }catch(_){} },200);
-  }catch(_){}
-}
-
-function completeLogin(){
-  const portal=document.getElementById('portal-hero'); if(portal) hide(portal);
-  hide(document.getElementById('login-screen'));
-  show(document.getElementById('app-root'));
-}
-
 async function fetchGlockeMd(){
   const bases=['','/', window.location.origin+'/', (new URL('.', window.location.href)).href];
   const names=['GLOCKE.md','glocke.md'];
@@ -115,45 +37,20 @@ function addDownloadAllButton(files, serverNameSafe){
 
 // App init
 document.addEventListener('DOMContentLoaded',()=>{
-  // Login UI
-  const loginForm=document.getElementById('login-form');
-  const inputUser=document.getElementById('login-username');
-  const inputPass=document.getElementById('login-password');
-  // Strengthen hints for password managers
-  loginForm.setAttribute('name','portal-login');
-  loginForm.setAttribute('autocomplete','on');
-  inputUser.setAttribute('name','username'); inputUser.setAttribute('autocomplete','username');
-  inputPass.setAttribute('name','password'); inputPass.setAttribute('autocomplete','current-password');
-
-  loginForm.addEventListener('submit', async (e)=>{
-    e.preventDefault();
-    clearLoginMessage();
-    const u=inputUser.value.trim();
-    const p=inputPass.value;
-    const ok=await validateLogin(u,p);
-    if(ok){
-      try{ if(navigator.credentials && window.PasswordCredential && navigator.credentials.store){ const cred=new PasswordCredential({id:u,name:u,password:p}); await navigator.credentials.store(cred);} }catch(_){ }
-      triggerBrowserSave(u,p);
-      completeLogin();
-    }else{
-      setLoginMessage('Invalid credentials.', false);
+  // Inject version string under PORTAL title; increments per commit via Git short SHA length
+  try{
+    const vEl=document.getElementById('portal-version');
+    const hv=document.getElementById('header-version');
+    // Prefer window.__APP_VERSION__, then version.json (static), fallback to date string
+    if(window.__APP_VERSION__){ if(vEl) vEl.textContent=window.__APP_VERSION__; }
+    else {
+      fetch('version.json', { cache: 'no-store' }).then(r=>r.ok?r.json():null).then(j=>{
+        const text = j ? `${j.version} • ${j.date}` : 'v0.0.0 • '+(new Date()).toISOString().slice(0,10);
+        if(vEl) vEl.textContent = text;
+        if(hv) hv.textContent = text;
+      }).catch(()=>{ if(vEl) vEl.textContent='v0.0.0 • '+(new Date()).toISOString().slice(0,10); });
     }
-  });
-
-  let loginVisible=false;
-  document.addEventListener('keydown',(e)=>{
-    const key=(e.key||'').toLowerCase();
-    const hasAltGr=e.getModifierState && e.getModifierState('AltGraph');
-    const hasAlt=e.altKey||hasAltGr;
-    const isOeLike=(key==='ö'||key==='ø'||key===';'||e.keyCode===186);
-    if((e.ctrlKey||hasAltGr) && e.shiftKey && hasAlt && isOeLike){
-      e.preventDefault();
-      loginVisible=!loginVisible;
-      const login=document.getElementById('login-screen');
-      if(loginVisible){ show(login); } else { hide(login); }
-      clearLoginMessage();
-    }
-  });
+  }catch(_){ }
 
   // Adders
   document.getElementById('btn-add-tool').addEventListener('click',()=>{
@@ -264,44 +161,27 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     const promptText=await fetchGlockeMd();
 
-    const serverNameSafe=svc.toLowerCase().replace(/[^a-z0-9_-]+/g,'-');
-    const serverPyName=`${serverNameSafe}_server.py`;
+    // New (optional) modern controls — read defensively so the form works
+    // whether or not the markup is present yet.
+    const val=(id,def)=>{ const el=document.getElementById(id); return el?el.value:def; };
+    const chk=(id,def)=>{ const el=document.getElementById(id); return el?el.checked:def; };
 
-    const requirements=(deps?deps.split(/\s+/).join('\n'):'mcp[cli]>=1.2.0\nhttpx').trim();
+    const config={
+      svc, desc, author, category, tags, license,
+      apis, tools, auth, docker, output, adv, deps, sysdeps, envs, promptText,
+      transport: val('select-transport','stdio'),
+      httpPort: val('input-http-port','8000'),
+      annotations:{
+        readOnly: chk('check-ann-readonly', true),
+        idempotent: chk('check-ann-idempotent', true),
+        openWorld: chk('check-ann-openworld', true)
+      }
+    };
+    config.output=Object.assign({}, output, { structured: chk('check-structured-output', false) });
 
-    const dockerfile=`FROM ${docker.base}\nWORKDIR ${docker.workdir}\nENV PYTHONUNBUFFERED=1\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY ${serverPyName} .\nRUN useradd -m -u ${docker.uid||'1000'} ${docker.uname||'mcpuser'} \\n && chown -R ${docker.uname||'mcpuser'}:${docker.uname||'mcpuser'} ${docker.workdir}\nUSER ${docker.uname||'mcpuser'}\nCMD [\"python\", \"${serverPyName}\"]\n`;
-
-    const pyTools=tools.map(t=>{
-      const params=(t.params||'').split(',').map(s=>s.trim()).filter(Boolean);
-      const sig=params.map(p=>`${p}: str = ${adv.emptyDefaults?'\"\"':'""'}`).join(', ');
-      const doc=(t.desc||'Tool').replace(/\n/g, adv.oneLine?' ':'\n').replace(/\"/g,'\\\"');
-      return `@mcp.tool()\nasync def ${t.name||'tool'}(${sig}):\n    \"\"\"${doc}\"\"\"\n    try:\n        return f\"${output.emojis.ok||'✅'} ${t.name||'tool'} executed\"\n    except Exception as e:\n        return f\"${output.emojis.err||'❌'} Error: {str(e)}\"\n`;
-    }).join('\n');
-
-    const secretLine=(auth.embed&&auth.secret)?`\nAPI_TOKEN = os.environ.get(\"${auth.secret.toUpperCase()}\", \"\")`:'';
-    const healthTool=adv.hc?`\n@mcp.tool()\nasync def health():\n    \"\"\"Simple health check tool\"\"\"\n    return \"${output.emojis.ok||'✅'} ok\"\n`:'';
-    const metricsTool=adv.metrics?`\n@mcp.tool()\nasync def metrics():\n    \"\"\"Simple metrics tool\"\"\"\n    return \"${output.emojis.info||'ℹ️'} metrics: none\"\n`:'';
-
-    const serverPy=`#!/usr/bin/env python3\n\n\"\"\"${svc} MCP Server - ${desc}\"\"\"\nimport os, sys, logging, httpx\nfrom datetime import datetime, timezone\nfrom mcp.server.fastmcp import FastMCP\nlogging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', stream=sys.stderr)\nlogger = logging.getLogger(\"${serverNameSafe}-server\")\nmcp = FastMCP(\"${svc}\")${secretLine}\n${pyTools||''}${healthTool}${metricsTool}\nif __name__ == \"__main__\":\n    logger.info(\"Starting ${svc} MCP server...\")\n    try:\n        mcp.run(transport='stdio')\n    except Exception as e:\n        logger.error(f\"Server error: {e}\", exc_info=True)\n        sys.exit(1)\n`;
-
-    const claudeMd=`# CLAUDE.md\n\nFollow MCP generation rules from GLOCKE.md.\n- No @mcp.prompt decorators\n- No prompt param to FastMCP()\n- Single-line docstrings\n- Empty string defaults for params\n- Return strings; log to stderr\n- Docker non-root user\n`;
-    const installMd=`# INSTALLATION\n\n1. Save files locally\n2. docker build -t ${serverNameSafe}-mcp-server .\n3. Optionally set secrets via Docker Desktop (mcp secrets)\n4. Configure catalog/registry (see YAML files if included)\n5. Run via MCP Gateway (stdio)\n`;
-    const catalogYaml=`version: 2\nname: custom\ndisplayName: Custom MCP Servers\nregistry:\n  ${serverNameSafe}:\n    description: \"${desc}\"\n    title: \"${svc}\"\n    type: server\n    dateAdded: \"${new Date().toISOString()}\"\n    image: ${serverNameSafe}-mcp-server:latest\n    ref: \"\"\n    readme: \"\"\n    toolsUrl: \"\"\n    source: \"\"\n    upstream: \"\"\n    icon: \"\"\n    tools:${tools.map(t=>`\n      - name: ${t.name||'tool'}`).join('')}\n`;
-    const registryYaml=`registry:\n  ${serverNameSafe}:\n    ref: \"\"\n`;
-    const readmeTxt=`Create the files listed and build the Docker image. See instructions in GLOCKE.md. Author: ${author}`;
-    const readme=`# ${svc} MCP Server\n\n${desc||''}\n\n## Author\n${author}\n\n## Category\n${category}\n\n## Tools\n${tools.map(t=>`- ${t.name}: ${t.desc}`).join('\n')}\n\n## APIs\n${apis.map(a=>`- ${a.name} (${a.url})`).join('\n')}\n`;
-
-    const files=[
-      {name:'Dockerfile', content:dockerfile},
-      {name:'requirements.txt', content:requirements+'\n'},
-      {name:serverPyName, content:serverPy},
-      {name:'README.md', content:readme},
-      {name:'readme.txt', content:readmeTxt+'\n'},
-      {name:'CLAUDE.md', content:claudeMd}
-    ];
-    if(promptText){ files.push({name:'GLOCKE.md', content:promptText}); }
-    if(output.includeInstall){ files.push({name:'INSTALL.md', content:installMd}); }
-    if(output.includeCatalog){ files.push({name:'catalog.yaml', content:catalogYaml}); files.push({name:'registry.yaml', content:registryYaml}); }
+    const built=window.GlockeGenerator.buildServerFiles(config);
+    const serverNameSafe=built.serverNameSafe;
+    const files=built.files;
 
     const modal=document.getElementById('generator-modal');
     const content=document.getElementById('modal-content');
@@ -328,4 +208,271 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
 
   // Tools toggle behavior remains in glocke.js
+
+  // --- DokuWiki Plugin Wizard ------------------------------------------------
+  initDokuWikiWizard();
 });
+
+function fieldVal(id, placeholderDefault) {
+  const el = document.getElementById(id);
+  if (!el) return '';
+  const v = String(el.value || '').trim();
+  return v || (placeholderDefault != null ? String(placeholderDefault) : '');
+}
+
+function setDwStatus(msg) {
+  const el = document.getElementById('dw-status');
+  if (el) el.textContent = msg || '';
+}
+
+function setDwFieldError(id, msg) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = msg || '';
+}
+
+function clearDwValidation() {
+  ['dw-err-base', 'dw-err-email', 'dw-err-type'].forEach(id => setDwFieldError(id, ''));
+}
+
+function isValidEmail(s) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || ''));
+}
+
+function collectDwConfig() {
+  const basePh = document.getElementById('dw-input-base')?.getAttribute('placeholder') || 'my_plugin';
+  const namePh = document.getElementById('dw-input-name')?.getAttribute('placeholder') || basePh;
+  const authorPh = document.getElementById('dw-input-author')?.getAttribute('placeholder') || 'Jan Ritt';
+  const emailPh = document.getElementById('dw-input-email')?.getAttribute('placeholder') || 'jan@example.com';
+  const urlPh = document.getElementById('dw-input-url')?.getAttribute('placeholder') || 'https://github.com/IxI-Enki';
+  const descPh = document.getElementById('dw-input-desc')?.getAttribute('placeholder') || 'A DokuWiki plugin scaffold';
+
+  return window.DokuWikiGenerator.normalizeConfig({
+    plugin_base: fieldVal('dw-input-base', basePh),
+    plugin_name: fieldVal('dw-input-name', namePh),
+    author: fieldVal('dw-input-author', authorPh),
+    email: fieldVal('dw-input-email', emailPh),
+    url: fieldVal('dw-input-url', urlPh),
+    desc: fieldVal('dw-input-desc', descPh),
+    plugin_type: document.getElementById('dw-select-type')?.value || 'syntax',
+    complexity: document.getElementById('dw-select-complexity')?.value || 'advanced',
+    assets: {
+      css: document.getElementById('dw-check-css')?.checked !== false,
+      js: document.getElementById('dw-check-js')?.checked !== false,
+      conf: document.getElementById('dw-check-conf')?.checked !== false,
+      lang: document.getElementById('dw-check-lang')?.checked !== false
+    }
+  });
+}
+
+function validateDwForm() {
+  clearDwValidation();
+  const cfg = collectDwConfig();
+  let ok = true;
+  if (!cfg.plugin_base) {
+    setDwFieldError('dw-err-base', 'Plugin base name is required.');
+    ok = false;
+  }
+  if (!isValidEmail(cfg.email)) {
+    setDwFieldError('dw-err-email', 'Enter a valid email address.');
+    ok = false;
+  }
+  const validTypes = ['syntax', 'action', 'admin', 'helper'];
+  if (validTypes.indexOf(cfg.plugin_type) < 0) {
+    setDwFieldError('dw-err-type', 'Unsupported plugin type.');
+    ok = false;
+  }
+  return ok ? cfg : null;
+}
+
+function showDwModal(files, pluginBase, title) {
+  const modal = document.getElementById('generator-modal');
+  const content = document.getElementById('modal-content');
+  const titleEl = document.getElementById('modal-title');
+  if (titleEl) titleEl.textContent = title || 'Generated DokuWiki Plugin Files';
+  content.innerHTML = '';
+
+  const bar = document.createElement('div');
+  bar.style.display = 'flex';
+  bar.style.justifyContent = 'flex-end';
+  bar.style.gap = '0.5rem';
+  bar.style.margin = '0 0 0.5rem 0';
+
+  const dlAll = document.createElement('button');
+  dlAll.className = 'mcp-btn';
+  dlAll.textContent = 'Download ZIP';
+  dlAll.addEventListener('click', async () => {
+    try {
+      if (!window.JSZip) throw new Error('JSZip not loaded');
+      const zip = new JSZip();
+      const dir = zip.folder(pluginBase);
+      files.forEach(f => { dir.file(f.name, f.content); });
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = pluginBase + '.zip';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setDwStatus('ZIP download started.');
+    } catch (e) {
+      setDwStatus('ZIP download failed — try again or use individual file downloads.');
+      console.error(e);
+    }
+  });
+  bar.appendChild(dlAll);
+  content.appendChild(bar);
+
+  files.forEach(f => {
+    const wrap = document.createElement('div');
+    wrap.className = 'file-block';
+    const name = document.createElement('div');
+    name.className = 'file-name';
+    name.textContent = f.name;
+    const actions = document.createElement('div');
+    actions.className = 'file-actions';
+    const btnCopy = document.createElement('button');
+    btnCopy.className = 'add-btn';
+    btnCopy.textContent = 'Copy';
+    btnCopy.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(f.content);
+        btnCopy.textContent = 'Copied';
+        setTimeout(() => { btnCopy.textContent = 'Copy'; }, 1200);
+      } catch (_) {}
+    });
+    const btnDl = document.createElement('button');
+    btnDl.className = 'add-btn';
+    btnDl.textContent = 'Download';
+    btnDl.addEventListener('click', () => {
+      const blob = new Blob([f.content], { type: 'text/plain;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = f.name.replace(/\//g, '_');
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    });
+    actions.appendChild(btnCopy);
+    actions.appendChild(btnDl);
+    const pre = document.createElement('pre');
+    pre.className = 'code-block';
+    pre.textContent = f.content;
+    wrap.appendChild(name);
+    wrap.appendChild(actions);
+    wrap.appendChild(pre);
+    content.appendChild(wrap);
+  });
+
+  document.getElementById('modal-close').onclick = () => {
+    modal.classList.add('hidden');
+    modal.setAttribute('aria-hidden', 'true');
+  };
+  modal.classList.remove('hidden');
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+function updateDwAiButtons(connectorReady) {
+  ['dw-btn-ai-desc', 'dw-btn-ai-preview', 'dw-btn-ai-deploy'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    if (connectorReady) {
+      btn.classList.remove('is-disabled');
+      btn.disabled = false;
+    } else {
+      btn.classList.add('is-disabled');
+      btn.disabled = true;
+    }
+  });
+  const hint = document.getElementById('dw-llm-hint');
+  if (hint && !connectorReady) {
+    hint.textContent = 'Lokale LLM-Instanz verbinden — AI buttons disabled until endpoint + model are saved.';
+  }
+}
+
+function initDokuWikiWizard() {
+  if (!window.DokuWikiGenerator || !window.LlmConnector) return;
+
+  const cfg = window.LlmConnector.loadConfig();
+  if (cfg.endpoint) document.getElementById('dw-llm-endpoint').value = cfg.endpoint;
+  if (cfg.model) document.getElementById('dw-llm-model').value = cfg.model;
+  if (cfg.key) document.getElementById('dw-llm-key').value = cfg.key;
+  updateDwAiButtons(!!(cfg.endpoint && cfg.model));
+
+  document.getElementById('dw-llm-preset')?.addEventListener('change', (e) => {
+    const p = window.LlmConnector.PRESETS[e.target.value];
+    if (p && p.endpoint) document.getElementById('dw-llm-endpoint').value = p.endpoint;
+  });
+
+  document.getElementById('dw-btn-llm-save')?.addEventListener('click', async () => {
+    const connectorCfg = {
+      endpoint: document.getElementById('dw-llm-endpoint').value.trim(),
+      model: document.getElementById('dw-llm-model').value.trim(),
+      key: document.getElementById('dw-llm-key').value.trim()
+    };
+    window.LlmConnector.saveConfig(connectorCfg);
+    const reach = await window.LlmConnector.checkReachability(connectorCfg.endpoint, connectorCfg.key, { model: connectorCfg.model });
+    updateDwAiButtons(!!(connectorCfg.endpoint && connectorCfg.model));
+    setDwStatus(reach.ok ? 'Connector saved and reachable.' : ('Connector saved — ' + reach.status));
+  });
+
+  let aiPreviewContent = null;
+
+  document.getElementById('dw-btn-ai-desc')?.addEventListener('click', async () => {
+    const formCfg = collectDwConfig();
+    setDwStatus('Improving description...');
+    const result = await window.LlmConnector.improveDescription(formCfg.desc, formCfg.plugin_name);
+    if (result.content) {
+      document.getElementById('dw-input-desc').value = result.content.trim();
+      setDwStatus('Description improved.');
+    } else {
+      setDwStatus('AI unavailable: ' + result.status);
+    }
+  });
+
+  document.getElementById('dw-btn-ai-preview')?.addEventListener('click', async () => {
+    const formCfg = collectDwConfig();
+    setDwStatus('Generating code preview...');
+    const result = await window.LlmConnector.previewCode(formCfg.plugin_type, formCfg.plugin_base, formCfg.plugin_name, formCfg.desc);
+    const box = document.getElementById('dw-ai-preview');
+    if (result.content) {
+      aiPreviewContent = result.content;
+      if (box) {
+        box.style.display = 'block';
+        box.textContent = result.content;
+      }
+      setDwStatus('Code preview ready (shown alongside deterministic scaffold).');
+    } else {
+      setDwStatus('AI preview unavailable: ' + result.status);
+    }
+  });
+
+  document.getElementById('dw-btn-ai-deploy')?.addEventListener('click', async () => {
+    const formCfg = collectDwConfig();
+    setDwStatus('Generating deployment guide...');
+    const result = await window.LlmConnector.generateDeployment(formCfg.plugin_base, formCfg.plugin_name);
+    if (result.content) {
+      showDwModal([{ name: 'DEPLOYMENT_GUIDE.md', content: result.content }], formCfg.plugin_base, 'Deployment Guide');
+      setDwStatus('Deployment guide generated.');
+    } else {
+      setDwStatus('Deployment guide unavailable: ' + result.status);
+    }
+  });
+
+  document.getElementById('dw-btn-generate')?.addEventListener('click', () => {
+    const cfg = validateDwForm();
+    if (!cfg) {
+      setDwStatus('Fix validation errors before generating.');
+      return;
+    }
+    let files = window.DokuWikiGenerator.buildPluginFiles(cfg);
+    const replaceAi = document.getElementById('dw-check-ai-replace')?.checked;
+    if (replaceAi && aiPreviewContent) {
+      const type = cfg.plugin_type;
+      files = files.map(f => (f.name === type + '.php' ? { name: f.name, content: aiPreviewContent.replace(/```php|```/g, '') } : f));
+    } else if (aiPreviewContent) {
+      files = files.concat([{ name: '_ai_preview.php.txt', content: aiPreviewContent }]);
+    }
+    showDwModal(files, cfg.plugin_base, 'Generated DokuWiki Plugin Files');
+    setDwStatus('Plugin scaffold generated.');
+  });
+}

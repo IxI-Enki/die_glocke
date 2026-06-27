@@ -79,29 +79,29 @@
     }
   }
   document.addEventListener('DOMContentLoaded',function(){
-    // Keep header scribbles only; remove tool scribbles and animations for a clean slate
+    // Header scribbles
     createScribbles('occult-layer');
-
-    // Cleanup any residual tool-layer elements
+    // Ensure tool occult layer is present but do not clear the bell SVG
     var toolOccult=document.getElementById('tool-occult');
-    if(toolOccult){ toolOccult.innerHTML=''; }
-    var bell=document.getElementById('tool-bell');
-    if(bell){ bell.innerHTML=''; }
+    if(toolOccult && toolOccult.children.length===0){ createScribbles('tool-occult'); }
 
     // Tools list toggle behavior
     var toolsList=document.getElementById('tools-list');
     if (toolsList){
+      var panelIdMap={ 'mcp-generator': 'tool-mcp-generator', 'dokuwiki-wizard': 'tool-dokuwiki-wizard' };
       toolsList.addEventListener('click',function(e){
         var card=e.target.closest('[data-tool-id]');
         if(!card) return;
         var id=card.getAttribute('data-tool-id');
-        var panelIdMap={ 'mcp-generator': 'tool-mcp-generator' };
         var panelId=panelIdMap[id];
         if(!panelId) return;
+        Object.keys(panelIdMap).forEach(function(key){
+          var p=document.getElementById(panelIdMap[key]);
+          if(p){ p.classList.add('hidden'); }
+        });
         var panel=document.getElementById(panelId);
         if(!panel) return;
-        if(panel.classList.contains('hidden')){ panel.classList.remove('hidden'); }
-        else { panel.classList.add('hidden'); }
+        panel.classList.remove('hidden');
       });
     }
   });
